@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Tambah Catatan</title>
+  <title>Blok Kuliah</title>
 
   <style>
     * {
@@ -19,41 +19,97 @@
     }
 
     header {
-      background: #2563eb;
+      background: #1e3a8a;
       color: white;
-      padding: 20px;
+      padding: 25px 20px;
       text-align: center;
     }
 
     header h1 {
+      margin: 0 0 8px;
+    }
+
+    header p {
       margin: 0;
     }
 
     .container {
-      max-width: 900px;
-      margin: 25px auto;
-      padding: 15px;
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 15px;
     }
 
-    .card {
+    .blok {
       background: white;
       border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      padding: 22px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
-    iframe {
-      width: 100%;
-      min-height: 1000px;
-      border: none;
+    .blok h2 {
+      margin-top: 0;
+      color: #1e3a8a;
     }
 
-    .back {
+    .catatan {
+      border-top: 1px solid #ddd;
+      padding: 15px 0;
+    }
+
+    .catatan:first-child {
+      border-top: none;
+    }
+
+    .catatan h3 {
+      margin: 0 0 8px;
+    }
+
+    .info {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .btn {
       display: inline-block;
-      margin-top: 20px;
+      padding: 9px 15px;
+      background: #1e3a8a;
+      color: white;
       text-decoration: none;
-      color: #2563eb;
-      font-weight: bold;
+      border-radius: 8px;
+    }
+
+    .btn:hover {
+      opacity: 0.85;
+    }
+
+    .tambah {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 15px;
+      background: #16a34a;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+
+    .loading {
+      color: #777;
+      font-style: italic;
+    }
+
+    .kosong {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
     }
   </style>
 </head>
@@ -61,26 +117,246 @@
 <body>
 
   <header>
-    <h1>📝 Tambah Catatan Kuliah</h1>
-    <p>Kirim link catatan kuliah harian kamu</p>
+    <h1>Blok Kuliah</h1>
+    <p>Kumpulan catatan kuliah harian</p>
   </header>
 
   <div class="container">
 
-    <div class="card">
+    <div id="error"></div>
 
-      <iframe
-        src="https://docs.google.com/forms/d/e/1FAIpQLSdvwc9xtzOi5A9o_Ez2nYf5FDi92lXgHChiSmyYI0Ez9NB6xA/viewform?usp=preview"
-        frameborder="0">
-      </iframe>
+    <!-- BLOK 1 -->
+    <section class="blok">
+      <h2>1. Bioetik dan Medikolegal</h2>
 
-    </div>
+      <div id="bioetik">
+        <p class="loading">Memuat catatan...</p>
+      </div>
 
-    <a class="back" href="../materi/index.html">
-      ← Kembali ke Blok
-    </a>
+      <a class="tambah" href="../tambah-catatan/">
+        + Tambah Catatan
+      </a>
+    </section>
+
+
+    <!-- BLOK 2 -->
+    <section class="blok">
+      <h2>2. THT</h2>
+
+      <div id="tht">
+        <p class="loading">Memuat catatan...</p>
+      </div>
+
+      <a class="tambah" href="../tambah-catatan/">
+        + Tambah Catatan
+      </a>
+    </section>
+
+
+    <!-- BLOK 3 -->
+    <section class="blok">
+      <h2>3. Endocrine dan Metabolisme</h2>
+
+      <div id="endocrine">
+        <p class="loading">Memuat catatan...</p>
+      </div>
+
+      <a class="tambah" href="../tambah-catatan/">
+        + Tambah Catatan
+      </a>
+    </section>
+
+
+    <!-- BLOK 4 -->
+    <section class="blok">
+      <h2>4. Neurology</h2>
+
+      <div id="neurology">
+        <p class="loading">Memuat catatan...</p>
+      </div>
+
+      <a class="tambah" href="../tambah-catatan/">
+        + Tambah Catatan
+      </a>
+    </section>
+
+
+    <!-- BLOK 5 -->
+    <section class="blok">
+      <h2>5. Reproductive System</h2>
+
+      <div id="reproductive">
+        <p class="loading">Memuat catatan...</p>
+      </div>
+
+      <a class="tambah" href="../tambah-catatan/">
+        + Tambah Catatan
+      </a>
+    </section>
 
   </div>
+
+
+  <script>
+
+    // ==========================================
+    // MASUKKAN WEB APP URL APPS SCRIPT DI SINI
+    // ==========================================
+
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwiAQYoQP_3zmIarTdgIdWvHqmXWBrJO9TKvN6Jlkvb067wKc6ud54TXOOzIYlHdnxK/exec";
+
+
+    // ==========================================
+    // PEMETAAN NAMA BLOK KE BAGIAN WEBSITE
+    // ==========================================
+
+    const blokMap = {
+      "bioetik dan medikolegal": "bioetik",
+      "tht": "tht",
+      "endocrine dan metabolisme": "endocrine",
+      "neurology": "neurology",
+      "reproductive system": "reproductive"
+    };
+
+
+    // ==========================================
+    // MENGAMBIL DATA DARI GOOGLE SHEETS
+    // ==========================================
+
+    fetch(SCRIPT_URL)
+
+      .then(response => {
+
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data.");
+        }
+
+        return response.json();
+
+      })
+
+      .then(data => {
+
+        // Bersihkan tulisan "Memuat catatan..."
+        Object.values(blokMap).forEach(id => {
+          document.getElementById(id).innerHTML = "";
+        });
+
+
+        // Kalau belum ada catatan
+        if (data.length === 0) {
+
+          Object.values(blokMap).forEach(id => {
+
+            document.getElementById(id).innerHTML =
+              '<p class="kosong">Belum ada catatan yang dikirim.</p>';
+
+          });
+
+          return;
+        }
+
+
+        // Masukkan setiap catatan ke blok yang sesuai
+        data.forEach(item => {
+
+          const namaBlok = String(item.blok || "")
+            .trim()
+            .toLowerCase();
+
+          const targetId = blokMap[namaBlok];
+
+          // Kalau nama blok tidak ditemukan
+          if (!targetId) {
+            return;
+          }
+
+
+          const container = document.getElementById(targetId);
+
+
+          // Membuat elemen catatan
+          const catatan = document.createElement("div");
+
+          catatan.className = "catatan";
+
+
+          // Judul topik
+          const judul = document.createElement("h3");
+
+          judul.textContent =
+            item.topik || "Catatan Kuliah";
+
+
+          // Informasi nama dan tanggal
+          const info = document.createElement("div");
+
+          info.className = "info";
+
+          info.textContent =
+            "Oleh: " +
+            (item.nama || "-") +
+            " • " +
+            (item.tanggal || "-");
+
+
+          // Tombol buka catatan
+          const link = document.createElement("a");
+
+          link.className = "btn";
+
+          link.textContent = "Buka Catatan";
+
+          link.href = item.link || "#";
+
+          link.target = "_blank";
+
+          link.rel = "noopener noreferrer";
+
+
+          // Masukkan semuanya
+          catatan.appendChild(judul);
+
+          catatan.appendChild(info);
+
+          catatan.appendChild(link);
+
+          container.appendChild(catatan);
+
+        });
+
+
+        // Tampilkan pesan jika suatu blok masih kosong
+        Object.values(blokMap).forEach(id => {
+
+          const container = document.getElementById(id);
+
+          if (container.children.length === 0) {
+
+            container.innerHTML =
+              '<p class="kosong">Belum ada catatan untuk blok ini.</p>';
+
+          }
+
+        });
+
+      })
+
+
+      .catch(error => {
+
+        console.error(error);
+
+        document.getElementById("error").innerHTML =
+
+          '<div class="error">' +
+          'Tidak dapat mengambil data catatan. ' +
+          'Pastikan Web App URL sudah benar dan deployment Apps Script sudah aktif.' +
+          '</div>';
+
+      });
+
+  </script>
 
 </body>
 </html>
