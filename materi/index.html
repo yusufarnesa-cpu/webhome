@@ -1,156 +1,546 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Materi - Medical Learning Hub</title>
+  <title>Blok Kuliah</title>
 
-    <style>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-            color: #1e293b;
-        }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #222;
+    }
 
-        nav {
-            background: #2563eb;
-            padding: 20px;
-            text-align: center;
-        }
+    header {
+      background: #1e3a8a;
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+    }
 
-        nav h2 {
-            color: white;
-            margin: 0 0 15px;
-        }
+    header h1 {
+      margin: 0 0 8px;
+    }
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 10px;
-        }
+    .container {
+      max-width: 1000px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 40px 20px;
-        }
+    /* FORM */
 
-        .materi {
-            background: white;
-            margin: 20px 0;
-            padding: 25px;
-            border-radius: 15px;
-        }
+    .form-box {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
 
-        .materi h2 {
-            color: #2563eb;
-        }
+    .form-box h2 {
+      margin-top: 0;
+      color: #1e3a8a;
+    }
 
-        .back {
-            display: inline-block;
-            margin-top: 20px;
-            background: #2563eb;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-        }
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
 
-    </style>
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
 
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      background: #16a34a;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #999;
+    }
+
+    #status {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* BLOK */
+
+    .blok {
+      background: white;
+      border-radius: 15px;
+      padding: 22px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .blok h2 {
+      margin-top: 0;
+      color: #1e3a8a;
+    }
+
+    .catatan {
+      border-top: 1px solid #ddd;
+      padding: 15px 0;
+    }
+
+    .catatan:first-child {
+      border-top: none;
+    }
+
+    .catatan h3 {
+      margin: 0 0 8px;
+    }
+
+    .info {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 9px 15px;
+      background: #1e3a8a;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+
+    .kosong {
+      color: #999;
+      font-size: 14px;
+    }
+  </style>
 </head>
 
 <body>
 
-<nav>
-
-    <h2>Medical Learning Hub</h2>
-
-    <a href="../index.html">Home</a>
-    <a href="index.html">Materi</a>
-    <a href="#">Quiz</a>
-    <a href="#">Referensi</a>
-
-</nav>
-
+<header>
+  <h1>Blok Kuliah</h1>
+  <p>Kumpulan Catatan Kuliah Harian</p>
+</header>
 
 <div class="container">
 
-    <h1>📚 Materi Pembelajaran</h1>
+  <!-- FORM TAMBAH CATATAN -->
 
-    <p>
-        Selamat datang di halaman materi.
-    </p>
+  <div class="form-box">
+
+    <h2>➕ Tambah Catatan Kuliah</h2>
+
+    <form id="catatanForm">
+
+      <label>Nama</label>
+      <input
+        type="text"
+        id="nama"
+        required
+        placeholder="Masukkan nama"
+      >
+
+      <label>Tanggal</label>
+      <input
+        type="date"
+        id="tanggal"
+        required
+      >
+
+      <label>Blok</label>
+      <input
+        type="text"
+        id="blok"
+        required
+        placeholder="Contoh: THT"
+      >
+
+      <label>Topik Kuliah</label>
+      <input
+        type="text"
+        id="topik"
+        required
+        placeholder="Contoh: Anatomi Telinga"
+      >
+
+      <label>Link Catatan</label>
+      <input
+        type="url"
+        id="link"
+        required
+        placeholder="https://..."
+      >
+
+      <button type="submit" id="submitBtn">
+        Kirim Catatan
+      </button>
+
+    </form>
+
+    <div id="status"></div>
+
+  </div>
 
 
-    <div class="materi">
+  <!-- BLOK 1 -->
 
-        <h2>1. Bioetik dan Medikolegal</h2>
+  <section class="blok">
 
-        <p>
-            Di sini nanti kita dapat memasukkan
-            materi anatomi.
-        </p>
+    <h2>1. Bioetik dan Medikolegal</h2>
 
+    <div id="bioetik">
+      <p class="kosong">Memuat catatan...</p>
     </div>
 
+  </section>
 
-    <div class="materi">
 
-        <h2>2. THT</h2>
+  <!-- BLOK 2 -->
 
-        <p>
-            Di sini nanti kita dapat memasukkan
-            materi THT.
-        </p>
+  <section class="blok">
 
+    <h2>2. THT</h2>
+
+    <div id="tht">
+      <p class="kosong">Memuat catatan...</p>
     </div>
 
+  </section>
 
-    <div class="materi">
 
-        <h2>3. Endocrine dan Metabolisme</h2>
+  <!-- BLOK 3 -->
 
-        <p>
-            Di sini nanti kita dapat memasukkan
-            materi Endocrine dan Metabolisme.
-        </p>
+  <section class="blok">
 
+    <h2>3. Endocrine dan Metabolisme</h2>
+
+    <div id="endocrine">
+      <p class="kosong">Memuat catatan...</p>
     </div>
-<div class="materi">
+
+  </section>
+
+
+  <!-- BLOK 4 -->
+
+  <section class="blok">
 
     <h2>4. Neurology</h2>
 
-    <p>
-        Pembelajaran mengenai sistem saraf,
-        otak, medula spinalis, saraf perifer,
-        dan gangguan neurologis.
-    </p>
+    <div id="neurology">
+      <p class="kosong">Memuat catatan...</p>
+    </div>
 
-</div>
+  </section>
 
 
-<div class="materi">
+  <!-- BLOK 5 -->
+
+  <section class="blok">
 
     <h2>5. Reproductive System</h2>
 
-    <p>
-        Pembelajaran mengenai sistem reproduksi
-        pria dan wanita.
-    </p>
+    <div id="reproductive">
+      <p class="kosong">Memuat catatan...</p>
+    </div>
+
+  </section>
 
 </div>
 
-    <a class="back" href="../index.html">
-        ← Kembali ke Home
-    </a>
 
-</div>
+<script>
+
+/* =================================================
+   MASUKKAN URL WEB APP APPS SCRIPT DI SINI
+   ================================================= */
+
+const SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbwiAQYoQP_3zmIarTdgIdWvHqmXWBrJO9TKvN6Jlkvb067wKc6ud54TXOOzIYlHdnxK/exec";
+
+
+/* =================================================
+   PEMETAAN BLOK
+   ================================================= */
+
+const blokMap = {
+
+  "bioetik dan medikolegal": "bioetik",
+
+  "tht": "tht",
+
+  "endocrine dan metabolisme": "endocrine",
+
+  "neurology": "neurology",
+
+  "reproductive system": "reproductive"
+
+};
+
+
+/* =================================================
+   FORM TAMBAH CATATAN
+   ================================================= */
+
+document
+  .getElementById("catatanForm")
+  .addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    const submitBtn =
+      document.getElementById("submitBtn");
+
+    const status =
+      document.getElementById("status");
+
+
+    const data = new URLSearchParams();
+
+    data.append(
+      "nama",
+      document.getElementById("nama").value
+    );
+
+    data.append(
+      "tanggal",
+      document.getElementById("tanggal").value
+    );
+
+    data.append(
+      "blok",
+      document.getElementById("blok").value
+    );
+
+    data.append(
+      "topik",
+      document.getElementById("topik").value
+    );
+
+    data.append(
+      "link",
+      document.getElementById("link").value
+    );
+
+
+    submitBtn.disabled = true;
+
+    submitBtn.textContent =
+      "Mengirim...";
+
+    status.textContent =
+      "Sedang menyimpan catatan...";
+
+
+    fetch(SCRIPT_URL, {
+
+      method: "POST",
+
+      body: data
+
+    })
+
+    .then(response => response.text())
+
+    .then(result => {
+
+      status.textContent =
+        "✅ Catatan berhasil ditambahkan!";
+
+      document
+        .getElementById("catatanForm")
+        .reset();
+
+      submitBtn.disabled = false;
+
+      submitBtn.textContent =
+        "Kirim Catatan";
+
+
+      // Muat ulang daftar catatan
+
+      setTimeout(() => {
+
+        location.reload();
+
+      }, 1000);
+
+    })
+
+    .catch(error => {
+
+      console.error(error);
+
+      status.textContent =
+        "❌ Gagal mengirim catatan.";
+
+      submitBtn.disabled = false;
+
+      submitBtn.textContent =
+        "Kirim Catatan";
+
+    });
+
+  });
+
+
+/* =================================================
+   MENGAMBIL CATATAN DARI GOOGLE SHEETS
+   ================================================= */
+
+fetch(SCRIPT_URL)
+
+  .then(response => response.json())
+
+  .then(data => {
+
+    // Bersihkan loading
+
+    Object.values(blokMap).forEach(id => {
+
+      document.getElementById(id).innerHTML = "";
+
+    });
+
+
+    data.forEach(item => {
+
+      const namaBlok =
+        String(item.blok || "")
+        .trim()
+        .toLowerCase();
+
+
+      const targetId =
+        blokMap[namaBlok];
+
+
+      if (!targetId) {
+        return;
+      }
+
+
+      const container =
+        document.getElementById(targetId);
+
+
+      const catatan =
+        document.createElement("div");
+
+      catatan.className =
+        "catatan";
+
+
+      const judul =
+        document.createElement("h3");
+
+      judul.textContent =
+        item.topik || "Catatan Kuliah";
+
+
+      const info =
+        document.createElement("div");
+
+      info.className =
+        "info";
+
+      info.textContent =
+        "Oleh: " +
+        (item.nama || "-") +
+        " • " +
+        (item.tanggal || "-");
+
+
+      const link =
+        document.createElement("a");
+
+      link.className =
+        "btn";
+
+      link.textContent =
+        "Buka Catatan";
+
+      link.href =
+        item.link || "#";
+
+      link.target =
+        "_blank";
+
+      link.rel =
+        "noopener noreferrer";
+
+
+      catatan.appendChild(judul);
+
+      catatan.appendChild(info);
+
+      catatan.appendChild(link);
+
+
+      container.appendChild(catatan);
+
+    });
+
+
+    // Jika blok masih kosong
+
+    Object.values(blokMap).forEach(id => {
+
+      const container =
+        document.getElementById(id);
+
+      if (container.children.length === 0) {
+
+        container.innerHTML =
+          '<p class="kosong">' +
+          'Belum ada catatan untuk blok ini.' +
+          '</p>';
+
+      }
+
+    });
+
+  })
+
+  .catch(error => {
+
+    console.error(error);
+
+    Object.values(blokMap).forEach(id => {
+
+      document.getElementById(id).innerHTML =
+        '<p class="kosong">' +
+        'Gagal memuat catatan.' +
+        '</p>';
+
+    });
+
+  });
+
+</script>
 
 </body>
-
 </html>
