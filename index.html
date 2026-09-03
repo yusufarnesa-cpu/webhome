@@ -1,63 +1,231 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Homepage Saya</title>
+    <title>Medical Learning Hub</title>
 
     <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
             background: #f4f7fb;
-            text-align: center;
+            color: #1e293b;
         }
 
-        header {
+        /* NAVBAR */
+
+        nav {
             background: #2563eb;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
             color: white;
-            padding: 30px 20px;
+            font-size: 22px;
+            font-weight: bold;
         }
 
-        main {
-            padding: 50px 20px;
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
         }
 
-        h1 {
-            font-size: 40px;
+        /* HERO */
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
         }
+
+        .hero h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        /* BUTTON */
 
         .button {
             display: inline-block;
-            padding: 12px 25px;
             background: #2563eb;
             color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
             text-decoration: none;
-            border-radius: 8px;
         }
+
+        /* CARDS */
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin: 15px 0;
+        }
+
+        .card p {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
     </style>
 </head>
 
+
 <body>
 
-    <header>
-        <h1>Website Saya</h1>
-        <p>Selamat datang di homepage saya</p>
-    </header>
+    <!-- NAVBAR -->
 
-    <main>
+    <nav>
+
+        <div class="logo">
+            Medical Learning Hub
+        </div>
+
+        <div>
+            <a href="index.html">Home</a>
+            <a href="#">Materi</a>
+            <a href="#">Quiz</a>
+        </div>
+
+    </nav>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
         <h1>Selamat Datang 👋</h1>
 
         <p>
-            Ini adalah homepage pertama saya
+            Platform pembelajaran medis sederhana
             yang dibuat menggunakan GitHub Pages.
         </p>
 
-        <a class="button" href="#">
-            Mulai
+        <a class="button" href="#menu">
+            Mulai Belajar
         </a>
-    </main>
+
+    </section>
+
+
+    <!-- MENU -->
+
+    <section class="container" id="menu">
+
+        <div class="cards">
+
+            <div class="card">
+
+                <div style="font-size:45px;">
+                    📚
+                </div>
+
+                <h2>Materi</h2>
+
+                <p>
+                    Pelajari berbagai materi
+                    pembelajaran secara terstruktur.
+                </p>
+
+                <a class="button" href="#">
+                    Buka Materi
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <div style="font-size:45px;">
+                    📝
+                </div>
+
+                <h2>Quiz</h2>
+
+                <p>
+                    Uji pemahamanmu melalui
+                    berbagai soal latihan.
+                </p>
+
+                <a class="button" href="#">
+                    Mulai Quiz
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <div style="font-size:45px;">
+                    📖
+                </div>
+
+                <h2>Referensi</h2>
+
+                <p>
+                    Kumpulan sumber dan referensi
+                    pembelajaran.
+                </p>
+
+                <a class="button" href="#">
+                    Lihat Referensi
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <footer>
+
+        © 2026 Medical Learning Hub
+
+    </footer>
 
 </body>
+
 </html>
