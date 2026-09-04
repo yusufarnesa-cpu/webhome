@@ -3,144 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
 
     <title>Medical Learning Hub</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-        }
+    <link rel="stylesheet" href="style.css">
 
-        nav {
-            background: #2563eb;
-            padding: 20px;
-            color: white;
-            text-align: center;
-        }
-
-        nav h2 {
-            margin: 0 0 15px;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 10px;
-        }
-
-        .hero {
-            text-align: center;
-            padding: 80px 20px;
-        }
-
-        .hero h1 {
-            font-size: 42px;
-        }
-
-        .hero p {
-            font-size: 18px;
-        }
-
-        .cards {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            padding: 30px;
-        }
-
-        .card {
-            background: white;
-            width: 250px;
-            padding: 30px;
-            text-align: center;
-            border-radius: 15px;
-        }
-
-        .button {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-        }
-
-        footer {
-            text-align: center;
-            padding: 50px;
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-<nav>
-    <h2>Medical Learning Hub</h2>
+    <!-- NAVBAR -->
+    <nav class="navbar">
 
-    <a href="index.html">Home</a>
-    <a href=<a href="materi/index.html">Materi</a>
-    <a href="#">Quiz</a>
-    <a href="#">Referensi</a>
-</nav>
+        <div class="nav-container">
 
-<section class="hero">
+            <div class="logo">
+                🩺 Medical Learning Hub
+            </div>
 
-    <h1>Selamat Datang 👋</h1>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="materi/index.html">Materi</a>
+                <a href="#">Quiz</a>
+                <a href="#">Referensi</a>
+            </div>
 
-    <p>
-        Platform pembelajaran medis saya
-    </p>
+        </div>
 
-</section>
+    </nav>
 
-<section class="cards">
 
-    <div class="card">
-        <h2>📚 Materi</h2>
+    <!-- HERO -->
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                MEDICAL EDUCATION PLATFORM
+            </span>
+
+            <h1>
+                Belajar Kedokteran<br>
+                <span>Lebih Terstruktur</span>
+            </h1>
+
+            <p>
+                Satu tempat untuk menemukan materi, latihan soal,
+                referensi, dan berbagai sumber pembelajaran medis.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a class="button primary" href="materi/index.html">
+                    📚 Jelajahi Materi
+                </a>
+
+                <a class="button secondary" href="#materi-terbaru">
+                    Lihat Materi Terbaru
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FITUR -->
+    <section class="features">
+
+        <div class="section-heading">
+
+            <span>LEARNING HUB</span>
+
+            <h2>
+                Semua yang kamu butuhkan untuk belajar
+            </h2>
+
+            <p>
+                Dirancang untuk membantu proses belajar menjadi
+                lebih terorganisir dan mudah diakses.
+            </p>
+
+        </div>
+
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    📚
+                </div>
+
+                <h3>Materi</h3>
+
+                <p>
+                    Kumpulan materi pembelajaran medis
+                    yang tersusun secara terstruktur.
+                </p>
+
+                <a href="materi/index.html">
+                    Buka Materi →
+                </a>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    📝
+                </div>
+
+                <h3>Quiz</h3>
+
+                <p>
+                    Latihan soal untuk membantu menguji
+                    pemahaman materi.
+                </p>
+
+                <a href="#">
+                    Mulai Quiz →
+                </a>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    📖
+                </div>
+
+                <h3>Referensi</h3>
+
+                <p>
+                    Kumpulan sumber dan referensi
+                    pembelajaran kedokteran.
+                </p>
+
+                <a href="#">
+                    Lihat Referensi →
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MATERI TERBARU -->
+    <section class="latest-section" id="materi-terbaru">
+
+        <div class="section-heading">
+
+            <span>TERBARU</span>
+
+            <h2>Materi Terbaru</h2>
+
+            <p>
+                Materi yang baru ditambahkan ke Learning Hub.
+            </p>
+
+        </div>
+
+
+        <div id="latest-materials" class="materials-grid">
+
+            <div class="loading">
+                Memuat materi...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CTA -->
+    <section class="cta">
+
+        <div>
+
+            <h2>
+                Siap mulai belajar?
+            </h2>
+
+            <p>
+                Jelajahi materi dan sumber pembelajaran
+                yang tersedia di Medical Learning Hub.
+            </p>
+
+            <a class="button primary" href="materi/index.html">
+                Mulai Belajar →
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <h3>
+            🩺 Medical Learning Hub
+        </h3>
+
         <p>
-            Kumpulan materi pembelajaran.
+            Platform pembelajaran medis.
         </p>
 
-        <a class="button" href="materi/index.html">
-    Buka Materi
-        </a>
-            
-
-    </div>
-
-    <div class="card">
-        <h2>📝 Quiz</h2>
-        <p>
-            Latihan soal untuk menguji pemahaman.
+        <p class="copyright">
+            © 2026 Medical Learning Hub
         </p>
 
-        <a class="button" href="#">
-            Mulai Quiz
-        </a>
-    </div>
+    </footer>
 
-    <div class="card">
-        <h2>📖 Referensi</h2>
-        <p>
-            Kumpulan sumber pembelajaran.
-        </p>
 
-        <a class="button" href="#">
-            Lihat Referensi
-        </a>
-    </div>
-
-</section>
-
-<footer>
-    <p>© 2026 Medical Learning Hub</p>
-</footer>
-<script  
-     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
+
 </body>
 </html>
