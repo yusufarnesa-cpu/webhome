@@ -344,6 +344,67 @@
       margin-top: 4px;
     }
 
+    /* ============================================================
+       OSCE
+    ============================================================ */
+
+    .osce-checklist {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #f8fafc;
+    }
+
+    .osce-checklist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .osce-step {
+      font-weight: 700;
+      color: #2563eb;
+    }
+
+    .osce-checklist-grid {
+      display: grid;
+      grid-template-columns: 1fr 120px auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .osce-station {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: #f8fafc;
+    }
+
+    .osce-station-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .osce-station-meta {
+      color: #64748b;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .osce-station-section {
+      margin-top: 10px;
+    }
+
+    .osce-station-section strong {
+      color: #334155;
+    }
+
     @media (max-width: 900px) {
       .four-column {
         grid-template-columns: 1fr 1fr;
@@ -370,6 +431,14 @@
 
       .card {
         padding: 18px;
+      }
+
+      .osce-checklist-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .osce-checklist-header {
+        align-items: flex-start;
       }
     }
   </style>
@@ -1007,6 +1076,129 @@
 
       <div class="empty">
         Memuat CBT...
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================================================
+       KELOLA OSCE
+  ========================================================== -->
+
+  <div class="card">
+
+    <h2>🎯 Kelola OSCE</h2>
+
+    <p class="description">
+      Buat dan kelola station OSCE beserta checklist penilaiannya.
+      OSCE tidak menggunakan blok atau kategori.
+    </p>
+
+    <div class="form-group">
+
+      <label for="osceTitle">
+        Judul Station
+      </label>
+
+      <input
+        type="text"
+        id="osceTitle"
+        placeholder="Contoh: Pemeriksaan Telinga"
+      >
+
+    </div>
+
+    <div class="form-group">
+
+      <label for="osceDescription">
+        Deskripsi
+      </label>
+
+      <textarea
+        id="osceDescription"
+        placeholder="Deskripsi singkat station..."
+      ></textarea>
+
+    </div>
+
+    <div class="form-group">
+
+      <label for="osceObjective">
+        Tujuan / Objective
+      </label>
+
+      <textarea
+        id="osceObjective"
+        placeholder="Contoh: Mahasiswa mampu melakukan pemeriksaan otoskopi dengan benar."
+      ></textarea>
+
+    </div>
+
+    <div class="form-group">
+
+      <label for="osceInstructions">
+        Instruksi
+      </label>
+
+      <textarea
+        id="osceInstructions"
+        placeholder="Instruksi yang harus dilakukan peserta..."
+      ></textarea>
+
+    </div>
+
+    <h3>Checklist Penilaian</h3>
+
+    <div class="info-box">
+
+      Tambahkan langkah pemeriksaan yang harus dilakukan peserta.
+      Setiap langkah dapat diberikan poin penilaian.
+
+    </div>
+
+    <div id="osceChecklistContainer"></div>
+
+    <div class="button-row">
+
+      <button
+        type="button"
+        class="btn-secondary"
+        onclick="addChecklistRow()"
+      >
+        ➕ Tambah Checklist
+      </button>
+
+      <button
+        type="button"
+        class="btn-primary"
+        onclick="saveOSCEStation()"
+      >
+        💾 Simpan Station
+      </button>
+
+      <button
+        type="button"
+        class="btn-warning"
+        onclick="clearOSCEForm()"
+      >
+        Bersihkan
+      </button>
+
+    </div>
+
+    <div
+      id="osceMessage"
+      class="message"
+    ></div>
+
+    <h3>Daftar Station OSCE</h3>
+
+    <div id="osceStationList">
+
+      <div class="empty">
+        Memuat station OSCE...
       </div>
 
     </div>
@@ -3448,10 +3640,6 @@
 
     try {
 
-      /*
-       * Membuat SATU record quiz.
-       */
-
       const {
         data,
         error: quizError
@@ -3495,10 +3683,6 @@
         data;
 
 
-      /*
-       * Gabungkan Batch 1 → 4.
-       */
-
       const allQuestions =
         batches.flatMap(
           batch =>
@@ -3517,10 +3701,6 @@
       }
 
 
-      /*
-       * Insert soal satu per satu.
-       */
-
       for (
         let i = 0;
         i < allQuestions.length;
@@ -3530,10 +3710,6 @@
         const item =
           allQuestions[i];
 
-
-        /*
-         * Nomor soal otomatis 1–100.
-         */
 
         const questionNumber =
           i + 1;
@@ -3617,9 +3793,6 @@
 
         }
 
-        /*
-         * Update progress setiap 10 soal.
-         */
 
         if (
           questionNumber === 1 ||
@@ -3654,14 +3827,6 @@
 
       console.error(error);
 
-
-      /*
-       * Jika gagal di tengah proses,
-       * hapus quiz utama.
-       *
-       * ON DELETE CASCADE akan
-       * membersihkan soal dan opsi.
-       */
 
       if (quiz) {
 
@@ -3894,6 +4059,993 @@
 
 
   /* ============================================================
+     OSCE
+  ============================================================ */
+
+  let editingStationId = null;
+
+
+  function addChecklistRow(
+    item = "",
+    points = 1
+  ) {
+
+    const container =
+      document.getElementById(
+        "osceChecklistContainer"
+      );
+
+
+    if (!container) return;
+
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    row.className =
+      "osce-checklist";
+
+
+    row.innerHTML = `
+
+      <div class="osce-checklist-header">
+
+        <div class="osce-step">
+
+          Langkah
+          <span class="osce-step-number"></span>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-danger"
+          onclick="removeChecklistRow(this)"
+        >
+          Hapus
+        </button>
+
+      </div>
+
+
+      <div class="osce-checklist-grid">
+
+        <div
+          class="form-group"
+          style="margin-bottom:0;"
+        >
+
+          <label>
+            Item Checklist
+          </label>
+
+          <input
+            type="text"
+            class="osce-item-input"
+            value="${escapeAttribute(item)}"
+            placeholder="Contoh: Mencuci tangan sebelum pemeriksaan"
+          >
+
+        </div>
+
+
+        <div
+          class="form-group"
+          style="margin-bottom:0;"
+        >
+
+          <label>
+            Poin
+          </label>
+
+          <input
+            type="number"
+            class="osce-points-input"
+            value="${Number(points) || 1}"
+            min="1"
+            step="1"
+          >
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    container.appendChild(
+      row
+    );
+
+
+    updateChecklistNumbers();
+
+  }
+
+
+  function removeChecklistRow(
+    button
+  ) {
+
+    const row =
+      button.closest(
+        ".osce-checklist"
+      );
+
+
+    if (!row) return;
+
+
+    row.remove();
+
+
+    updateChecklistNumbers();
+
+  }
+
+
+  function updateChecklistNumbers() {
+
+    const rows =
+      document.querySelectorAll(
+        "#osceChecklistContainer .osce-checklist"
+      );
+
+
+    rows.forEach(
+      (
+        row,
+        index
+      ) => {
+
+        const number =
+          row.querySelector(
+            ".osce-step-number"
+          );
+
+
+        if (number) {
+
+          number.textContent =
+            index + 1;
+
+        }
+
+      }
+    );
+
+  }
+
+
+  function resetChecklistRows() {
+
+    const container =
+      document.getElementById(
+        "osceChecklistContainer"
+      );
+
+
+    if (!container) return;
+
+
+    container.innerHTML =
+      "";
+
+  }
+
+
+  function clearOSCEForm() {
+
+    editingStationId =
+      null;
+
+
+    document.getElementById(
+      "osceTitle"
+    ).value =
+      "";
+
+
+    document.getElementById(
+      "osceDescription"
+    ).value =
+      "";
+
+
+    document.getElementById(
+      "osceObjective"
+    ).value =
+      "";
+
+
+    document.getElementById(
+      "osceInstructions"
+    ).value =
+      "";
+
+
+    resetChecklistRows();
+
+
+    addChecklistRow();
+
+
+    const message =
+      document.getElementById(
+        "osceMessage"
+      );
+
+
+    if (message) {
+
+      message.className =
+        "message";
+
+      message.textContent =
+        "";
+
+    }
+
+  }
+
+
+  function getOSCEChecklistData() {
+
+    const rows =
+      document.querySelectorAll(
+        "#osceChecklistContainer .osce-checklist"
+      );
+
+
+    const checklist =
+      [];
+
+
+    rows.forEach(
+      (
+        row,
+        index
+      ) => {
+
+        const itemInput =
+          row.querySelector(
+            ".osce-item-input"
+          );
+
+
+        const pointsInput =
+          row.querySelector(
+            ".osce-points-input"
+          );
+
+
+        const item =
+          itemInput
+            ? itemInput.value.trim()
+            : "";
+
+
+        const points =
+          pointsInput
+            ? Number(pointsInput.value)
+            : 0;
+
+
+        if (!item) {
+
+          throw new Error(
+            `Checklist langkah ${index + 1} belum diisi.`
+          );
+
+        }
+
+
+        if (
+          !Number.isInteger(points) ||
+          points <= 0
+        ) {
+
+          throw new Error(
+            `Poin checklist langkah ${index + 1} harus berupa bilangan bulat lebih dari 0.`
+          );
+
+        }
+
+
+        checklist.push({
+
+          step_number:
+            index + 1,
+
+          item,
+
+          points
+
+        });
+
+      }
+    );
+
+
+    if (
+      checklist.length === 0
+    ) {
+
+      throw new Error(
+        "Minimal harus ada satu checklist."
+      );
+
+    }
+
+
+    return checklist;
+
+  }
+
+
+  async function saveOSCEStation() {
+
+    const title =
+      document.getElementById(
+        "osceTitle"
+      ).value.trim();
+
+
+    const description =
+      document.getElementById(
+        "osceDescription"
+      ).value.trim();
+
+
+    const objective =
+      document.getElementById(
+        "osceObjective"
+      ).value.trim();
+
+
+    const instructions =
+      document.getElementById(
+        "osceInstructions"
+      ).value.trim();
+
+
+    if (!title) {
+
+      showMessage(
+        "osceMessage",
+        "Judul station wajib diisi.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    let checklist;
+
+
+    try {
+
+      checklist =
+        getOSCEChecklistData();
+
+    } catch (error) {
+
+      showMessage(
+        "osceMessage",
+        error.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    showMessage(
+      "osceMessage",
+      "Menyimpan station OSCE...",
+      "info"
+    );
+
+
+    let stationId =
+      editingStationId;
+
+
+    try {
+
+      if (
+        editingStationId
+      ) {
+
+        const {
+          error: updateError
+        } = await supabaseClient
+          .from("osce_stations")
+          .update({
+
+            title,
+
+            description:
+              description ||
+              null,
+
+            objective:
+              objective ||
+              null,
+
+            instructions:
+              instructions ||
+              null
+
+          })
+          .eq(
+            "id",
+            editingStationId
+          );
+
+
+        if (updateError) {
+
+          throw new Error(
+            "Gagal memperbarui station: " +
+            updateError.message
+          );
+
+        }
+
+
+        const {
+          error:
+            deleteChecklistError
+        } = await supabaseClient
+          .from("osce_checklists")
+          .delete()
+          .eq(
+            "station_id",
+            editingStationId
+          );
+
+
+        if (
+          deleteChecklistError
+        ) {
+
+          throw new Error(
+            "Gagal memperbarui checklist: " +
+            deleteChecklistError.message
+          );
+
+        }
+
+      } else {
+
+        const {
+          data,
+          error: stationError
+        } = await supabaseClient
+          .from("osce_stations")
+          .insert({
+
+            title,
+
+            description:
+              description ||
+              null,
+
+            objective:
+              objective ||
+              null,
+
+            instructions:
+              instructions ||
+              null
+
+          })
+          .select()
+          .single();
+
+
+        if (stationError) {
+
+          throw new Error(
+            "Gagal membuat station: " +
+            stationError.message
+          );
+
+        }
+
+
+        stationId =
+          data.id;
+
+      }
+
+
+      const checklistData =
+        checklist.map(
+          item => ({
+
+            station_id:
+              stationId,
+
+            step_number:
+              item.step_number,
+
+            item:
+              item.item,
+
+            points:
+              item.points
+
+          })
+        );
+
+
+      const {
+        error: checklistError
+      } = await supabaseClient
+        .from("osce_checklists")
+        .insert(
+          checklistData
+        );
+
+
+      if (checklistError) {
+
+        if (
+          !editingStationId &&
+          stationId
+        ) {
+
+          await supabaseClient
+            .from("osce_stations")
+            .delete()
+            .eq(
+              "id",
+              stationId
+            );
+
+        }
+
+
+        throw new Error(
+          "Gagal menyimpan checklist: " +
+          checklistError.message
+        );
+
+      }
+
+
+      showMessage(
+        "osceMessage",
+        editingStationId
+          ? "Station OSCE berhasil diperbarui."
+          : "Station OSCE berhasil dibuat.",
+        "success"
+      );
+
+
+      clearOSCEForm();
+
+
+      await loadOSCEStations();
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      showMessage(
+        "osceMessage",
+        error.message ||
+        "Terjadi kesalahan saat menyimpan OSCE.",
+        "error"
+      );
+
+    }
+
+  }
+
+
+  async function loadOSCEStations() {
+
+    const container =
+      document.getElementById(
+        "osceStationList"
+      );
+
+
+    if (!container) return;
+
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("osce_stations")
+      .select(`
+        *,
+        osce_checklists (
+          id
+        )
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+    if (error) {
+
+      console.error(error);
+
+
+      container.innerHTML =
+        '<div class="empty">Gagal memuat station OSCE.</div>';
+
+
+      return;
+
+    }
+
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
+
+      container.innerHTML =
+        '<div class="empty">Belum ada station OSCE.</div>';
+
+
+      return;
+
+    }
+
+
+    container.innerHTML =
+      data.map(
+        station => {
+
+          const checklistCount =
+            station.osce_checklists
+              ? station.osce_checklists.length
+              : 0;
+
+
+          return `
+
+            <div class="osce-station">
+
+              <div class="osce-station-title">
+
+                ${escapeHtml(
+                  station.title
+                )}
+
+              </div>
+
+
+              <div class="osce-station-meta">
+
+                ${checklistCount}
+                checklist
+
+              </div>
+
+
+              ${
+                station.description
+                  ? `
+
+                    <div class="osce-station-section">
+
+                      <strong>
+                        Deskripsi
+                      </strong>
+
+                      <div class="item-description">
+
+                        ${escapeHtml(
+                          station.description
+                        )}
+
+                      </div>
+
+                    </div>
+
+                  `
+                  : ""
+              }
+
+
+              ${
+                station.objective
+                  ? `
+
+                    <div class="osce-station-section">
+
+                      <strong>
+                        Objective
+                      </strong>
+
+                      <div class="item-description">
+
+                        ${escapeHtml(
+                          station.objective
+                        )}
+
+                      </div>
+
+                    </div>
+
+                  `
+                  : ""
+              }
+
+
+              ${
+                station.instructions
+                  ? `
+
+                    <div class="osce-station-section">
+
+                      <strong>
+                        Instruksi
+                      </strong>
+
+                      <div class="item-description">
+
+                        ${escapeHtml(
+                          station.instructions
+                        )}
+
+                      </div>
+
+                    </div>
+
+                  `
+                  : ""
+              }
+
+
+              <div class="button-row">
+
+                <button
+                  type="button"
+                  class="btn-warning"
+                  onclick="editOSCEStation(${station.id})"
+                >
+                  Edit
+                </button>
+
+
+                <button
+                  type="button"
+                  class="btn-danger"
+                  onclick="deleteOSCEStation(${station.id})"
+                >
+                  Hapus
+                </button>
+
+              </div>
+
+            </div>
+
+          `;
+
+        }
+      ).join("");
+
+  }
+
+
+  async function editOSCEStation(
+    id
+  ) {
+
+    showMessage(
+      "osceMessage",
+      "Mengambil data station...",
+      "info"
+    );
+
+
+    const {
+      data: station,
+      error: stationError
+    } = await supabaseClient
+      .from("osce_stations")
+      .select("*")
+      .eq(
+        "id",
+        id
+      )
+      .single();
+
+
+    if (
+      stationError ||
+      !station
+    ) {
+
+      showMessage(
+        "osceMessage",
+        "Gagal mengambil data station OSCE.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const {
+      data: checklist,
+      error: checklistError
+    } = await supabaseClient
+      .from("osce_checklists")
+      .select("*")
+      .eq(
+        "station_id",
+        id
+      )
+      .order(
+        "step_number",
+        {
+          ascending: true
+        }
+      );
+
+
+    if (checklistError) {
+
+      showMessage(
+        "osceMessage",
+        "Gagal mengambil checklist OSCE: " +
+        checklistError.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    editingStationId =
+      id;
+
+
+    document.getElementById(
+      "osceTitle"
+    ).value =
+      station.title || "";
+
+
+    document.getElementById(
+      "osceDescription"
+    ).value =
+      station.description || "";
+
+
+    document.getElementById(
+      "osceObjective"
+    ).value =
+      station.objective || "";
+
+
+    document.getElementById(
+      "osceInstructions"
+    ).value =
+      station.instructions || "";
+
+
+    resetChecklistRows();
+
+
+    if (
+      checklist &&
+      checklist.length > 0
+    ) {
+
+      checklist.forEach(
+        item =>
+          addChecklistRow(
+            item.item,
+            item.points
+          )
+      );
+
+    } else {
+
+      addChecklistRow();
+
+    }
+
+
+    showMessage(
+      "osceMessage",
+      "Mode edit aktif. Ubah data lalu klik Simpan Station.",
+      "info"
+    );
+
+
+    window.scrollTo({
+
+      top:
+        document.getElementById(
+          "osceTitle"
+        ).getBoundingClientRect().top +
+        window.scrollY -
+        100,
+
+      behavior:
+        "smooth"
+
+    });
+
+  }
+
+
+  async function deleteOSCEStation(
+    id
+  ) {
+
+    const confirmed =
+      confirm(
+        "Hapus station OSCE ini? Semua checklist yang terhubung juga akan dihapus."
+      );
+
+
+    if (!confirmed) return;
+
+
+    const {
+      error
+    } = await supabaseClient
+      .from("osce_stations")
+      .delete()
+      .eq(
+        "id",
+        id
+      );
+
+
+    if (error) {
+
+      alert(
+        "Gagal menghapus station OSCE: " +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    if (
+      editingStationId === id
+    ) {
+
+      clearOSCEForm();
+
+    }
+
+
+    await loadOSCEStations();
+
+  }
+
+
+  /* ============================================================
      LOGOUT
   ============================================================ */
 
@@ -3929,6 +5081,10 @@
     await loadResources();
 
     await loadCBTs();
+
+    clearOSCEForm();
+
+    await loadOSCEStations();
 
   }
 
