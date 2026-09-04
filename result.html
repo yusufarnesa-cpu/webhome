@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="id"><head>
-  <meta charset="UTF-8"><meta
+<!DOCTYPE html><html lang="id"><head>  <meta charset="UTF-8"><meta
 name="viewport"
 content="width=device-width, initial-scale=1.0"
 
@@ -38,13 +37,17 @@ content="width=device-width, initial-scale=1.0"
       margin: 40px auto 60px;
     }
 
-    .result-card {
+    .result-card,
+    .review-section {
       background: white;
       border: 1px solid #e5e7eb;
       border-radius: 20px;
       padding: 35px;
-      text-align: center;
       margin-bottom: 25px;
+    }
+
+    .result-card {
+      text-align: center;
     }
 
     .result-icon {
@@ -173,13 +176,6 @@ content="width=device-width, initial-scale=1.0"
       background: #15803d;
     }
 
-    .review-section {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 20px;
-      padding: 30px;
-    }
-
     .review-header {
       margin-bottom: 25px;
     }
@@ -222,17 +218,17 @@ content="width=device-width, initial-scale=1.0"
       border-radius: 20px;
     }
 
-    .status.correct-status {
+    .correct-status {
       color: #166534;
       background: #dcfce7;
     }
 
-    .status.wrong-status {
+    .wrong-status {
       color: #991b1b;
       background: #fee2e2;
     }
 
-    .status.unanswered-status {
+    .unanswered-status {
       color: #92400e;
       background: #fef3c7;
     }
@@ -310,10 +306,6 @@ content="width=device-width, initial-scale=1.0"
       text-align: center;
     }
 
-    .hidden {
-      display: none;
-    }
-
     @media (max-width: 700px) {
 
       .container {
@@ -374,14 +366,9 @@ content="width=device-width, initial-scale=1.0"
   Medical Learning Hub
 </a>
 
-  </nav>  <main class="container"><!-- =========================================
-     HASIL UTAMA
-========================================== -->
+  </nav>  <main class="container"><!-- HASIL -->
 
-<section
-  id="resultContainer"
-  class="result-card"
->
+<section class="result-card">
 
   <div class="result-icon">
     🎉
@@ -398,12 +385,14 @@ content="width=device-width, initial-scale=1.0"
     Memuat hasil...
   </p>
 
+
   <div
     id="participant"
     class="participant"
   >
     Peserta: -
   </div>
+
 
   <div class="score-label">
     NILAI
@@ -446,7 +435,7 @@ content="width=device-width, initial-scale=1.0"
       </div>
 
       <div class="stat-label">
-        Jawaban Benar
+        Benar
       </div>
 
     </div>
@@ -462,7 +451,7 @@ content="width=device-width, initial-scale=1.0"
       </div>
 
       <div class="stat-label">
-        Jawaban Salah
+        Salah
       </div>
 
     </div>
@@ -525,9 +514,7 @@ content="width=device-width, initial-scale=1.0"
 </section>
 
 
-<!-- =========================================
-     PEMBAHASAN
-========================================== -->
+<!-- PEMBAHASAN -->
 
 <section class="review-section">
 
@@ -553,16 +540,15 @@ content="width=device-width, initial-scale=1.0"
 
 </section>
 
-  </main>  <!-- =========================================
-       SUPABASE
-  ========================================== -->  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script>
+  </main>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script>
+
 
     const SUPABASE_URL =
       "https://hqzishiazabguknallei.supabase.co";
 
 
     const SUPABASE_ANON_KEY =
-      "sb_publishable_r8rspBje6vjTvF9lKYzA_SakK9CD5";
+      "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
 
 
     const supabaseClient =
@@ -571,10 +557,6 @@ content="width=device-width, initial-scale=1.0"
         SUPABASE_ANON_KEY
       );
 
-
-    // =========================================
-    // ELEMENT
-    // =========================================
 
     const quizTitle =
       document.getElementById("quizTitle");
@@ -613,7 +595,10 @@ content="width=device-width, initial-scale=1.0"
 
     function escapeHtml(value) {
 
-      if (value === null || value === undefined) {
+      if (
+        value === null ||
+        value === undefined
+      ) {
         return "";
       }
 
@@ -628,7 +613,7 @@ content="width=device-width, initial-scale=1.0"
 
 
     // =========================================
-    // FORMAT WAKTU
+    // FORMAT DURASI
     // =========================================
 
     function formatDuration(
@@ -636,7 +621,10 @@ content="width=device-width, initial-scale=1.0"
       submittedAt
     ) {
 
-      if (!startedAt || !submittedAt) {
+      if (
+        !startedAt ||
+        !submittedAt
+      ) {
         return "-";
       }
 
@@ -694,28 +682,64 @@ content="width=device-width, initial-scale=1.0"
       }
 
 
-      const {
-        data,
-        error
-      } =
+      const numericAttemptId =
+        Number(attemptId);
+
+
+      if (
+        !Number.isInteger(
+          numericAttemptId
+        )
+      ) {
+
+        showError(
+          "ID hasil CBT tidak valid."
+        );
+
+        return;
+
+      }
+
+
+      console.log(
+        "Mengambil hasil attempt:",
+        numericAttemptId
+      );
+
+
+      const response =
         await supabaseClient.rpc(
           "get_quiz_attempt_result",
           {
             p_attempt_id:
-              Number(attemptId)
+              numericAttemptId
           }
         );
+
+
+      console.log(
+        "Response RPC:",
+        response
+      );
+
+
+      const {
+        data,
+        error
+      } = response;
 
 
       if (error) {
 
         console.error(
-          "Error mengambil hasil:",
+          "RPC ERROR:",
           error
         );
 
+
         showError(
-          "Hasil CBT tidak dapat dimuat. Silakan kembali ke daftar CBT."
+          error.message ||
+          "Hasil CBT tidak dapat dimuat."
         );
 
         return;
@@ -726,12 +750,18 @@ content="width=device-width, initial-scale=1.0"
       if (!data) {
 
         showError(
-          "Data hasil CBT tidak ditemukan."
+          "Data hasil CBT kosong."
         );
 
         return;
 
       }
+
+
+      console.log(
+        "Data hasil:",
+        data
+      );
 
 
       renderResult(data);
@@ -752,30 +782,47 @@ content="width=device-width, initial-scale=1.0"
 
       participant.textContent =
         `Peserta: ${
-          data.participant_name || "-"
+          data.participant_name ||
+          "-"
         }`;
 
 
       score.textContent =
         Number(
-          data.score || 0
+          data.score ?? 0
         ).toFixed(2);
 
 
       totalQuestions.textContent =
-        data.total_questions || 0;
+        data.total_questions ??
+        0;
 
 
       correctAnswers.textContent =
-        data.correct_answers || 0;
+        data.correct_answers ??
+        0;
 
 
       wrongAnswers.textContent =
-        data.wrong_answers || 0;
+        data.wrong_answers ??
+        0;
 
 
       unanswered.textContent =
-        data.unanswered || 0;
+        data.unanswered ??
+        (
+          Number(
+            data.total_questions || 0
+          )
+          -
+          Number(
+            data.correct_answers || 0
+          )
+          -
+          Number(
+            data.wrong_answers || 0
+          )
+        );
 
 
       timeInfo.textContent =
@@ -787,13 +834,19 @@ content="width=device-width, initial-scale=1.0"
         }`;
 
 
-      // Tombol ulangi CBT
       retryButton.onclick =
         function() {
 
           if (!data.quiz_id) {
+
+            alert(
+              "CBT tidak ditemukan."
+            );
+
             return;
+
           }
+
 
           window.location.href =
             `cbt.html?id=${data.quiz_id}`;
@@ -802,7 +855,9 @@ content="width=device-width, initial-scale=1.0"
 
 
       renderReview(
-        data.questions || []
+        Array.isArray(data.questions)
+          ? data.questions
+          : []
       );
 
     }
@@ -837,21 +892,16 @@ content="width=device-width, initial-scale=1.0"
           .map(
             (item) => {
 
-              let statusClass;
-              let statusText;
+
+              let statusClass =
+                "unanswered-status";
+
+              let statusText =
+                "⚪ Tidak Dijawab";
 
 
               if (
-                item.is_answered !== true
-              ) {
-
-                statusClass =
-                  "unanswered-status";
-
-                statusText =
-                  "⚪ Tidak Dijawab";
-
-              } else if (
+                item.is_answered === true &&
                 item.is_correct === true
               ) {
 
@@ -861,7 +911,10 @@ content="width=device-width, initial-scale=1.0"
                 statusText =
                   "✅ Benar";
 
-              } else {
+              } else if (
+                item.is_answered === true &&
+                item.is_correct === false
+              ) {
 
                 statusClass =
                   "wrong-status";
@@ -880,23 +933,32 @@ content="width=device-width, initial-scale=1.0"
               ) {
 
                 selectedAnswer = `
-                  <div class="answer-item selected-answer">
+
+                  <div
+                    class="answer-item selected-answer"
+                  >
 
                     <div class="answer-label">
                       Jawaban Kamu
                     </div>
 
-                    ${escapeHtml(
-                      item.selected_option
-                    )}
+                    ${
+                      escapeHtml(
+                        item.selected_option
+                      )
+                    }
 
                   </div>
+
                 `;
 
               } else {
 
                 selectedAnswer = `
-                  <div class="answer-item unanswered-answer">
+
+                  <div
+                    class="answer-item unanswered-answer"
+                  >
 
                     <div class="answer-label">
                       Jawaban Kamu
@@ -905,6 +967,7 @@ content="width=device-width, initial-scale=1.0"
                     Tidak dijawab
 
                   </div>
+
                 `;
 
               }
@@ -946,9 +1009,11 @@ content="width=device-width, initial-scale=1.0"
                     <div
                       class="question-text"
                     >
+
                       ${escapeHtml(
                         item.question
                       )}
+
                     </div>
 
 
@@ -961,22 +1026,24 @@ content="width=device-width, initial-scale=1.0"
                         class="answer-item correct-answer"
                       >
 
-                        <div
-                          class="answer-label"
-                        >
+                        <div class="answer-label">
                           Jawaban Benar
                         </div>
 
-                        ${escapeHtml(
-                          item.correct_option
-                        )}
+                        ${
+                          escapeHtml(
+                            item.correct_option
+                          )
+                        }
 
                       </div>
 
                     </div>
 
 
-                    <div class="explanation">
+                    <div
+                      class="explanation"
+                    >
 
                       <div
                         class="explanation-title"
@@ -1023,15 +1090,13 @@ content="width=device-width, initial-scale=1.0"
           <div class="error">
 
             <h2>
-              ${escapeHtml(message)}
+              Hasil CBT tidak dapat dimuat
             </h2>
 
             <p
-              style="
-                margin-top:10px;
-              "
+              style="margin-top:10px;"
             >
-              Silakan kembali ke daftar CBT.
+              ${escapeHtml(message)}
             </p>
 
             <a
