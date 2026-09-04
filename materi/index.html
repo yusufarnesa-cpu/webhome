@@ -2,6 +2,7 @@
 <html lang="id">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -23,7 +24,10 @@
             color: #1f2937;
         }
 
-        /* NAVBAR */
+
+        /* =========================
+           NAVBAR
+        ========================= */
 
         nav {
             background: #0f172a;
@@ -50,7 +54,10 @@
             opacity: 0.8;
         }
 
-        /* HEADER */
+
+        /* =========================
+           HERO
+        ========================= */
 
         .hero {
             padding: 60px 7% 40px;
@@ -68,7 +75,63 @@
             line-height: 1.6;
         }
 
-        /* CONTAINER */
+
+        /* =========================
+           FILTER AREA
+        ========================= */
+
+        .filter-section {
+            width: 86%;
+            max-width: 1200px;
+            margin: 30px auto 0;
+        }
+
+        .filter-box {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        }
+
+        .filter-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #0f172a;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .search-input,
+        .filter-select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #d0d5dd;
+            border-radius: 9px;
+            font-size: 14px;
+            background: white;
+            color: #1f2937;
+            outline: none;
+        }
+
+        .search-input:focus,
+        .filter-select:focus {
+            border-color: #2563eb;
+        }
+
+        .result-info {
+            margin-top: 14px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           CONTAINER
+        ========================= */
 
         .container {
             width: 86%;
@@ -76,7 +139,10 @@
             margin: 40px auto;
         }
 
-        /* CATEGORY */
+
+        /* =========================
+           CATEGORY
+        ========================= */
 
         .category-block {
             margin-bottom: 50px;
@@ -90,15 +156,24 @@
             padding-left: 12px;
         }
 
-        /* GRID */
+
+        /* =========================
+           GRID
+        ========================= */
 
         .materials-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(280px, 1fr)
+            );
             gap: 22px;
         }
 
-        /* CARD */
+
+        /* =========================
+           CARD
+        ========================= */
 
         .material-card {
             background: white;
@@ -138,7 +213,10 @@
             color: #334155;
         }
 
-        /* BUTTON */
+
+        /* =========================
+           BUTTON
+        ========================= */
 
         .open-button {
             display: inline-block;
@@ -157,7 +235,10 @@
             background: #1d4ed8;
         }
 
-        /* EMPTY */
+
+        /* =========================
+           EMPTY
+        ========================= */
 
         .empty {
             background: white;
@@ -167,7 +248,10 @@
             text-align: center;
         }
 
-        /* LOADING */
+
+        /* =========================
+           LOADING
+        ========================= */
 
         .loading {
             text-align: center;
@@ -175,7 +259,10 @@
             color: #64748b;
         }
 
-        /* FOOTER */
+
+        /* =========================
+           FOOTER
+        ========================= */
 
         footer {
             margin-top: 80px;
@@ -186,7 +273,10 @@
             font-size: 14px;
         }
 
-        /* MOBILE */
+
+        /* =========================
+           MOBILE
+        ========================= */
 
         @media (max-width: 700px) {
 
@@ -204,8 +294,13 @@
                 font-size: 28px;
             }
 
-            .container {
+            .container,
+            .filter-section {
                 width: 92%;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
             }
 
         }
@@ -218,7 +313,9 @@
 <body>
 
 
-<!-- NAVBAR -->
+<!-- =========================
+     NAVBAR
+========================= -->
 
 <nav>
 
@@ -249,8 +346,9 @@
 </nav>
 
 
-
-<!-- HERO -->
+<!-- =========================
+     HERO
+========================= -->
 
 <section class="hero">
 
@@ -267,8 +365,68 @@
 </section>
 
 
+<!-- =========================
+     SEARCH & FILTER
+========================= -->
 
-<!-- MATERIALS -->
+<section class="filter-section">
+
+    <div class="filter-box">
+
+        <div class="filter-title">
+            Cari dan Filter Materi
+        </div>
+
+        <div class="filter-grid">
+
+            <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="🔎 Cari judul, mata kuliah, topik..."
+            >
+
+            <select
+                id="categoryFilter"
+                class="filter-select"
+            >
+
+                <option value="">
+                    Semua Kategori
+                </option>
+
+            </select>
+
+
+            <select
+                id="semesterFilter"
+                class="filter-select"
+            >
+
+                <option value="">
+                    Semua Semester
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div
+            id="resultInfo"
+            class="result-info"
+        >
+            Memuat materi...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     MATERIALS
+========================= -->
 
 <main class="container">
 
@@ -283,8 +441,9 @@
 </main>
 
 
-
-<!-- FOOTER -->
+<!-- =========================
+     FOOTER
+========================= -->
 
 <footer>
 
@@ -293,14 +452,12 @@
 </footer>
 
 
-
 <script>
 
 
 /* ==============================
    SUPABASE
 ============================== */
-
 
 const SUPABASE_URL =
     "https://hqzishiazabguknallei.supabase.co";
@@ -317,22 +474,56 @@ const supabaseClient =
     );
 
 
-
 /* ==============================
-   LOAD MATERIALS
+   ELEMENTS
 ============================== */
 
+const container =
+    document.getElementById(
+        "materials-container"
+    );
+
+
+const searchInput =
+    document.getElementById(
+        "searchInput"
+    );
+
+
+const categoryFilter =
+    document.getElementById(
+        "categoryFilter"
+    );
+
+
+const semesterFilter =
+    document.getElementById(
+        "semesterFilter"
+    );
+
+
+const resultInfo =
+    document.getElementById(
+        "resultInfo"
+    );
+
+
+/* ==============================
+   GLOBAL DATA
+============================== */
+
+let allCategories = [];
+
+let allMaterials = [];
+
+
+/* ==============================
+   LOAD DATA
+============================== */
 
 async function loadMaterials() {
 
-    const container =
-        document.getElementById(
-            "materials-container"
-        );
-
-
     try {
-
 
         /* GET CATEGORIES */
 
@@ -348,11 +539,8 @@ async function loadMaterials() {
 
 
         if (categoryError) {
-
             throw categoryError;
-
         }
-
 
 
         /* GET MATERIALS */
@@ -370,42 +558,324 @@ async function loadMaterials() {
 
 
         if (materialError) {
-
             throw materialError;
-
         }
 
 
-
-        /* CLEAR */
-
-        container.innerHTML = "";
+        allCategories =
+            categories || [];
 
 
+        allMaterials =
+            materials || [];
 
-        /* NO CATEGORY */
 
-        if (!categories || categories.length === 0) {
+        /* POPULATE FILTERS */
 
-            container.innerHTML = `
-                <div class="empty">
-                    Belum ada kategori materi.
-                </div>
-            `;
+        populateCategoryFilter();
 
-            return;
+        populateSemesterFilter();
+
+
+        /* FIRST DISPLAY */
+
+        renderMaterials(
+            allMaterials
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Gagal memuat materi:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Gagal memuat materi.
+
+                <br><br>
+
+                <small>
+                    ${escapeHtml(
+                        error.message || error
+                    )}
+                </small>
+
+            </div>
+
+        `;
+
+        resultInfo.textContent =
+            "Materi gagal dimuat.";
+
+    }
+
+}
+
+
+/* ==============================
+   CATEGORY FILTER
+============================== */
+
+function populateCategoryFilter() {
+
+    categoryFilter.innerHTML = `
+
+        <option value="">
+            Semua Kategori
+        </option>
+
+    `;
+
+
+    allCategories.forEach(
+        function(category) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                category.id;
+
+            option.textContent =
+                category.name;
+
+            categoryFilter.appendChild(
+                option
+            );
 
         }
+    );
+
+}
 
 
+/* ==============================
+   SEMESTER FILTER
+============================== */
 
-        /* LOOP CATEGORY */
+function populateSemesterFilter() {
 
-        categories.forEach(function(category) {
+    const semesters =
+        allMaterials
+            .map(function(material) {
+                return material.semester;
+            })
+            .filter(function(semester) {
+                return semester !== null &&
+                       semester !== undefined &&
+                       String(semester).trim() !== "";
+            })
+            .map(function(semester) {
+                return String(semester).trim();
+            });
 
+
+    const uniqueSemesters =
+        [...new Set(semesters)]
+            .sort(function(a, b) {
+
+                const numberA =
+                    parseInt(a);
+
+                const numberB =
+                    parseInt(b);
+
+                if (
+                    !isNaN(numberA) &&
+                    !isNaN(numberB)
+                ) {
+                    return numberA - numberB;
+                }
+
+                return a.localeCompare(b);
+            });
+
+
+    semesterFilter.innerHTML = `
+
+        <option value="">
+            Semua Semester
+        </option>
+
+    `;
+
+
+    uniqueSemesters.forEach(
+        function(semester) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                semester;
+
+            option.textContent =
+                "Semester " + semester;
+
+            semesterFilter.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* ==============================
+   FILTER MATERIALS
+============================== */
+
+function filterMaterials() {
+
+    const search =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    const selectedCategory =
+        categoryFilter.value;
+
+
+    const selectedSemester =
+        semesterFilter.value;
+
+
+    const filtered =
+        allMaterials.filter(
+            function(material) {
+
+                /* SEARCH */
+
+                const searchableText = [
+
+                    material.title,
+
+                    material.description,
+
+                    material.subject,
+
+                    material.topic,
+
+                    material.author
+
+                ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    searchableText.includes(
+                        search
+                    );
+
+
+                /* CATEGORY */
+
+                const matchesCategory =
+                    !selectedCategory ||
+                    Number(
+                        material.category_id
+                    ) === Number(
+                        selectedCategory
+                    );
+
+
+                /* SEMESTER */
+
+                const matchesSemester =
+                    !selectedSemester ||
+                    String(
+                        material.semester || ""
+                    ).trim() ===
+                    selectedSemester;
+
+
+                return (
+                    matchesSearch &&
+                    matchesCategory &&
+                    matchesSemester
+                );
+
+            }
+        );
+
+
+    renderMaterials(
+        filtered
+    );
+
+}
+
+
+/* ==============================
+   RENDER MATERIALS
+============================== */
+
+function renderMaterials(
+    materials
+) {
+
+    container.innerHTML = "";
+
+
+    resultInfo.textContent =
+        materials.length +
+        " materi ditemukan";
+
+
+    /* NO RESULT */
+
+    if (
+        !materials ||
+        materials.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                <h3>
+                    Materi tidak ditemukan
+                </h3>
+
+                <br>
+
+                <p>
+                    Coba gunakan kata kunci
+                    atau filter yang berbeda.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    /* LOOP CATEGORY */
+
+    allCategories.forEach(
+        function(category) {
 
             const categoryMaterials =
-                (materials || []).filter(
+                materials.filter(
                     function(material) {
 
                         return Number(
@@ -418,21 +888,32 @@ async function loadMaterials() {
                 );
 
 
+            /* SKIP EMPTY CATEGORY */
+
+            if (
+                categoryMaterials.length === 0
+            ) {
+                return;
+            }
+
 
             /* CATEGORY BLOCK */
 
             const categoryBlock =
-                document.createElement("section");
+                document.createElement(
+                    "section"
+                );
 
             categoryBlock.className =
                 "category-block";
 
 
-
             /* CATEGORY TITLE */
 
             const categoryTitle =
-                document.createElement("h2");
+                document.createElement(
+                    "h2"
+                );
 
             categoryTitle.className =
                 "category-title";
@@ -441,82 +922,54 @@ async function loadMaterials() {
                 category.name;
 
 
-
             categoryBlock.appendChild(
                 categoryTitle
             );
 
 
-
-            /* EMPTY CATEGORY */
-
-            if (
-                categoryMaterials.length === 0
-            ) {
-
-                const empty =
-                    document.createElement("div");
-
-                empty.className =
-                    "empty";
-
-                empty.textContent =
-                    "Belum ada materi pada kategori ini.";
-
-                categoryBlock.appendChild(
-                    empty
-                );
-
-                container.appendChild(
-                    categoryBlock
-                );
-
-                return;
-
-            }
-
-
-
             /* GRID */
 
             const grid =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             grid.className =
                 "materials-grid";
 
 
-
-            /* LOOP MATERIAL */
+            /* MATERIAL CARDS */
 
             categoryMaterials.forEach(
                 function(material) {
 
-
-                    /* CARD */
-
                     const card =
-                        document.createElement("article");
+                        document.createElement(
+                            "article"
+                        );
 
                     card.className =
                         "material-card";
 
 
-
                     /* TITLE */
 
                     const title =
-                        document.createElement("h3");
+                        document.createElement(
+                            "h3"
+                        );
 
                     title.textContent =
-                        material.title || "Tanpa judul";
-
+                        material.title ||
+                        "Tanpa judul";
 
 
                     /* DESCRIPTION */
 
                     const description =
-                        document.createElement("p");
+                        document.createElement(
+                            "p"
+                        );
 
                     description.className =
                         "description";
@@ -526,11 +979,12 @@ async function loadMaterials() {
                         "Tidak ada deskripsi materi.";
 
 
-
                     /* META */
 
                     const meta =
-                        document.createElement("div");
+                        document.createElement(
+                            "div"
+                        );
 
                     meta.className =
                         "meta";
@@ -541,64 +995,59 @@ async function loadMaterials() {
                         ${
                             material.subject
                             ? `<strong>Mata Kuliah:</strong>
-                               ${material.subject}<br>`
+                               ${escapeHtml(
+                                   material.subject
+                               )}<br>`
                             : ""
                         }
 
                         ${
                             material.semester
                             ? `<strong>Semester:</strong>
-                               ${material.semester}<br>`
+                               ${escapeHtml(
+                                   material.semester
+                               )}<br>`
                             : ""
                         }
 
                         ${
                             material.topic
                             ? `<strong>Topik:</strong>
-                               ${material.topic}<br>`
+                               ${escapeHtml(
+                                   material.topic
+                               )}<br>`
                             : ""
                         }
 
                         ${
                             material.author
                             ? `<strong>Penulis:</strong>
-                               ${material.author}`
+                               ${escapeHtml(
+                                   material.author
+                               )}`
                             : ""
                         }
 
                     `;
 
 
-
                     /* BUTTON */
 
                     const button =
-                        document.createElement("a");
-
+                        document.createElement(
+                            "a"
+                        );
 
                     button.className =
                         "open-button";
-
 
                     button.textContent =
                         "Buka Materi →";
 
 
-                    /*
-                       PENTING:
-
-                       detail.html berada di root,
-                       sedangkan halaman ini berada
-                       di folder /materi/
-
-                       Jadi kita naik satu folder
-                       menggunakan ../
-                    */
-
                     button.href =
                         "../detail.html?id=" +
                         material.id;
-
 
 
                     /* APPEND */
@@ -628,7 +1077,6 @@ async function loadMaterials() {
             );
 
 
-
             categoryBlock.appendChild(
                 grid
             );
@@ -638,49 +1086,55 @@ async function loadMaterials() {
                 categoryBlock
             );
 
-
-        });
-
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Gagal memuat materi:",
-            error
-        );
-
-
-        container.innerHTML = `
-
-            <div class="empty">
-
-                Gagal memuat materi.
-
-                <br><br>
-
-                <small>
-                    ${error.message || error}
-                </small>
-
-            </div>
-
-        `;
-
-    }
+        }
+    );
 
 }
 
+
+/* ==============================
+   EVENTS
+============================== */
+
+searchInput.addEventListener(
+    "input",
+    filterMaterials
+);
+
+
+categoryFilter.addEventListener(
+    "change",
+    filterMaterials
+);
+
+
+semesterFilter.addEventListener(
+    "change",
+    filterMaterials
+);
+
+
+/* ==============================
+   SECURITY
+============================== */
+
+function escapeHtml(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
 
 
 /* ==============================
    START
 ============================== */
 
-
 loadMaterials();
-
 
 </script>
 
