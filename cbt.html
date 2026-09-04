@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>CBT | Medical Learning Hub</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>CBT | Medical Learning Hub</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
     * {
       box-sizing: border-box;
       margin: 0;
@@ -350,6 +343,34 @@
       gap: 10px;
     }
 
+    .name-input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 15px;
+      margin: 8px 0 20px;
+      outline: none;
+    }
+
+    .name-input:focus {
+      border-color: #2563eb;
+    }
+
+    .participant-info {
+      margin-top: 10px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .submit-loading {
+      display: none;
+      margin-top: 15px;
+      color: #2563eb;
+      font-size: 14px;
+      text-align: center;
+    }
+
     @media (max-width: 850px) {
       .exam-layout {
         grid-template-columns: 1fr;
@@ -394,179 +415,223 @@
         width: 100%;
       }
     }
-  </style>
-</head>
-
-<body>
-
-  <nav>
+  </style></head><body>  <nav>
     <a href="quiz.html" class="logo">
       Medical Learning Hub
-    </a>
+    </a><div id="timer" class="timer">
+  --:--
+</div>
 
-    <div id="timer" class="timer">
-      --:--
+  </nav>  <main class="container"><div id="loading" class="loading">
+  Memuat CBT...
+</div>
+
+<div id="examContent" style="display:none;">
+
+  <section class="exam-header">
+
+    <h1 id="quizTitle">
+      CBT
+    </h1>
+
+    <p id="quizDescription"></p>
+
+    <div id="participantInfo" class="participant-info"></div>
+
+    <div class="progress-wrapper">
+
+      <div class="progress-info">
+        <span id="progressText">
+          Soal 1 dari 100
+        </span>
+
+        <span id="answeredText">
+          0 terjawab
+        </span>
+      </div>
+
+      <div class="progress-bar">
+        <div
+          id="progressFill"
+          class="progress-fill"
+        ></div>
+      </div>
+
     </div>
-  </nav>
 
-  <main class="container">
+  </section>
 
-    <div id="loading" class="loading">
-      Memuat CBT...
-    </div>
+  <div class="exam-layout">
 
-    <div id="examContent" style="display:none;">
+    <section class="question-card">
 
-      <section class="exam-header">
+      <div
+        id="questionNumber"
+        class="question-number"
+      >
+        Soal 1
+      </div>
 
-        <h1 id="quizTitle">
-          CBT
-        </h1>
+      <div
+        id="questionText"
+        class="question-text"
+      ></div>
 
-        <p id="quizDescription"></p>
+      <div
+        id="options"
+        class="options"
+      ></div>
 
-        <div class="progress-wrapper">
+      <div class="question-actions">
 
-          <div class="progress-info">
-            <span id="progressText">
-              Soal 1 dari 100
-            </span>
+        <button
+          id="previousBtn"
+          class="btn-secondary"
+          onclick="previousQuestion()"
+        >
+          ← Sebelumnya
+        </button>
 
-            <span id="answeredText">
-              0 terjawab
-            </span>
-          </div>
+        <button
+          id="nextBtn"
+          class="btn-primary"
+          onclick="nextQuestion()"
+        >
+          Berikutnya →
+        </button>
 
-          <div class="progress-bar">
-            <div
-              id="progressFill"
-              class="progress-fill"
-            ></div>
-          </div>
+      </div>
 
+    </section>
+
+    <aside class="navigation-card">
+
+      <h3>
+        Navigasi Soal
+      </h3>
+
+      <div
+        id="questionGrid"
+        class="question-grid"
+      ></div>
+
+      <div class="legend">
+
+        <div class="legend-item">
+          <span class="legend-box current"></span>
+          Soal aktif
         </div>
 
-      </section>
+        <div class="legend-item">
+          <span class="legend-box answered"></span>
+          Sudah dijawab
+        </div>
 
-      <div class="exam-layout">
-
-        <section class="question-card">
-
-          <div
-            id="questionNumber"
-            class="question-number"
-          >
-            Soal 1
-          </div>
-
-          <div
-            id="questionText"
-            class="question-text"
-          ></div>
-
-          <div
-            id="options"
-            class="options"
-          ></div>
-
-          <div class="question-actions">
-
-            <button
-              id="previousBtn"
-              class="btn-secondary"
-              onclick="previousQuestion()"
-            >
-              ← Sebelumnya
-            </button>
-
-            <button
-              id="nextBtn"
-              class="btn-primary"
-              onclick="nextQuestion()"
-            >
-              Berikutnya →
-            </button>
-
-          </div>
-
-        </section>
-
-        <aside class="navigation-card">
-
-          <h3>
-            Navigasi Soal
-          </h3>
-
-          <div
-            id="questionGrid"
-            class="question-grid"
-          ></div>
-
-          <div class="legend">
-
-            <div class="legend-item">
-              <span class="legend-box current"></span>
-              Soal aktif
-            </div>
-
-            <div class="legend-item">
-              <span class="legend-box answered"></span>
-              Sudah dijawab
-            </div>
-
-            <div class="legend-item">
-              <span class="legend-box"></span>
-              Belum dijawab
-            </div>
-
-          </div>
-
-        </aside>
+        <div class="legend-item">
+          <span class="legend-box"></span>
+          Belum dijawab
+        </div>
 
       </div>
 
-    </div>
-
-  </main>
-
-  <div
-    id="submitModal"
-    class="modal-overlay"
-  >
-
-    <div class="modal">
-
-      <h2>
-        Kumpulkan CBT?
-      </h2>
-
-      <p id="submitMessage">
-        Pastikan jawabanmu sudah diperiksa sebelum mengumpulkan ujian.
-      </p>
-
-      <div class="modal-actions">
-
-        <button
-          class="btn-secondary"
-          onclick="closeSubmitModal()"
-        >
-          Kembali
-        </button>
-
-        <button
-          class="btn-success"
-          onclick="submitExam()"
-        >
-          Kumpulkan
-        </button>
-
-      </div>
-
-    </div>
+    </aside>
 
   </div>
 
-  <script>
+</div>
+
+  </main>  <!-- MODAL NAMA PESERTA -->  <div
+    id="nameModal"
+    class="modal-overlay"
+  ><div class="modal">
+
+  <h2>
+    Mulai CBT
+  </h2>
+
+  <p>
+    Silakan masukkan nama peserta sebelum memulai ujian.
+  </p>
+
+  <input
+    id="participantName"
+    class="name-input"
+    type="text"
+    maxlength="100"
+    placeholder="Nama peserta"
+    autocomplete="name"
+  >
+
+  <div class="modal-actions">
+
+    <button
+      class="btn-secondary"
+      onclick="cancelExam()"
+    >
+      Batal
+    </button>
+
+    <button
+      id="startExamBtn"
+      class="btn-primary"
+      onclick="startExam()"
+    >
+      Mulai CBT
+    </button>
+
+  </div>
+
+  <div
+    id="startError"
+    class="error"
+    style="display:none; padding:12px; margin-top:15px; border-radius:10px;"
+  ></div>
+
+</div>
+
+  </div>  <!-- MODAL SUBMIT -->  <div
+    id="submitModal"
+    class="modal-overlay"
+  ><div class="modal">
+
+  <h2>
+    Kumpulkan CBT?
+  </h2>
+
+  <p id="submitMessage">
+    Pastikan jawabanmu sudah diperiksa sebelum mengumpulkan ujian.
+  </p>
+
+  <div class="modal-actions">
+
+    <button
+      id="cancelSubmitBtn"
+      class="btn-secondary"
+      onclick="closeSubmitModal()"
+    >
+      Kembali
+    </button>
+
+    <button
+      id="submitBtn"
+      class="btn-success"
+      onclick="submitExam()"
+    >
+      Kumpulkan
+    </button>
+
+  </div>
+
+  <div
+    id="submitLoading"
+    class="submit-loading"
+  >
+    Memproses jawaban dan menghitung nilai...
+  </div>
+
+</div>
+
+  </div>  <script>
 
     const SUPABASE_URL =
       "https://hqzishiazabguknallei.supabase.co";
@@ -580,6 +645,7 @@
         SUPABASE_KEY
       );
 
+
     const params =
       new URLSearchParams(
         window.location.search
@@ -588,6 +654,7 @@
     const quizId =
       params.get("id");
 
+
     let quiz = null;
     let questions = [];
     let answers = {};
@@ -595,6 +662,16 @@
 
     let remainingSeconds = 0;
     let timerInterval = null;
+
+    let attemptId = null;
+    let participantName = "";
+
+    let examSubmitted = false;
+
+
+    // ==========================================
+    // LOAD CBT
+    // ==========================================
 
     async function loadExam() {
 
@@ -606,6 +683,7 @@
 
         return;
       }
+
 
       const {
         data: quizData,
@@ -623,6 +701,7 @@
         .eq("status", "published")
         .single();
 
+
       if (quizError) {
 
         console.error(quizError);
@@ -634,12 +713,13 @@
         return;
       }
 
+
       quiz = quizData;
 
-      /*
-        Ambil soal TANPA quiz_options.
-        Kunci jawaban tidak ikut terbaca.
-      */
+
+      // ========================================
+      // LOAD QUESTIONS
+      // ========================================
 
       const {
         data: questionData,
@@ -656,6 +736,7 @@
           ascending: true
         });
 
+
       if (questionError) {
 
         console.error(questionError);
@@ -667,8 +748,10 @@
         return;
       }
 
+
       questions =
         questionData || [];
+
 
       if (!questions.length) {
 
@@ -679,20 +762,16 @@
         return;
       }
 
-      /*
-        Ambil pilihan dari VIEW aman.
-        VIEW hanya memiliki:
-        id
-        question_id
-        option_text
 
-        is_correct tidak dikirim.
-      */
+      // ========================================
+      // LOAD SAFE OPTIONS VIEW
+      // ========================================
 
       const questionIds =
         questions.map(
           question => question.id
         );
+
 
       const {
         data: optionData,
@@ -704,10 +783,14 @@
           question_id,
           option_text
         `)
-        .in("question_id", questionIds)
+        .in(
+          "question_id",
+          questionIds
+        )
         .order("id", {
           ascending: true
         });
+
 
       if (optionError) {
 
@@ -720,9 +803,6 @@
         return;
       }
 
-      /*
-        Gabungkan pilihan dengan masing-masing soal.
-      */
 
       questions =
         questions.map(question => {
@@ -741,10 +821,16 @@
 
         });
 
+
+      // ========================================
+      // DISPLAY CBT
+      // ========================================
+
       document.getElementById(
         "quizTitle"
       ).textContent =
         quiz.title;
+
 
       document.getElementById(
         "quizDescription"
@@ -752,25 +838,172 @@
         quiz.description ||
         "Silakan kerjakan seluruh soal dengan teliti.";
 
+
+      createQuestionNavigation();
+
+
       document.getElementById(
         "loading"
       ).style.display =
         "none";
+
 
       document.getElementById(
         "examContent"
       ).style.display =
         "block";
 
-      createQuestionNavigation();
+
+      // Tampilkan modal nama
+      document.getElementById(
+        "nameModal"
+      ).style.display =
+        "flex";
+
+
+      setTimeout(() => {
+
+        document.getElementById(
+          "participantName"
+        ).focus();
+
+      }, 100);
+
+    }
+
+
+    // ==========================================
+    // MULAI CBT
+    // ==========================================
+
+    async function startExam() {
+
+      const input =
+        document.getElementById(
+          "participantName"
+        );
+
+      participantName =
+        input.value.trim();
+
+
+      const errorBox =
+        document.getElementById(
+          "startError"
+        );
+
+
+      if (!participantName) {
+
+        errorBox.textContent =
+          "Nama peserta wajib diisi.";
+
+        errorBox.style.display =
+          "block";
+
+        return;
+      }
+
+
+      errorBox.style.display =
+        "none";
+
+
+      const startButton =
+        document.getElementById(
+          "startExamBtn"
+        );
+
+
+      startButton.disabled =
+        true;
+
+      startButton.textContent =
+        "Memulai...";
+
+
+      // ========================================
+      // CREATE ATTEMPT SERVER-SIDE
+      // ========================================
+
+      const {
+        data: newAttemptId,
+        error
+      } = await supabaseClient.rpc(
+        "start_quiz_attempt",
+        {
+          p_quiz_id:
+            Number(quizId),
+
+          p_participant_name:
+            participantName
+        }
+      );
+
+
+      if (error) {
+
+        console.error(error);
+
+        startButton.disabled =
+          false;
+
+        startButton.textContent =
+          "Mulai CBT";
+
+
+        errorBox.textContent =
+          error.message ||
+          "Gagal memulai CBT.";
+
+        errorBox.style.display =
+          "block";
+
+        return;
+      }
+
+
+      attemptId =
+        newAttemptId;
+
+
+      document.getElementById(
+        "participantInfo"
+      ).textContent =
+        `Peserta: ${participantName}`;
+
+
+      document.getElementById(
+        "nameModal"
+      ).style.display =
+        "none";
+
 
       startTimer(
         (quiz.duration_minutes || 60) * 60
       );
 
+
       renderQuestion();
 
     }
+
+
+    // ==========================================
+    // BATAL
+    // ==========================================
+
+    function cancelExam() {
+
+      window.location.href =
+        "quiz.html";
+
+    }
+
+
+    // ==========================================
+    // NAVIGASI SOAL
+    // ==========================================
 
     function createQuestionNavigation() {
 
@@ -779,96 +1012,122 @@
           "questionGrid"
         );
 
+
       grid.innerHTML = "";
+
 
       questions.forEach(
         (question, index) => {
 
           const button =
-            document.createElement("button");
+            document.createElement(
+              "button"
+            );
+
 
           button.className =
             "question-number-btn";
+
 
           button.textContent =
             question.question_number ||
             index + 1;
 
+
           button.onclick = () => {
 
-            currentQuestion = index;
+            currentQuestion =
+              index;
 
             renderQuestion();
 
           };
 
-          grid.appendChild(button);
+
+          grid.appendChild(
+            button
+          );
 
         }
       );
 
     }
 
+
     function renderQuestion() {
 
       const question =
         questions[currentQuestion];
 
+
       if (!question) {
         return;
       }
 
+
       const number =
         question.question_number ||
         currentQuestion + 1;
+
 
       document.getElementById(
         "questionNumber"
       ).textContent =
         `Soal ${number}`;
 
+
       document.getElementById(
         "questionText"
       ).textContent =
         question.question;
+
 
       document.getElementById(
         "progressText"
       ).textContent =
         `Soal ${currentQuestion + 1} dari ${questions.length}`;
 
+
       const answeredCount =
         Object.keys(answers).length;
+
 
       document.getElementById(
         "answeredText"
       ).textContent =
         `${answeredCount} terjawab`;
 
+
       const progress =
         ((currentQuestion + 1) /
           questions.length) * 100;
+
 
       document.getElementById(
         "progressFill"
       ).style.width =
         `${progress}%`;
 
+
       renderOptions(
         question
       );
 
+
       updateQuestionNavigation();
+
 
       document.getElementById(
         "previousBtn"
       ).disabled =
         currentQuestion === 0;
 
+
       const nextButton =
         document.getElementById(
           "nextBtn"
         );
+
 
       if (
         currentQuestion ===
@@ -893,6 +1152,7 @@
 
     }
 
+
     function renderOptions(question) {
 
       const container =
@@ -900,23 +1160,31 @@
           "options"
         );
 
+
       container.innerHTML = "";
+
 
       const options =
         question.quiz_options || [];
+
 
       options.forEach(
         (option, index) => {
 
           const wrapper =
-            document.createElement("div");
+            document.createElement(
+              "div"
+            );
+
 
           wrapper.className =
             "option";
 
+
           const selected =
             answers[question.id] ===
             option.id;
+
 
           if (selected) {
 
@@ -926,28 +1194,46 @@
 
           }
 
+
           const letter =
-            document.createElement("div");
+            document.createElement(
+              "div"
+            );
+
 
           letter.className =
             "option-letter";
+
 
           letter.textContent =
             String.fromCharCode(
               65 + index
             );
 
+
           const text =
-            document.createElement("div");
+            document.createElement(
+              "div"
+            );
+
 
           text.className =
             "option-text";
 
+
           text.textContent =
             option.option_text;
 
-          wrapper.appendChild(letter);
-          wrapper.appendChild(text);
+
+          wrapper.appendChild(
+            letter
+          );
+
+
+          wrapper.appendChild(
+            text
+          );
+
 
           wrapper.onclick = () => {
 
@@ -958,6 +1244,7 @@
 
           };
 
+
           container.appendChild(
             wrapper
           );
@@ -967,17 +1254,25 @@
 
     }
 
+
     function selectOption(
       questionId,
       optionId
     ) {
 
+      if (examSubmitted) {
+        return;
+      }
+
+
       answers[questionId] =
         optionId;
+
 
       renderQuestion();
 
     }
+
 
     function updateQuestionNavigation() {
 
@@ -985,6 +1280,7 @@
         document.querySelectorAll(
           ".question-number-btn"
         );
+
 
       buttons.forEach(
         (button, index) => {
@@ -994,8 +1290,10 @@
             "answered"
           );
 
+
           const question =
             questions[index];
+
 
           if (
             answers[question.id]
@@ -1006,6 +1304,7 @@
             );
 
           }
+
 
           if (
             index === currentQuestion
@@ -1022,9 +1321,12 @@
 
     }
 
+
     function previousQuestion() {
 
-      if (currentQuestion > 0) {
+      if (
+        currentQuestion > 0
+      ) {
 
         currentQuestion--;
 
@@ -1033,6 +1335,7 @@
       }
 
     }
+
 
     function nextQuestion() {
 
@@ -1053,24 +1356,36 @@
 
     }
 
+
+    // ==========================================
+    // SUBMIT MODAL
+    // ==========================================
+
     function openSubmitModal() {
 
       const answered =
-        Object.keys(answers).length;
+        Object.keys(
+          answers
+        ).length;
+
 
       const unanswered =
         questions.length -
         answered;
+
 
       const message =
         document.getElementById(
           "submitMessage"
         );
 
-      if (unanswered > 0) {
+
+      if (
+        unanswered > 0
+      ) {
 
         message.textContent =
-          `Masih ada ${unanswered} soal yang belum dijawab. Apakah kamu tetap ingin mengumpulkan CBT?`;
+          `Masih ada ${unanswered} soal yang belum dijawab. Jawaban yang kosong akan dianggap salah. Apakah kamu tetap ingin mengumpulkan CBT?`;
 
       } else {
 
@@ -1079,6 +1394,7 @@
 
       }
 
+
       document.getElementById(
         "submitModal"
       ).style.display =
@@ -1086,7 +1402,13 @@
 
     }
 
+
     function closeSubmitModal() {
+
+      if (examSubmitted) {
+        return;
+      }
+
 
       document.getElementById(
         "submitModal"
@@ -1095,29 +1417,182 @@
 
     }
 
-    function submitExam() {
 
-      closeSubmitModal();
+    // ==========================================
+    // SUBMIT + SERVER-SIDE GRADING
+    // ==========================================
 
-      alert(
-        "Jawaban berhasil dikumpulkan. Sistem hasil CBT akan kita sambungkan pada tahap berikutnya."
+    async function submitExam() {
+
+      if (
+        examSubmitted ||
+        !attemptId
+      ) {
+        return;
+      }
+
+
+      examSubmitted =
+        true;
+
+
+      if (timerInterval) {
+
+        clearInterval(
+          timerInterval
+        );
+
+      }
+
+
+      const submitButton =
+        document.getElementById(
+          "submitBtn"
+        );
+
+
+      const cancelButton =
+        document.getElementById(
+          "cancelSubmitBtn"
+        );
+
+
+      submitButton.disabled =
+        true;
+
+
+      cancelButton.disabled =
+        true;
+
+
+      submitButton.textContent =
+        "Memproses...";
+
+
+      document.getElementById(
+        "submitLoading"
+      ).style.display =
+        "block";
+
+
+      // ========================================
+      // KIRIM JAWABAN KE SUPABASE
+      // ========================================
+
+      const {
+        data: result,
+        error
+      } = await supabaseClient.rpc(
+        "submit_quiz_attempt",
+        {
+          p_attempt_id:
+            Number(attemptId),
+
+          p_answers:
+            answers
+        }
       );
 
+
+      if (error) {
+
+        console.error(error);
+
+        examSubmitted =
+          false;
+
+
+        submitButton.disabled =
+          false;
+
+        cancelButton.disabled =
+          false;
+
+
+        submitButton.textContent =
+          "Kumpulkan";
+
+
+        document.getElementById(
+          "submitLoading"
+        ).style.display =
+          "none";
+
+
+        alert(
+          "Gagal mengirim jawaban. Silakan coba lagi."
+        );
+
+
+        return;
+      }
+
+
+      // ========================================
+      // SIMPAN HASIL SEMENTARA UNTUK RESULT PAGE
+      // ========================================
+
+      const resultData = {
+
+        attempt_id:
+          result.attempt_id,
+
+        total_questions:
+          result.total_questions,
+
+        correct_answers:
+          result.correct_answers,
+
+        wrong_answers:
+          result.wrong_answers,
+
+        score:
+          result.score,
+
+        participant_name:
+          participantName,
+
+        quiz_title:
+          quiz.title
+
+      };
+
+
+      sessionStorage.setItem(
+        "cbt_result",
+        JSON.stringify(
+          resultData
+        )
+      );
+
+
+      window.location.href =
+        `result.html?attempt=${attemptId}`;
+
     }
+
+
+    // ==========================================
+    // TIMER
+    // ==========================================
 
     function startTimer(seconds) {
 
       remainingSeconds =
         seconds;
 
+
       updateTimer();
+
 
       timerInterval =
         setInterval(() => {
 
           remainingSeconds--;
 
+
           updateTimer();
+
 
           if (
             remainingSeconds <= 0
@@ -1127,17 +1602,27 @@
               timerInterval
             );
 
+
             alert(
-              "Waktu CBT telah habis."
+              "Waktu CBT telah habis. Jawaban akan dikumpulkan otomatis."
             );
 
-            submitExam();
+
+            openSubmitModal();
+
+
+            setTimeout(() => {
+
+              submitExam();
+
+            }, 300);
 
           }
 
         }, 1000);
 
     }
+
 
     function updateTimer() {
 
@@ -1146,21 +1631,26 @@
           "timer"
         );
 
+
       const minutes =
         Math.floor(
           remainingSeconds / 60
         );
 
+
       const seconds =
         remainingSeconds % 60;
 
+
       timer.textContent =
         `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
 
       timer.classList.remove(
         "warning",
         "danger"
       );
+
 
       if (
         remainingSeconds <= 300
@@ -1182,12 +1672,18 @@
 
     }
 
+
+    // ==========================================
+    // ERROR
+    // ==========================================
+
     function showError(message) {
 
       document.getElementById(
         "loading"
       ).className =
         "error";
+
 
       document.getElementById(
         "loading"
@@ -1196,13 +1692,19 @@
 
     }
 
+
+    // ==========================================
+    // PREVENT ACCIDENTAL CLOSE
+    // ==========================================
+
     window.addEventListener(
       "beforeunload",
       function(event) {
 
         if (
-          questions.length > 0 &&
-          Object.keys(answers).length > 0
+          !examSubmitted &&
+          attemptId &&
+          questions.length > 0
         ) {
 
           event.preventDefault();
@@ -1214,9 +1716,39 @@
       }
     );
 
+
+    // ==========================================
+    // ENTER UNTUK MULAI
+    // ==========================================
+
+    document.addEventListener(
+      "keydown",
+      function(event) {
+
+        const modal =
+          document.getElementById(
+            "nameModal"
+          );
+
+
+        if (
+          modal.style.display === "flex" &&
+          event.key === "Enter"
+        ) {
+
+          startExam();
+
+        }
+
+      }
+    );
+
+
+    // ==========================================
+    // START
+    // ==========================================
+
     loadExam();
 
-  </script>
-
-</body>
+  </script></body>
 </html>
