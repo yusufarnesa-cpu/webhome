@@ -1,7 +1,14 @@
-<!DOCTYPE html><html lang="id"><head>
+<!DOCTYPE html>
+<html lang="id">
+<head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Admin Dashboard - Learning Hub</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Admin Dashboard - Medical Learning Hub</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
     * {
       box-sizing: border-box;
     }
@@ -10,13 +17,17 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f5f7fb;
-      color: #172033;
+      color: #1f2937;
     }
 
     header {
-      background: #172033;
+      background: #0f172a;
       color: white;
-      padding: 18px 20px;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
     }
 
     header h1 {
@@ -24,567 +35,820 @@
       font-size: 22px;
     }
 
+    header p {
+      margin: 5px 0 0;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+    }
+
     .container {
-      width: 92%;
-      max-width: 900px;
-      margin: 25px auto;
+      width: min(1100px, 92%);
+      margin: 30px auto;
     }
 
     .card {
       background: white;
-      padding: 22px;
-      margin-bottom: 20px;
       border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
       box-shadow: 0 5px 20px rgba(0,0,0,0.06);
     }
 
-    h2 {
+    .card h2 {
       margin-top: 0;
+      color: #0f172a;
+    }
+
+    .card h3 {
+      margin-top: 24px;
+      color: #334155;
+    }
+
+    .description {
+      color: #64748b;
+      font-size: 14px;
+      margin-top: -8px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 7px;
     }
 
     input,
     textarea,
     select {
       width: 100%;
-      padding: 12px;
-      margin: 7px 0 14px;
-      border: 1px solid #ddd;
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
       border-radius: 8px;
+      font-size: 14px;
       font-family: inherit;
       background: white;
     }
 
     textarea {
-      min-height: 130px;
+      min-height: 120px;
       resize: vertical;
     }
 
-    button {
-      border: none;
+    .content-area {
+      min-height: 220px;
+    }
+
+    .json-area {
+      min-height: 350px;
+      font-family: monospace;
+      line-height: 1.5;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-success {
+      background: #16a34a;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #64748b;
+      color: white;
+    }
+
+    .btn-warning {
+      background: #d97706;
+      color: white;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 10px 12px;
       border-radius: 8px;
-      padding: 11px 16px;
-      cursor: pointer;
-      margin-right: 6px;
+      display: none;
+      font-size: 14px;
     }
 
-    .save-btn,
-    .add-category-btn,
-    .add-resource-btn {
-      background: #172033;
-      color: white;
-      width: 100%;
+    .message.success {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
     }
 
-    .delete-btn {
-      background: #e74c3c;
-      color: white;
+    .message.error {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
     }
 
-    .edit-btn {
-      background: #f0ad4e;
-      color: white;
+    .message.info {
+      display: block;
+      background: #dbeafe;
+      color: #1e40af;
     }
 
-    .logout-btn {
-      background: white;
-      color: #172033;
-      float: right;
-    }
-
-    .material,
-    .category-item,
-    .resource-item {
-      border: 1px solid #eee;
+    .item {
+      border: 1px solid #e2e8f0;
       border-radius: 10px;
       padding: 15px;
-      margin-top: 12px;
-    }
-
-    .material h3,
-    .category-item h3,
-    .resource-item h3 {
-      margin-top: 0;
-    }
-
-    #message,
-    #categoryMessage,
-    #resourceMessage {
-      margin-top: 12px;
-      font-weight: bold;
-    }
-
-    .field-label {
-      display: block;
-      font-weight: bold;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-
-    .category-info,
-    .danger-info {
-      font-size: 13px;
-      color: #667085;
-      margin-top: -8px;
       margin-bottom: 12px;
+      background: #f8fafc;
     }
 
-    hr {
-      margin: 22px 0;
-      border: none;
-      border-top: 1px solid #eee;
+    .item-title {
+      font-weight: 700;
+      margin-bottom: 6px;
     }
 
-  </style></head><body><header><button
-class="logout-btn"
-onclick="logout()">
-Logout
-</button>
+    .item-meta {
+      color: #64748b;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
 
-  <h1>
-    Admin Dashboard
-  </h1></header><div class="container">  <!-- =========================
-       KELOLA BLOK
-  ========================== -->  <div class="card"><h2>
-  Kelola Blok Materi
-</h2>
+    .item-description {
+      color: #475569;
+      font-size: 14px;
+      margin-bottom: 12px;
+      white-space: pre-wrap;
+    }
 
-<p class="category-info">
-  Tambahkan blok baru untuk mengelompokkan materi
-  di halaman Materi.
-</p>
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .badge-published {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-draft {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-closed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .empty {
+      color: #64748b;
+      padding: 15px 0;
+      text-align: center;
+    }
+
+    .json-example {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre;
+      margin-top: 12px;
+    }
+
+    .warning-box {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2563eb;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <h1>Admin Dashboard</h1>
+    <p>Medical Learning Hub</p>
+  </div>
+
+  <button class="logout-btn" onclick="logout()">
+    Logout
+  </button>
+</header>
 
 
-<label class="field-label">
-  Nama Blok
-</label>
+<div class="container">
 
-<input
-  type="text"
-  id="categoryName"
-  placeholder="Contoh: Cardiovascular System"
->
+  <!-- =========================================================
+       KELOLA BLOK MATERI
+  ========================================================== -->
+
+  <div class="card">
+
+    <h2>📚 Kelola Blok Materi</h2>
+
+    <p class="description">
+      Tambahkan kategori atau blok pembelajaran yang akan digunakan
+      untuk mengelompokkan materi.
+    </p>
+
+    <div class="form-group">
+      <label for="categoryName">Nama Blok</label>
+      <input
+        type="text"
+        id="categoryName"
+        placeholder="Contoh: Cardiovascular System"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="categoryDescription">Deskripsi</label>
+      <textarea
+        id="categoryDescription"
+        placeholder="Deskripsi singkat blok..."
+      ></textarea>
+    </div>
+
+    <div class="button-row">
+      <button
+        class="btn-primary"
+        onclick="addCategory()"
+      >
+        Tambah Blok
+      </button>
+    </div>
+
+    <div id="categoryMessage" class="message"></div>
+
+    <h3>Daftar Blok</h3>
+
+    <div id="categoryList">
+      <div class="empty">Memuat kategori...</div>
+    </div>
+
+  </div>
 
 
-<label class="field-label">
-  Deskripsi Blok
-</label>
-
-<textarea
-  id="categoryDescription"
-  placeholder="Deskripsi singkat tentang blok ini"
-></textarea>
-
-
-<button
-  class="add-category-btn"
-  onclick="addCategory()">
-
-  + Tambah Blok
-
-</button>
-
-
-<div id="categoryMessage"></div>
-
-
-<hr>
-
-
-<h3>
-  Blok yang tersedia
-</h3>
-
-<div id="categoryList">
-  Memuat blok...
-</div>
-
-  </div>  <!-- =========================
+  <!-- =========================================================
        TAMBAH / EDIT MATERI
-  ========================== -->  <div class="card"><h2 id="formTitle">
-  Tambah Materi
-</h2>
+  ========================================================== -->
+
+  <div class="card">
+
+    <h2>📝 Tambah / Edit Materi</h2>
+
+    <p class="description">
+      Kelola materi pembelajaran yang akan ditampilkan pada halaman
+      Materi Pembelajaran.
+    </p>
+
+    <div class="form-group">
+      <label for="formTitle">Judul Materi</label>
+      <input
+        type="text"
+        id="title"
+        placeholder="Contoh: Anatomi Telinga"
+      >
+    </div>
+
+    <div class="two-column">
+
+      <div class="form-group">
+        <label for="subject">Mata Kuliah</label>
+        <input
+          type="text"
+          id="subject"
+          placeholder="Contoh: Anatomi"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="semester">Semester</label>
+        <input
+          type="text"
+          id="semester"
+          placeholder="Contoh: Semester 3"
+        >
+      </div>
+
+    </div>
+
+    <div class="form-group">
+      <label for="topic">Topik</label>
+      <input
+        type="text"
+        id="topic"
+        placeholder="Contoh: Telinga Tengah"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="category">Blok / Kategori</label>
+      <select id="category">
+        <option value="">Pilih kategori</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Deskripsi</label>
+      <textarea
+        id="description"
+        placeholder="Deskripsi singkat materi..."
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="content">Isi Materi</label>
+      <textarea
+        id="content"
+        class="content-area"
+        placeholder="Masukkan isi materi..."
+      ></textarea>
+    </div>
+
+    <div class="button-row">
+
+      <button
+        class="btn-primary"
+        onclick="saveMaterial()"
+      >
+        Simpan Materi
+      </button>
+
+      <button
+        class="btn-secondary"
+        onclick="clearForm()"
+      >
+        Bersihkan Form
+      </button>
+
+    </div>
+
+    <div id="message" class="message"></div>
+
+  </div>
 
 
-<input
-  type="text"
-  id="title"
-  placeholder="Judul materi"
->
+  <!-- =========================================================
+       TAMBAH REFERENSI
+  ========================================================== -->
+
+  <div class="card">
+
+    <h2>🔗 Tambah Referensi Materi</h2>
+
+    <p class="description">
+      Tambahkan PDF, video, website, artikel, atau buku yang
+      berhubungan dengan materi.
+    </p>
+
+    <div class="form-group">
+      <label for="resourceMaterial">Materi</label>
+
+      <select id="resourceMaterial">
+        <option value="">Pilih materi</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="resourceTitle">Judul Referensi</label>
+
+      <input
+        type="text"
+        id="resourceTitle"
+        placeholder="Contoh: Video Anatomi Telinga"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="resourceType">Jenis</label>
+
+      <select id="resourceType">
+
+        <option value="PDF">PDF</option>
+        <option value="Video">Video</option>
+        <option value="Website">Website</option>
+        <option value="Artikel">Artikel</option>
+        <option value="Buku">Buku</option>
+
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="resourceUrl">URL</label>
+
+      <input
+        type="url"
+        id="resourceUrl"
+        placeholder="https://..."
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="resourceDescription">Deskripsi</label>
+
+      <textarea
+        id="resourceDescription"
+        placeholder="Deskripsi referensi..."
+      ></textarea>
+    </div>
+
+    <button
+      class="btn-primary"
+      onclick="addResource()"
+    >
+      Tambah Referensi
+    </button>
+
+    <div id="resourceMessage" class="message"></div>
+
+  </div>
 
 
-<input
-  type="text"
-  id="subject"
-  placeholder="Mata kuliah"
->
+  <!-- =========================================================
+       KELOLA CBT
+  ========================================================== -->
+
+  <div class="card">
+
+    <h2>🧠 Kelola CBT</h2>
+
+    <p class="description">
+      Import ujian CBT beserta seluruh soal dan pilihan jawaban
+      menggunakan JSON yang dibuat oleh AI.
+    </p>
+
+    <div class="info-box">
+
+      <strong>Alur penggunaan:</strong><br>
+
+      1. Generate soal menggunakan AI.<br>
+      2. Minta AI menghasilkan format JSON sesuai template di bawah.<br>
+      3. Copy seluruh JSON.<br>
+      4. Paste ke kotak JSON di bawah.<br>
+      5. Klik <strong>Import CBT</strong>.<br>
+      6. Sistem akan menyimpan ujian, soal, pilihan, dan kunci jawaban
+      ke Supabase.
+
+    </div>
 
 
-<input
-  type="text"
-  id="semester"
-  placeholder="Semester"
->
+    <div class="warning-box">
+
+      <strong>⚠️ Penting:</strong><br>
+
+      Nomor <strong>answer</strong> menggunakan sistem 1-based.
+      Artinya <strong>1 = pilihan pertama</strong>,
+      <strong>2 = pilihan kedua</strong>, dan seterusnya.
+
+    </div>
 
 
-<input
-  type="text"
-  id="topic"
-  placeholder="Topik"
->
+    <h3>Format JSON</h3>
+
+    <div class="json-example">{
+  "title": "Ujian Anatomi THT",
+  "description": "Ujian CBT Anatomi THT",
+  "category": "THT",
+  "duration_minutes": 60,
+  "questions": [
+    {
+      "question": "Apa fungsi utama tuba Eustachius?",
+      "options": [
+        "Mengatur tekanan telinga tengah",
+        "Menghasilkan serumen",
+        "Mengatur keseimbangan tubuh",
+        "Menghasilkan endolimfa"
+      ],
+      "answer": 1,
+      "explanation": "Tuba Eustachius membantu menyamakan tekanan telinga tengah dengan nasofaring."
+    }
+  ]
+}</div>
 
 
-<label class="field-label">
-  Blok / Kategori
-</label>
+    <h3>Import JSON CBT</h3>
 
-<select id="category">
+    <div class="form-group">
 
-  <option value="">
-    Pilih blok materi
-  </option>
+      <label for="cbtJson">
+        Paste JSON dari AI
+      </label>
 
-</select>
+      <textarea
+        id="cbtJson"
+        class="json-area"
+        placeholder="Paste JSON CBT di sini..."
+      ></textarea>
 
-
-<div class="category-info">
-  Pilih blok tempat materi ini akan ditampilkan.
-</div>
-
-
-<textarea
-  id="description"
-  placeholder="Deskripsi materi"
-></textarea>
+    </div>
 
 
-<textarea
-  id="content"
-  placeholder="Isi materi"
-></textarea>
+    <div class="button-row">
+
+      <button
+        class="btn-success"
+        onclick="importCBT()"
+      >
+        🚀 Import CBT
+      </button>
+
+      <button
+        class="btn-secondary"
+        onclick="clearCBTForm()"
+      >
+        Bersihkan
+      </button>
+
+    </div>
 
 
-<button
-  class="save-btn"
-  onclick="saveMaterial()">
-
-  Simpan Materi
-
-</button>
+    <div id="cbtMessage" class="message"></div>
 
 
-<div id="message"></div>
+    <h3>Daftar CBT</h3>
 
-  </div>  <!-- =========================
-       KELOLA REFERENSI
-  ========================== -->  <div class="card"><h2>
-  Tambah Referensi Materi
-</h2>
+    <div id="cbtList">
+      <div class="empty">
+        Memuat CBT...
+      </div>
+    </div>
 
-<p class="category-info">
-  Tambahkan PDF, video, atau website yang berkaitan
-  dengan materi tertentu.
-</p>
+  </div>
 
 
-<label class="field-label">
-  Pilih Materi
-</label>
-
-<select id="resourceMaterial">
-
-  <option value="">
-    Pilih materi
-  </option>
-
-</select>
-
-
-<label class="field-label">
-  Judul Referensi
-</label>
-
-<input
-  type="text"
-  id="resourceTitle"
-  placeholder="Contoh: Netter Atlas of Human Anatomy"
->
-
-
-<label class="field-label">
-  Tipe Referensi
-</label>
-
-<select id="resourceType">
-
-  <option value="">
-    Pilih tipe
-  </option>
-
-  <option value="PDF">
-    PDF
-  </option>
-
-  <option value="Video">
-    Video
-  </option>
-
-  <option value="Website">
-    Website
-  </option>
-
-  <option value="Artikel">
-    Artikel
-  </option>
-
-  <option value="Buku">
-    Buku
-  </option>
-
-</select>
-
-
-<label class="field-label">
-  Link Referensi
-</label>
-
-<input
-  type="url"
-  id="resourceUrl"
-  placeholder="https://..."
->
-
-
-<label class="field-label">
-  Deskripsi
-</label>
-
-<textarea
-  id="resourceDescription"
-  placeholder="Deskripsi singkat referensi"
-></textarea>
-
-
-<button
-  class="add-resource-btn"
-  onclick="addResource()">
-
-  + Tambah Referensi
-
-</button>
-
-
-<div id="resourceMessage"></div>
-
-  </div>  <!-- =========================
+  <!-- =========================================================
        DAFTAR REFERENSI
-  ========================== -->  <div class="card"><h2>
-  Daftar Referensi
-</h2>
+  ========================================================== -->
 
-<div id="resources">
-  Memuat referensi...
-</div>
+  <div class="card">
 
-  </div>  <!-- =========================
+    <h2>📖 Daftar Referensi</h2>
+
+    <div id="resources">
+      <div class="empty">
+        Memuat referensi...
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- =========================================================
        DAFTAR MATERI
-  ========================== -->  <div class="card"><h2>
-  Daftar Materi
-</h2>
+  ========================================================== -->
 
-<div id="materials">
-  Memuat materi...
+  <div class="card">
+
+    <h2>📚 Daftar Materi</h2>
+
+    <div id="materials">
+      <div class="empty">
+        Memuat materi...
+      </div>
+    </div>
+
+  </div>
+
 </div>
 
-  </div></div><script>
+
+<script>
+
+  /* ============================================================
+     SUPABASE
+  ============================================================ */
+
+  const SUPABASE_URL =
+    "https://hqzishiazabguknallei.supabase.co";
+
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
 
 
-/* =========================
-   SUPABASE
-========================= */
+  let editingId = null;
 
 
-const SUPABASE_URL =
-  "https://hqzishiazabguknallei.supabase.co";
+  /* ============================================================
+     UTILITY
+  ============================================================ */
+
+  function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+      return "";
+    }
+
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 
 
-const SUPABASE_ANON_KEY =
-  "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+  function escapeAttribute(value) {
 
-
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-
-
-let editingId = null;
-
-
-
-/* =========================
-   CEK LOGIN ADMIN
-========================= */
-
-
-async function checkAdmin() {
-
-  const {
-    data: { user }
-  } =
-    await supabaseClient.auth.getUser();
-
-
-  if (!user) {
-
-    window.location.href =
-      "login.html";
-
-    return;
+    return escapeHtml(value);
 
   }
 
 
-  const {
-    data: profile,
-    error
-  } =
-    await supabaseClient
+  function showMessage(
+    elementId,
+    message,
+    type = "success"
+  ) {
+
+    const element =
+      document.getElementById(elementId);
+
+    if (!element) return;
+
+    element.textContent = message;
+
+    element.className =
+      "message " + type;
+
+  }
+
+
+  /* ============================================================
+     CHECK ADMIN
+  ============================================================ */
+
+  async function checkAdmin() {
+
+    const {
+      data: {
+        user
+      },
+      error
+    } = await supabaseClient.auth.getUser();
+
+
+    if (error || !user) {
+
+      alert(
+        "Anda belum login sebagai admin."
+      );
+
+      window.location.href = "login.html";
+
+      return false;
+
+    }
+
+
+    const {
+      data: profile,
+      error: profileError
+    } = await supabaseClient
       .from("profiles")
       .select("role")
       .eq("id", user.id)
       .single();
 
 
-  if (
-    error ||
-    !profile ||
-    profile.role !== "admin"
-  ) {
+    if (
+      profileError ||
+      !profile ||
+      profile.role !== "admin"
+    ) {
 
-    alert(
-      "Akses ditolak. Kamu bukan admin."
-    );
-
-
-    await supabaseClient
-      .auth
-      .signOut();
-
-
-    window.location.href =
-      "login.html";
-
-    return;
-
-  }
-
-
-  await loadCategories();
-
-  await loadMaterials();
-
-  await loadCategoryList();
-
-  await loadResourceMaterials();
-
-  await loadResources();
-
-}
-
-
-
-/* =========================
-   LOAD KATEGORI
-========================= */
-
-
-async function loadCategories() {
-
-  const select =
-    document.getElementById(
-      "category"
-    );
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("categories")
-      .select("id, name")
-      .order("id", {
-        ascending: true
-      });
-
-
-  if (error) {
-
-    console.error(error);
-
-    select.innerHTML = `
-      <option value="">
-        Gagal memuat blok
-      </option>
-    `;
-
-    return;
-
-  }
-
-
-  select.innerHTML = `
-    <option value="">
-      Pilih blok materi
-    </option>
-  `;
-
-
-  data.forEach(category => {
-
-    const option =
-      document.createElement(
-        "option"
+      alert(
+        "Akses ditolak. Halaman ini hanya untuk admin."
       );
 
+      window.location.href = "index.html";
 
-    option.value =
-      category.id;
+      return false;
 
-
-    option.textContent =
-      category.name;
+    }
 
 
-    select.appendChild(
-      option
-    );
+    return true;
 
-  });
-
-}
+  }
 
 
+  /* ============================================================
+     CATEGORY
+  ============================================================ */
 
-/* =========================
-   DAFTAR BLOK
-========================= */
+  async function loadCategories() {
 
-
-async function loadCategoryList() {
-
-  const container =
-    document.getElementById(
-      "categoryList"
-    );
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
+    const {
+      data,
+      error
+    } = await supabaseClient
       .from("categories")
       .select("*")
       .order("id", {
@@ -592,128 +856,125 @@ async function loadCategoryList() {
       });
 
 
-  if (error) {
+    if (error) {
 
-    container.innerHTML =
-      "Gagal memuat blok: " +
-      error.message;
+      console.error(error);
 
-    return;
+      document.getElementById(
+        "categoryList"
+      ).innerHTML =
+        '<div class="empty">Gagal memuat kategori.</div>';
 
-  }
+      return;
 
-
-  if (
-    !data ||
-    data.length === 0
-  ) {
-
-    container.innerHTML =
-      "Belum ada blok.";
-
-    return;
-
-  }
+    }
 
 
-  container.innerHTML = "";
-
-
-  data.forEach(category => {
-
-    const div =
-      document.createElement(
-        "div"
+    const categoryList =
+      document.getElementById(
+        "categoryList"
       );
 
 
-    div.className =
-      "category-item";
+    if (!data || data.length === 0) {
+
+      categoryList.innerHTML =
+        '<div class="empty">Belum ada kategori.</div>';
+
+    } else {
+
+      categoryList.innerHTML =
+        data.map(category => `
+
+          <div class="item">
+
+            <div class="item-title">
+              ${escapeHtml(category.name)}
+            </div>
+
+            <div class="item-description">
+              ${escapeHtml(category.description || "Tidak ada deskripsi.")}
+            </div>
+
+            <button
+              class="btn-danger"
+              onclick="deleteCategory(${category.id})"
+            >
+              Hapus
+            </button>
+
+          </div>
+
+        `).join("");
+
+    }
 
 
-    div.innerHTML = `
-
-      <h3>
-        ${escapeHtml(category.name)}
-      </h3>
-
-      <p>
-        ${escapeHtml(
-          category.description ||
-          "Tidak ada deskripsi."
-        )}
-      </p>
-
-      <button
-        class="delete-btn"
-        onclick="deleteCategory(${category.id})">
-
-        Hapus Blok
-
-      </button>
-
-    `;
-
-
-    container.appendChild(
-      div
-    );
-
-  });
-
-}
-
-
-
-/* =========================
-   TAMBAH BLOK
-========================= */
-
-
-async function addCategory() {
-
-  const name =
-    document
-      .getElementById(
-        "categoryName"
-      )
-      .value
-      .trim();
-
-
-  const description =
-    document
-      .getElementById(
-        "categoryDescription"
-      )
-      .value
-      .trim();
-
-
-  const message =
-    document.getElementById(
-      "categoryMessage"
-    );
-
-
-  if (!name) {
-
-    message.textContent =
-      "Nama blok wajib diisi.";
-
-    return;
+    populateCategorySelect(data);
 
   }
 
 
-  message.textContent =
-    "Menyimpan blok...";
+  function populateCategorySelect(categories) {
+
+    const select =
+      document.getElementById(
+        "category"
+      );
 
 
-  const {
-    error
-  } =
-    await supabaseClient
+    select.innerHTML =
+      '<option value="">Pilih kategori</option>';
+
+
+    categories.forEach(category => {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        category.id;
+
+      option.textContent =
+        category.name;
+
+      select.appendChild(option);
+
+    });
+
+  }
+
+
+  async function addCategory() {
+
+    const name =
+      document.getElementById(
+        "categoryName"
+      ).value.trim();
+
+
+    const description =
+      document.getElementById(
+        "categoryDescription"
+      ).value.trim();
+
+
+    if (!name) {
+
+      showMessage(
+        "categoryMessage",
+        "Nama blok wajib diisi.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const {
+      error
+    } = await supabaseClient
       .from("categories")
       .insert({
         name,
@@ -721,152 +982,89 @@ async function addCategory() {
       });
 
 
-  if (error) {
+    if (error) {
 
-    message.textContent =
-      "Gagal: " +
-      error.message;
+      console.error(error);
 
-    return;
+      showMessage(
+        "categoryMessage",
+        "Gagal menambahkan kategori: " +
+        error.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    document.getElementById(
+      "categoryName"
+    ).value = "";
+
+    document.getElementById(
+      "categoryDescription"
+    ).value = "";
+
+
+    showMessage(
+      "categoryMessage",
+      "Kategori berhasil ditambahkan.",
+      "success"
+    );
+
+
+    loadCategories();
 
   }
 
 
-  message.textContent =
-    "Blok berhasil ditambahkan.";
+  async function deleteCategory(id) {
 
-
-  document
-    .getElementById(
-      "categoryName"
-    )
-    .value = "";
-
-
-  document
-    .getElementById(
-      "categoryDescription"
-    )
-    .value = "";
-
-
-  await loadCategories();
-
-  await loadCategoryList();
-
-}
-
-
-
-/* =========================
-   HAPUS BLOK
-========================= */
-
-
-async function deleteCategory(id) {
-
-  const {
-    count,
-    error: countError
-  } =
-    await supabaseClient
-      .from("materials")
-      .select("id", {
-        count: "exact",
-        head: true
-      })
-      .eq(
-        "category_id",
-        id
+    const confirmed =
+      confirm(
+        "Hapus kategori ini?"
       );
 
 
-  if (countError) {
-
-    alert(
-      "Gagal memeriksa materi: " +
-      countError.message
-    );
-
-    return;
-
-  }
+    if (!confirmed) return;
 
 
-  if (count > 0) {
-
-    alert(
-      "Blok ini tidak bisa dihapus karena masih memiliki " +
-      count +
-      " materi."
-    );
-
-    return;
-
-  }
-
-
-  if (
-    !confirm(
-      "Yakin ingin menghapus blok ini?"
-    )
-  ) return;
-
-
-  const {
-    error
-  } =
-    await supabaseClient
+    const {
+      error
+    } = await supabaseClient
       .from("categories")
       .delete()
-      .eq(
-        "id",
-        id
+      .eq("id", id);
+
+
+    if (error) {
+
+      alert(
+        "Gagal menghapus kategori: " +
+        error.message
       );
 
+      return;
 
-  if (error) {
+    }
 
-    alert(
-      "Gagal menghapus blok: " +
-      error.message
-    );
 
-    return;
+    loadCategories();
 
   }
 
 
-  await loadCategories();
+  /* ============================================================
+     MATERIAL
+  ============================================================ */
 
-  await loadCategoryList();
+  async function loadMaterials() {
 
-}
-
-
-
-/* =========================
-   LOAD MATERIAL
-========================= */
-
-
-async function loadMaterials() {
-
-  const container =
-    document.getElementById(
-      "materials"
-    );
-
-
-  container.innerHTML =
-    "Memuat...";
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
+    const {
+      data,
+      error
+    } = await supabaseClient
       .from("materials")
       .select(`
         *,
@@ -879,472 +1077,400 @@ async function loadMaterials() {
       });
 
 
-  if (error) {
+    if (error) {
 
-    container.innerHTML =
-      "Gagal memuat materi: " +
-      error.message;
+      console.error(error);
 
-    return;
+      document.getElementById(
+        "materials"
+      ).innerHTML =
+        '<div class="empty">Gagal memuat materi.</div>';
 
-  }
+      return;
 
-
-  if (
-    !data ||
-    data.length === 0
-  ) {
-
-    container.innerHTML =
-      "Belum ada materi.";
-
-    return;
-
-  }
+    }
 
 
-  container.innerHTML = "";
-
-
-  data.forEach(material => {
-
-    const div =
-      document.createElement(
-        "div"
+    const container =
+      document.getElementById(
+        "materials"
       );
 
 
-    div.className =
-      "material";
+    if (!data || data.length === 0) {
+
+      container.innerHTML =
+        '<div class="empty">Belum ada materi.</div>';
+
+      return;
+
+    }
 
 
-    const categoryName =
-      material.categories &&
-      material.categories.name
-        ? material.categories.name
-        : "-";
+    container.innerHTML =
+      data.map(material => `
+
+        <div class="item">
+
+          <div class="item-title">
+            ${escapeHtml(material.title)}
+          </div>
+
+          <div class="item-meta">
+
+            ${escapeHtml(material.subject || "-")}
+            •
+            ${escapeHtml(material.semester || "-")}
+            •
+            ${escapeHtml(
+              material.categories?.name || "Tanpa kategori"
+            )}
+
+          </div>
+
+          <div class="item-description">
+            ${escapeHtml(
+              material.description || ""
+            )}
+          </div>
+
+          <div class="button-row">
+
+            <button
+              class="btn-warning"
+              onclick="editMaterial(${material.id})"
+            >
+              Edit
+            </button>
+
+            <button
+              class="btn-danger"
+              onclick="deleteMaterial(${material.id})"
+            >
+              Hapus
+            </button>
+
+          </div>
+
+        </div>
+
+      `).join("");
+
+  }
 
 
-    div.innerHTML = `
+  async function saveMaterial() {
 
-      <h3>
-        ${escapeHtml(
-          material.title
-        )}
-      </h3>
-
-      <p>
-        <strong>Blok:</strong>
-        ${escapeHtml(
-          categoryName
-        )}
-      </p>
-
-      <p>
-        <strong>Mata kuliah:</strong>
-        ${escapeHtml(
-          material.subject || "-"
-        )}
-      </p>
-
-      <p>
-        <strong>Semester:</strong>
-        ${escapeHtml(
-          material.semester || "-"
-        )}
-      </p>
-
-      <p>
-        ${escapeHtml(
-          material.description || ""
-        )}
-      </p>
-
-      <button
-        class="edit-btn"
-        onclick="editMaterial('${material.id}')">
-
-        Edit
-
-      </button>
+    const title =
+      document.getElementById(
+        "title"
+      ).value.trim();
 
 
-      <button
-        class="delete-btn"
-        onclick="deleteMaterial('${material.id}')">
-
-        Hapus
-
-      </button>
-
-    `;
+    const subject =
+      document.getElementById(
+        "subject"
+      ).value.trim();
 
 
-    container.appendChild(
-      div
+    const semester =
+      document.getElementById(
+        "semester"
+      ).value.trim();
+
+
+    const topic =
+      document.getElementById(
+        "topic"
+      ).value.trim();
+
+
+    const categoryId =
+      document.getElementById(
+        "category"
+      ).value || null;
+
+
+    const description =
+      document.getElementById(
+        "description"
+      ).value.trim();
+
+
+    const content =
+      document.getElementById(
+        "content"
+      ).value.trim();
+
+
+    if (!title) {
+
+      showMessage(
+        "message",
+        "Judul materi wajib diisi.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const materialData = {
+
+      title,
+      subject,
+      semester,
+      topic,
+      category_id: categoryId
+        ? Number(categoryId)
+        : null,
+      description,
+      content,
+      status: "published"
+
+    };
+
+
+    let error;
+
+
+    if (editingId) {
+
+      ({
+        error
+      } = await supabaseClient
+        .from("materials")
+        .update(materialData)
+        .eq("id", editingId));
+
+    } else {
+
+      ({
+        error
+      } = await supabaseClient
+        .from("materials")
+        .insert(materialData));
+
+    }
+
+
+    if (error) {
+
+      console.error(error);
+
+      showMessage(
+        "message",
+        "Gagal menyimpan materi: " +
+        error.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    showMessage(
+      "message",
+      editingId
+        ? "Materi berhasil diperbarui."
+        : "Materi berhasil ditambahkan.",
+      "success"
     );
 
-  });
 
-}
+    clearForm();
 
+    loadMaterials();
 
-
-/* =========================
-   SIMPAN MATERIAL
-========================= */
-
-
-async function saveMaterial() {
-
-  const title =
-    document
-      .getElementById("title")
-      .value
-      .trim();
-
-
-  const subject =
-    document
-      .getElementById("subject")
-      .value
-      .trim();
-
-
-  const semester =
-    document
-      .getElementById("semester")
-      .value
-      .trim();
-
-
-  const topic =
-    document
-      .getElementById("topic")
-      .value
-      .trim();
-
-
-  const description =
-    document
-      .getElementById("description")
-      .value
-      .trim();
-
-
-  const content =
-    document
-      .getElementById("content")
-      .value
-      .trim();
-
-
-  const category =
-    document
-      .getElementById("category")
-      .value;
-
-
-  const message =
-    document.getElementById(
-      "message"
-    );
-
-
-  if (!title) {
-
-    message.textContent =
-      "Judul materi wajib diisi.";
-
-    return;
+    loadResourceMaterials();
 
   }
 
 
-  if (!category) {
+  async function editMaterial(id) {
 
-    message.textContent =
-      "Blok / kategori wajib dipilih.";
-
-    return;
-
-  }
-
-
-  message.textContent =
-    "Menyimpan...";
-
-
-  const materialData = {
-
-    title,
-
-    subject,
-
-    semester,
-
-    topic,
-
-    description,
-
-    content,
-
-    category_id:
-      Number(category),
-
-    status:
-      "published"
-
-  };
-
-
-  let result;
-
-
-  if (editingId) {
-
-    result =
-      await supabaseClient
-        .from("materials")
-        .update(
-          materialData
-        )
-        .eq(
-          "id",
-          editingId
-        );
-
-  }
-
-  else {
-
-    result =
-      await supabaseClient
-        .from("materials")
-        .insert(
-          materialData
-        );
-
-  }
-
-
-  if (result.error) {
-
-    message.textContent =
-      "Gagal: " +
-      result.error.message;
-
-    return;
-
-  }
-
-
-  message.textContent =
-    editingId
-      ? "Materi berhasil diperbarui."
-      : "Materi berhasil ditambahkan.";
-
-
-  editingId = null;
-
-
-  clearForm();
-
-
-  document
-    .getElementById(
-      "formTitle"
-    )
-    .textContent =
-      "Tambah Materi";
-
-
-  await loadMaterials();
-
-  await loadResourceMaterials();
-
-}
-
-
-
-/* =========================
-   EDIT MATERIAL
-========================= */
-
-
-async function editMaterial(id) {
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
+    const {
+      data,
+      error
+    } = await supabaseClient
       .from("materials")
       .select("*")
-      .eq(
-        "id",
-        id
-      )
+      .eq("id", id)
       .single();
 
 
-  if (error) {
+    if (error || !data) {
 
-    alert(
-      "Gagal mengambil materi."
-    );
+      alert(
+        "Gagal mengambil data materi."
+      );
 
-    return;
+      return;
 
-  }
-
-
-  editingId =
-    id;
+    }
 
 
-  document
-    .getElementById(
-      "formTitle"
-    )
-    .textContent =
-      "Edit Materi";
+    editingId = id;
 
 
-  document
-    .getElementById(
+    document.getElementById(
       "title"
-    )
-    .value =
+    ).value =
       data.title || "";
 
 
-  document
-    .getElementById(
+    document.getElementById(
       "subject"
-    )
-    .value =
+    ).value =
       data.subject || "";
 
 
-  document
-    .getElementById(
+    document.getElementById(
       "semester"
-    )
-    .value =
+    ).value =
       data.semester || "";
 
 
-  document
-    .getElementById(
+    document.getElementById(
       "topic"
-    )
-    .value =
+    ).value =
       data.topic || "";
 
 
-  document
-    .getElementById(
-      "description"
-    )
-    .value =
-      data.description || "";
-
-
-  document
-    .getElementById(
-      "content"
-    )
-    .value =
-      data.content || "";
-
-
-  document
-    .getElementById(
+    document.getElementById(
       "category"
-    )
-    .value =
+    ).value =
       data.category_id || "";
 
 
-  window.scrollTo({
-
-    top: 0,
-
-    behavior: "smooth"
-
-  });
-
-}
+    document.getElementById(
+      "description"
+    ).value =
+      data.description || "";
 
 
-
-/* =========================
-   HAPUS MATERIAL
-========================= */
-
-
-async function deleteMaterial(id) {
-
-  if (
-    !confirm(
-      "Yakin ingin menghapus materi ini?"
-    )
-  ) return;
+    document.getElementById(
+      "content"
+    ).value =
+      data.content || "";
 
 
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("materials")
-      .delete()
-      .eq(
-        "id",
-        id
-      );
-
-
-  if (error) {
-
-    alert(
-      "Gagal menghapus: " +
-      error.message
+    showMessage(
+      "message",
+      "Mode edit aktif. Silakan ubah materi lalu klik Simpan Materi.",
+      "info"
     );
 
-    return;
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
 
   }
 
 
-  await loadMaterials();
+  async function deleteMaterial(id) {
 
-  await loadResourceMaterials();
-
-  await loadResources();
-
-}
-
+    const confirmed =
+      confirm(
+        "Hapus materi ini? Referensi yang terhubung juga dapat ikut terhapus."
+      );
 
 
-/* =========================
-   LOAD MATERI UNTUK REFERENSI
-========================= */
+    if (!confirmed) return;
 
 
-async function loadResourceMaterials() {
+    const {
+      error
+    } = await supabaseClient
+      .from("materials")
+      .delete()
+      .eq("id", id);
 
-  const select =
+
+    if (error) {
+
+      alert(
+        "Gagal menghapus materi: " +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    loadMaterials();
+
+    loadResourceMaterials();
+
+    loadResources();
+
+  }
+
+
+  function clearForm() {
+
+    editingId = null;
+
+
     document.getElementById(
-      "resourceMaterial"
-    );
+      "title"
+    ).value = "";
 
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
+    document.getElementById(
+      "subject"
+    ).value = "";
+
+
+    document.getElementById(
+      "semester"
+    ).value = "";
+
+
+    document.getElementById(
+      "topic"
+    ).value = "";
+
+
+    document.getElementById(
+      "category"
+    ).value = "";
+
+
+    document.getElementById(
+      "description"
+    ).value = "";
+
+
+    document.getElementById(
+      "content"
+    ).value = "";
+
+
+    document.getElementById(
+      "message"
+    ).className =
+      "message";
+
+
+  }
+
+
+  /* ============================================================
+     RESOURCES
+  ============================================================ */
+
+  async function loadResourceMaterials() {
+
+    const {
+      data,
+      error
+    } = await supabaseClient
       .from("materials")
       .select("id, title")
       .order("title", {
@@ -1352,253 +1478,178 @@ async function loadResourceMaterials() {
       });
 
 
-  if (error) {
+    if (error) {
 
-    select.innerHTML = `
-      <option value="">
-        Gagal memuat materi
-      </option>
-    `;
+      console.error(error);
 
-    return;
+      return;
 
-  }
+    }
 
 
-  select.innerHTML = `
-    <option value="">
-      Pilih materi
-    </option>
-  `;
-
-
-  data.forEach(material => {
-
-    const option =
-      document.createElement(
-        "option"
+    const select =
+      document.getElementById(
+        "resourceMaterial"
       );
 
 
-    option.value =
-      material.id;
+    select.innerHTML =
+      '<option value="">Pilih materi</option>';
 
 
-    option.textContent =
-      material.title;
+    data.forEach(material => {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        material.id;
+
+      option.textContent =
+        material.title;
+
+      select.appendChild(option);
+
+    });
+
+  }
 
 
-    select.appendChild(
-      option
-    );
+  async function addResource() {
 
-  });
-
-}
-
-
-
-/* =========================
-   TAMBAH REFERENSI
-========================= */
-
-
-async function addResource() {
-
-  const materialId =
-    document
-      .getElementById(
+    const materialId =
+      document.getElementById(
         "resourceMaterial"
-      )
-      .value;
+      ).value;
 
 
-  const title =
-    document
-      .getElementById(
+    const title =
+      document.getElementById(
         "resourceTitle"
-      )
-      .value
-      .trim();
+      ).value.trim();
 
 
-  const type =
-    document
-      .getElementById(
+    const type =
+      document.getElementById(
         "resourceType"
-      )
-      .value;
+      ).value;
 
 
-  const url =
-    document
-      .getElementById(
+    const url =
+      document.getElementById(
         "resourceUrl"
-      )
-      .value
-      .trim();
+      ).value.trim();
 
 
-  const description =
-    document
-      .getElementById(
+    const description =
+      document.getElementById(
         "resourceDescription"
-      )
-      .value
-      .trim();
+      ).value.trim();
 
 
-  const message =
-    document.getElementById(
-      "resourceMessage"
-    );
+    if (!materialId) {
+
+      showMessage(
+        "resourceMessage",
+        "Pilih materi terlebih dahulu.",
+        "error"
+      );
+
+      return;
+
+    }
 
 
-  if (!materialId) {
+    if (!title) {
 
-    message.textContent =
-      "Pilih materi terlebih dahulu.";
+      showMessage(
+        "resourceMessage",
+        "Judul referensi wajib diisi.",
+        "error"
+      );
 
-    return;
+      return;
 
-  }
-
-
-  if (!title) {
-
-    message.textContent =
-      "Judul referensi wajib diisi.";
-
-    return;
-
-  }
+    }
 
 
-  if (!type) {
+    if (!url) {
 
-    message.textContent =
-      "Pilih tipe referensi.";
+      showMessage(
+        "resourceMessage",
+        "URL wajib diisi.",
+        "error"
+      );
 
-    return;
+      return;
 
-  }
-
-
-  if (!url) {
-
-    message.textContent =
-      "Link referensi wajib diisi.";
-
-    return;
-
-  }
+    }
 
 
-  message.textContent =
-    "Menyimpan referensi...";
-
-
-  const {
-    error
-  } =
-    await supabaseClient
+    const {
+      error
+    } = await supabaseClient
       .from("resources")
       .insert({
 
         title,
-
         description,
-
         type,
-
         url,
-
-        material_id:
-          Number(materialId)
+        material_id: Number(materialId)
 
       });
 
 
-  if (error) {
+    if (error) {
 
-    message.textContent =
-      "Gagal menambahkan referensi: " +
-      error.message;
+      console.error(error);
 
-    console.error(error);
+      showMessage(
+        "resourceMessage",
+        "Gagal menambahkan referensi: " +
+        error.message,
+        "error"
+      );
 
-    return;
+      return;
+
+    }
+
+
+    document.getElementById(
+      "resourceTitle"
+    ).value = "";
+
+
+    document.getElementById(
+      "resourceUrl"
+    ).value = "";
+
+
+    document.getElementById(
+      "resourceDescription"
+    ).value = "";
+
+
+    showMessage(
+      "resourceMessage",
+      "Referensi berhasil ditambahkan.",
+      "success"
+    );
+
+
+    loadResources();
 
   }
 
 
-  message.textContent =
-    "Referensi berhasil ditambahkan.";
+  async function loadResources() {
 
-
-  document
-    .getElementById(
-      "resourceMaterial"
-    )
-    .value = "";
-
-
-  document
-    .getElementById(
-      "resourceTitle"
-    )
-    .value = "";
-
-
-  document
-    .getElementById(
-      "resourceType"
-    )
-    .value = "";
-
-
-  document
-    .getElementById(
-      "resourceUrl"
-    )
-    .value = "";
-
-
-  document
-    .getElementById(
-      "resourceDescription"
-    )
-    .value = "";
-
-
-  await loadResources();
-
-}
-
-
-
-/* =========================
-   LOAD REFERENSI
-========================= */
-
-
-async function loadResources() {
-
-  const container =
-    document.getElementById(
-      "resources"
-    );
-
-
-  container.innerHTML =
-    "Memuat referensi...";
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
+    const {
+      data,
+      error
+    } = await supabaseClient
       .from("resources")
       .select(`
         *,
@@ -1611,275 +1662,813 @@ async function loadResources() {
       });
 
 
-  if (error) {
+    if (error) {
 
-    container.innerHTML =
-      "Gagal memuat referensi: " +
-      error.message;
+      console.error(error);
 
-    return;
+      document.getElementById(
+        "resources"
+      ).innerHTML =
+        '<div class="empty">Gagal memuat referensi.</div>';
 
-  }
+      return;
 
-
-  if (
-    !data ||
-    data.length === 0
-  ) {
-
-    container.innerHTML =
-      "Belum ada referensi.";
-
-    return;
-
-  }
+    }
 
 
-  container.innerHTML = "";
-
-
-  data.forEach(resource => {
-
-    const div =
-      document.createElement(
-        "div"
+    const container =
+      document.getElementById(
+        "resources"
       );
 
 
-    div.className =
-      "resource-item";
+    if (!data || data.length === 0) {
+
+      container.innerHTML =
+        '<div class="empty">Belum ada referensi.</div>';
+
+      return;
+
+    }
 
 
-    const materialTitle =
-      resource.materials &&
-      resource.materials.title
-        ? resource.materials.title
-        : "-";
+    container.innerHTML =
+      data.map(resource => `
+
+        <div class="item">
+
+          <div class="item-title">
+            ${escapeHtml(resource.title)}
+          </div>
+
+          <div class="item-meta">
+
+            ${escapeHtml(resource.type)}
+            •
+            ${escapeHtml(
+              resource.materials?.title ||
+              "Tanpa materi"
+            )}
+
+          </div>
+
+          <div class="item-description">
+            ${escapeHtml(
+              resource.description || ""
+            )}
+          </div>
+
+          <div class="button-row">
+
+            <a
+              href="${escapeAttribute(resource.url || "#")}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button
+                class="btn-primary"
+                type="button"
+              >
+                Buka
+              </button>
+            </a>
+
+            <button
+              class="btn-danger"
+              onclick="deleteResource(${resource.id})"
+            >
+              Hapus
+            </button>
+
+          </div>
+
+        </div>
+
+      `).join("");
+
+  }
 
 
-    div.innerHTML = `
+  async function deleteResource(id) {
 
-      <h3>
-        ${escapeHtml(
-          resource.title
-        )}
-      </h3>
-
-      <p>
-        <strong>Materi:</strong>
-        ${escapeHtml(
-          materialTitle
-        )}
-      </p>
-
-      <p>
-        <strong>Tipe:</strong>
-        ${escapeHtml(
-          resource.type
-        )}
-      </p>
-
-      <p>
-        ${escapeHtml(
-          resource.description || ""
-        )}
-      </p>
-
-      <p>
-        <a
-          href="${escapeAttribute(
-            resource.url || "#"
-          )}"
-          target="_blank"
-          rel="noopener noreferrer">
-
-          Buka Referensi →
-
-        </a>
-      </p>
-
-      <button
-        class="delete-btn"
-        onclick="deleteResource('${resource.id}')">
-
-        Hapus
-
-      </button>
-
-    `;
+    const confirmed =
+      confirm(
+        "Hapus referensi ini?"
+      );
 
 
-    container.appendChild(
-      div
-    );
-
-  });
-
-}
+    if (!confirmed) return;
 
 
-
-/* =========================
-   HAPUS REFERENSI
-========================= */
-
-
-async function deleteResource(id) {
-
-  if (
-    !confirm(
-      "Yakin ingin menghapus referensi ini?"
-    )
-  ) return;
-
-
-  const {
-    error
-  } =
-    await supabaseClient
+    const {
+      error
+    } = await supabaseClient
       .from("resources")
       .delete()
-      .eq(
-        "id",
-        id
+      .eq("id", id);
+
+
+    if (error) {
+
+      alert(
+        "Gagal menghapus referensi: " +
+        error.message
       );
 
+      return;
 
-  if (error) {
+    }
 
-    alert(
-      "Gagal menghapus referensi: " +
-      error.message
-    );
 
-    return;
+    loadResources();
 
   }
 
 
-  await loadResources();
+  /* ============================================================
+     CBT
+  ============================================================ */
 
-}
+  function clearCBTForm() {
 
-
-
-/* =========================
-   CLEAR FORM
-========================= */
-
-
-function clearForm() {
-
-  document
-    .getElementById(
-      "title"
-    )
-    .value = "";
+    document.getElementById(
+      "cbtJson"
+    ).value = "";
 
 
-  document
-    .getElementById(
-      "subject"
-    )
-    .value = "";
+    document.getElementById(
+      "cbtMessage"
+    ).className =
+      "message";
+
+  }
 
 
-  document
-    .getElementById(
-      "semester"
-    )
-    .value = "";
+  function validateCBTJson(data) {
+
+    if (!data || typeof data !== "object") {
+
+      throw new Error(
+        "JSON tidak valid atau kosong."
+      );
+
+    }
 
 
-  document
-    .getElementById(
-      "topic"
-    )
-    .value = "";
+    if (
+      !data.title ||
+      typeof data.title !== "string"
+    ) {
+
+      throw new Error(
+        "Field 'title' wajib diisi."
+      );
+
+    }
 
 
-  document
-    .getElementById(
-      "description"
-    )
-    .value = "";
+    if (
+      !data.category ||
+      typeof data.category !== "string"
+    ) {
+
+      throw new Error(
+        "Field 'category' wajib diisi."
+      );
+
+    }
 
 
-  document
-    .getElementById(
-      "content"
-    )
-    .value = "";
+    if (
+      !Array.isArray(data.questions) ||
+      data.questions.length === 0
+    ) {
+
+      throw new Error(
+        "Field 'questions' harus berupa array dan tidak boleh kosong."
+      );
+
+    }
 
 
-  document
-    .getElementById(
-      "category"
-    )
-    .value = "";
+    if (
+      data.duration_minutes !== undefined &&
+      (
+        !Number.isInteger(
+          Number(data.duration_minutes)
+        ) ||
+        Number(data.duration_minutes) <= 0
+      )
+    ) {
 
-}
+      throw new Error(
+        "'duration_minutes' harus berupa angka lebih dari 0."
+      );
 
-
-
-/* =========================
-   LOGOUT
-========================= */
-
-
-async function logout() {
-
-  await supabaseClient
-    .auth
-    .signOut();
+    }
 
 
-  window.location.href =
-    "login.html";
+    data.questions.forEach(
+      (item, index) => {
 
-}
-
-
-
-/* =========================
-   SECURITY
-========================= */
+        const number =
+          index + 1;
 
 
-function escapeHtml(text) {
+        if (
+          !item.question ||
+          typeof item.question !== "string"
+        ) {
 
-  const div =
-    document.createElement(
-      "div"
+          throw new Error(
+            `Soal nomor ${number}: field 'question' wajib diisi.`
+          );
+
+        }
+
+
+        if (
+          !Array.isArray(item.options) ||
+          item.options.length < 2
+        ) {
+
+          throw new Error(
+            `Soal nomor ${number}: minimal harus memiliki 2 pilihan jawaban.`
+          );
+
+        }
+
+
+        item.options.forEach(
+          (option, optionIndex) => {
+
+            if (
+              typeof option !== "string" ||
+              !option.trim()
+            ) {
+
+              throw new Error(
+                `Soal nomor ${number}: pilihan nomor ${optionIndex + 1} kosong.`
+              );
+
+            }
+
+          }
+        );
+
+
+        const answer =
+          Number(item.answer);
+
+
+        if (
+          !Number.isInteger(answer) ||
+          answer < 1 ||
+          answer > item.options.length
+        ) {
+
+          throw new Error(
+            `Soal nomor ${number}: 'answer' harus antara 1 dan ${item.options.length}.`
+          );
+
+        }
+
+      }
     );
 
 
-  div.textContent =
-    text;
+    return true;
+
+  }
 
 
-  return div.innerHTML;
+  async function findCategoryId(categoryName) {
 
-}
-
-
-function escapeAttribute(text) {
-
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-
-}
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("categories")
+      .select("id, name");
 
 
+    if (error) {
 
-/* =========================
-   START
-========================= */
+      throw new Error(
+        "Gagal mengambil kategori: " +
+        error.message
+      );
+
+    }
 
 
-checkAdmin();
+    const normalized =
+      categoryName
+        .trim()
+        .toLowerCase();
 
-</script></body></html>
+
+    const category =
+      data.find(
+        item =>
+          item.name
+            .trim()
+            .toLowerCase() === normalized
+      );
+
+
+    if (!category) {
+
+      throw new Error(
+        `Kategori "${categoryName}" tidak ditemukan. Tambahkan kategori tersebut terlebih dahulu di bagian Kelola Blok Materi.`
+      );
+
+    }
+
+
+    return category.id;
+
+  }
+
+
+  async function importCBT() {
+
+    const textarea =
+      document.getElementById(
+        "cbtJson"
+      );
+
+
+    const raw =
+      textarea.value.trim();
+
+
+    if (!raw) {
+
+      showMessage(
+        "cbtMessage",
+        "Paste JSON CBT terlebih dahulu.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    let data;
+
+
+    try {
+
+      data =
+        JSON.parse(raw);
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "cbtMessage",
+        "JSON tidak valid. Pastikan format JSON benar.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      validateCBTJson(data);
+
+
+      showMessage(
+        "cbtMessage",
+        "Memvalidasi dan menyiapkan import...",
+        "info"
+      );
+
+
+      const categoryId =
+        await findCategoryId(
+          data.category
+        );
+
+
+      const duration =
+        data.duration_minutes
+          ? Number(data.duration_minutes)
+          : 60;
+
+
+      /*
+       * Status default dibuat draft.
+       * CBT belum langsung terbuka untuk mahasiswa.
+       */
+
+      const {
+        data: quiz,
+        error: quizError
+      } = await supabaseClient
+        .from("quizzes")
+        .insert({
+
+          title:
+            data.title.trim(),
+
+          description:
+            data.description || null,
+
+          category_id:
+            categoryId,
+
+          duration_minutes:
+            duration,
+
+          status:
+            "draft"
+
+        })
+        .select()
+        .single();
+
+
+      if (quizError) {
+
+        throw new Error(
+          "Gagal membuat CBT: " +
+          quizError.message
+        );
+
+      }
+
+
+      try {
+
+        /*
+         * Insert semua soal satu per satu
+         * agar kita dapat menghubungkan question_id
+         * dengan options.
+         */
+
+        for (
+          let i = 0;
+          i < data.questions.length;
+          i++
+        ) {
+
+          const item =
+            data.questions[i];
+
+
+          const {
+            data: question,
+            error: questionError
+          } = await supabaseClient
+            .from("quiz_questions")
+            .insert({
+
+              quiz_id:
+                quiz.id,
+
+              question:
+                item.question.trim(),
+
+              explanation:
+                item.explanation || null
+
+            })
+            .select()
+            .single();
+
+
+          if (questionError) {
+
+            throw new Error(
+              `Gagal menyimpan soal nomor ${i + 1}: ${questionError.message}`
+            );
+
+          }
+
+
+          const answer =
+            Number(item.answer);
+
+
+          const options =
+            item.options.map(
+              (optionText, optionIndex) => ({
+
+                question_id:
+                  question.id,
+
+                option_text:
+                  optionText.trim(),
+
+                is_correct:
+                  optionIndex + 1 === answer
+
+              })
+            );
+
+
+          const {
+            error: optionError
+          } = await supabaseClient
+            .from("quiz_options")
+            .insert(options);
+
+
+          if (optionError) {
+
+            throw new Error(
+              `Gagal menyimpan pilihan jawaban soal nomor ${i + 1}: ${optionError.message}`
+            );
+
+          }
+
+        }
+
+
+      } catch (importError) {
+
+        /*
+         * Jika terjadi kegagalan saat menyimpan soal,
+         * hapus quiz utama.
+         *
+         * Karena quiz_questions menggunakan
+         * ON DELETE CASCADE, soal dan opsi
+         * akan ikut dibersihkan.
+         */
+
+        await supabaseClient
+          .from("quizzes")
+          .delete()
+          .eq("id", quiz.id);
+
+
+        throw importError;
+
+      }
+
+
+      showMessage(
+        "cbtMessage",
+        `CBT "${data.title}" berhasil diimport. ${data.questions.length} soal tersimpan dan status awalnya DRAFT.`,
+        "success"
+      );
+
+
+      clearCBTForm();
+
+
+      loadCBTs();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "cbtMessage",
+        error.message ||
+        "Terjadi kesalahan saat import CBT.",
+        "error"
+      );
+
+    }
+
+  }
+
+
+  async function loadCBTs() {
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("quizzes")
+      .select(`
+        *,
+        categories (
+          name
+        )
+      `)
+      .order("created_at", {
+        ascending: false
+      });
+
+
+    const container =
+      document.getElementById(
+        "cbtList"
+      );
+
+
+    if (error) {
+
+      console.error(error);
+
+      container.innerHTML =
+        '<div class="empty">Gagal memuat daftar CBT.</div>';
+
+      return;
+
+    }
+
+
+    if (!data || data.length === 0) {
+
+      container.innerHTML =
+        '<div class="empty">Belum ada CBT.</div>';
+
+      return;
+
+    }
+
+
+    container.innerHTML =
+      data.map(quiz => {
+
+        let badgeClass =
+          "badge";
+
+
+        if (
+          quiz.status === "published"
+        ) {
+
+          badgeClass +=
+            " badge-published";
+
+        } else if (
+          quiz.status === "draft"
+        ) {
+
+          badgeClass +=
+            " badge-draft";
+
+        } else if (
+          quiz.status === "closed"
+        ) {
+
+          badgeClass +=
+            " badge-closed";
+
+        }
+
+
+        return `
+
+          <div class="item">
+
+            <div class="item-title">
+
+              ${escapeHtml(
+                quiz.title
+              )}
+
+            </div>
+
+
+            <div class="item-meta">
+
+              Kategori:
+              ${escapeHtml(
+                quiz.categories?.name ||
+                "Tanpa kategori"
+              )}
+
+              •
+
+              Durasi:
+              ${escapeHtml(
+                quiz.duration_minutes ||
+                60
+              )} menit
+
+              •
+
+              <span class="${badgeClass}">
+                ${escapeHtml(
+                  quiz.status || "draft"
+                )}
+              </span>
+
+            </div>
+
+
+            <div class="item-description">
+
+              ${escapeHtml(
+                quiz.description ||
+                "Tidak ada deskripsi."
+              )}
+
+            </div>
+
+
+            <div class="button-row">
+
+              <button
+                class="btn-danger"
+                onclick="deleteCBT(${quiz.id})"
+              >
+                Hapus CBT
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }).join("");
+
+  }
+
+
+  async function deleteCBT(id) {
+
+    const confirmed =
+      confirm(
+        "Hapus CBT ini? Semua soal dan pilihan jawaban yang terhubung juga akan dihapus."
+      );
+
+
+    if (!confirmed) return;
+
+
+    const {
+      error
+    } = await supabaseClient
+      .from("quizzes")
+      .delete()
+      .eq("id", id);
+
+
+    if (error) {
+
+      alert(
+        "Gagal menghapus CBT: " +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    loadCBTs();
+
+  }
+
+
+  /* ============================================================
+     LOGOUT
+  ============================================================ */
+
+  async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+      "login.html";
+
+  }
+
+
+  /* ============================================================
+     INITIAL LOAD
+  ============================================================ */
+
+  async function init() {
+
+    const isAdmin =
+      await checkAdmin();
+
+
+    if (!isAdmin) return;
+
+
+    await loadCategories();
+
+    await loadMaterials();
+
+    await loadResourceMaterials();
+
+    await loadResources();
+
+    await loadCBTs();
+
+  }
+
+
+  init();
+
+</script>
+
+</body>
+  </html>
