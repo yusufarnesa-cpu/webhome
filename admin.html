@@ -371,9 +371,73 @@
 
     .osce-checklist-grid {
       display: grid;
-      grid-template-columns: 1fr 120px auto;
-      gap: 10px;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
       align-items: end;
+    }
+
+    /* ============================================================
+       OSCE SCORE 0-3 HORIZONTAL
+    ============================================================ */
+
+    .osce-score-group {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .osce-score-label {
+      font-weight: 600;
+      margin-right: 4px;
+      margin-bottom: 0;
+    }
+
+    .osce-score-option {
+      position: relative;
+      display: inline-block;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .osce-score-option input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      pointer-events: none;
+    }
+
+    .osce-score-option span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      height: 40px;
+      padding: 0 12px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      background: white;
+      color: #334155;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .osce-score-option span:hover {
+      border-color: #2563eb;
+      color: #2563eb;
+    }
+
+    .osce-score-option input:checked + span {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: white;
+    }
+
+    .osce-score-option input:focus-visible + span {
+      outline: 2px solid #93c5fd;
+      outline-offset: 2px;
     }
 
     .osce-station {
@@ -439,6 +503,10 @@
 
       .osce-checklist-header {
         align-items: flex-start;
+      }
+
+      .osce-score-group {
+        justify-content: flex-start;
       }
     }
   </style>
@@ -1154,7 +1222,25 @@
     <div class="info-box">
 
       Tambahkan langkah pemeriksaan yang harus dilakukan peserta.
-      Setiap langkah dapat diberikan poin penilaian.
+      Setiap langkah dapat diberikan poin penilaian 0–3.
+
+      <br><br>
+
+      <strong>
+        0 = Tidak dilakukan/salah
+      </strong><br>
+
+      <strong>
+        1 = Banyak kekurangan
+      </strong><br>
+
+      <strong>
+        2 = Cukup benar, masih ada kekurangan
+      </strong><br>
+
+      <strong>
+        3 = Benar dan lengkap
+      </strong>
 
     </div>
 
@@ -4089,6 +4175,23 @@
       "osce-checklist";
 
 
+    const selectedPoints =
+      [0, 1, 2, 3].includes(
+        Number(points)
+      )
+        ? Number(points)
+        : 1;
+
+
+    const scoreGroupName =
+      "osce-points-" +
+      Date.now() +
+      "-" +
+      Math.random()
+        .toString(36)
+        .slice(2);
+
+
     row.innerHTML = `
 
       <div class="osce-checklist-header">
@@ -4141,13 +4244,72 @@
             Poin
           </label>
 
-          <input
-            type="number"
-            class="osce-points-input"
-            value="${Number(points) || 1}"
-            min="1"
-            step="1"
-          >
+          <div class="osce-score-group">
+
+            <span class="osce-score-label">
+              Pilih:
+            </span>
+
+            <label class="osce-score-option">
+
+              <input
+                type="radio"
+                name="${scoreGroupName}"
+                value="0"
+                class="osce-points-input"
+                ${selectedPoints === 0 ? "checked" : ""}
+              >
+
+              <span>0</span>
+
+            </label>
+
+
+            <label class="osce-score-option">
+
+              <input
+                type="radio"
+                name="${scoreGroupName}"
+                value="1"
+                class="osce-points-input"
+                ${selectedPoints === 1 ? "checked" : ""}
+              >
+
+              <span>1</span>
+
+            </label>
+
+
+            <label class="osce-score-option">
+
+              <input
+                type="radio"
+                name="${scoreGroupName}"
+                value="2"
+                class="osce-points-input"
+                ${selectedPoints === 2 ? "checked" : ""}
+              >
+
+              <span>2</span>
+
+            </label>
+
+
+            <label class="osce-score-option">
+
+              <input
+                type="radio"
+                name="${scoreGroupName}"
+                value="3"
+                class="osce-points-input"
+                ${selectedPoints === 3 ? "checked" : ""}
+              >
+
+              <span>3</span>
+
+            </label>
+
+          </div>
 
         </div>
 
@@ -4318,7 +4480,7 @@
 
         const pointsInput =
           row.querySelector(
-            ".osce-points-input"
+            ".osce-points-input:checked"
           );
 
 
@@ -4345,11 +4507,12 @@
 
         if (
           !Number.isInteger(points) ||
-          points <= 0
+          points < 0 ||
+          points > 3
         ) {
 
           throw new Error(
-            `Poin checklist langkah ${index + 1} harus berupa bilangan bulat lebih dari 0.`
+            `Poin checklist langkah ${index + 1} harus berada pada rentang 0–3.`
           );
 
         }
