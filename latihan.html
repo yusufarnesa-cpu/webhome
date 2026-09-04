@@ -566,13 +566,6 @@
     const SUPABASE_URL =
       "https://hqzishiazabguknallei.supabase.co";
 
-    /*
-      PENTING:
-      Ganti nilai di bawah dengan
-      publishable key yang SAMA dengan
-      yang sudah kamu gunakan di banksoal.html.
-    */
-
     const SUPABASE_KEY =
       "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
 
@@ -599,10 +592,6 @@
       Number(quizIdRaw);
 
 
-    /*
-      Pastikan ID benar-benar angka.
-    */
-
     if (
       !quizIdRaw ||
       !Number.isInteger(quizId) ||
@@ -626,9 +615,19 @@
 
     let currentIndex = 0;
 
-    let selectedOptionId = null;
+    /*
+      State setiap soal.
 
-    let answered = false;
+      Contoh:
+
+      questionStates[0] = {
+        selectedOptionId: 12,
+        answered: true,
+        isCorrect: true
+      }
+    */
+
+    let questionStates = [];
 
     let correctCount = 0;
 
@@ -754,10 +753,6 @@
 
     async function loadQuiz() {
 
-      /*
-        Jangan lanjut jika ID tidak valid.
-      */
-
       if (
         !quizIdRaw ||
         !Number.isInteger(quizId) ||
@@ -767,12 +762,6 @@
         return;
       }
 
-
-      /*
-        DEBUG:
-        Menampilkan ID yang diterima
-        di console browser.
-      */
 
       console.log(
         "Quiz ID yang diterima:",
@@ -877,11 +866,6 @@
       }
 
 
-      /*
-        Ambil pilihan jawaban melalui
-        view aman.
-      */
-
       const questionIds =
         questionData.map(
           q => q.id
@@ -946,6 +930,18 @@
         );
 
 
+      /*
+        Buat state untuk setiap soal.
+      */
+
+      questionStates =
+        questions.map(() => ({
+          selectedOptionId: null,
+          answered: false,
+          isCorrect: false
+        }));
+
+
       quizTitle.textContent =
         quiz.title;
 
@@ -962,6 +958,25 @@
 
 
       renderQuestion();
+    }
+
+
+    /* ============================
+       UPDATE SCORE
+    ============================ */
+
+    function updateScore() {
+
+      correctCount =
+        questionStates.filter(
+          state =>
+            state.answered &&
+            state.isCorrect
+        ).length;
+
+
+      scoreText.textContent =
+        `Benar: ${correctCount}`;
     }
 
 
@@ -983,9 +998,8 @@
       }
 
 
-      selectedOptionId = null;
-
-      answered = false;
+      const state =
+        questionStates[currentIndex];
 
 
       questionNumber.textContent =
@@ -1000,8 +1014,7 @@
         `Soal ${currentIndex + 1} dari ${questions.length}`;
 
 
-      scoreText.textContent =
-        `Benar: ${correctCount}`;
+      updateScore();
 
 
       const progress =
@@ -1014,6 +1027,10 @@
         `${progress}%`;
 
 
+      /*
+        Render pilihan.
+      */
+
       optionsContainer.innerHTML =
         current.options.map(
           (option, index) => {
@@ -1024,9 +1041,59 @@
               );
 
 
+            let classes =
+              "option";
+
+
+            /*
+              Jika pilihan ini adalah
+              pilihan yang sebelumnya dipilih.
+            */
+
+            if (
+              state.selectedOptionId ===
+              option.id
+            ) {
+
+              classes += " selected";
+
+            }
+
+
+            /*
+              Jika soal sudah dijawab,
+              tandai pilihan berdasarkan
+              hasil sebelumnya.
+            */
+
+            if (state.answered) {
+
+              classes += " disabled";
+
+
+              if (
+                state.selectedOptionId ===
+                option.id
+              ) {
+
+                if (state.isCorrect) {
+
+                  classes += " correct";
+
+                } else {
+
+                  classes += " wrong";
+
+                }
+
+              }
+
+            }
+
+
             return `
               <div
-                class="option"
+                class="${classes}"
                 data-option-id="${option.id}"
                 onclick="selectOption(${option.id})"
               >
@@ -1048,21 +1115,86 @@
         ).join("");
 
 
-      feedback.className =
-        "feedback";
+      /*
+        Tampilkan feedback jika
+        soal sudah pernah dijawab.
+      */
 
-      feedbackTitle.textContent =
-        "";
+      if (state.answered) {
 
-      feedbackExplanation.textContent =
-        "";
+        if (state.isCorrect) {
+
+          feedback.className =
+            "feedback correct";
+
+          feedbackTitle.textContent =
+            "✓ Jawaban Benar!";
+
+        } else {
+
+          feedback.className =
+            "feedback wrong";
+
+          feedbackTitle.textContent =
+            "✕ Jawaban Belum Tepat";
+
+        }
 
 
-      checkButton.style.display =
-        "block";
+        feedbackExplanation.textContent =
+          current.explanation ||
+          "Tidak ada pembahasan untuk soal ini.";
 
-      nextButton.style.display =
-        "none";
+
+        checkButton.style.display =
+          "none";
+
+        nextButton.style.display =
+          "block";
+
+
+        if (
+          currentIndex ===
+          questions.length - 1
+        ) {
+
+          nextButton.textContent =
+            "Lihat Hasil →";
+
+        } else {
+
+          nextButton.textContent =
+            "Soal Berikutnya →";
+
+        }
+
+      } else {
+
+        /*
+          Soal belum dijawab.
+        */
+
+        feedback.className =
+          "feedback";
+
+        feedbackTitle.textContent =
+          "";
+
+        feedbackExplanation.textContent =
+          "";
+
+
+        checkButton.style.display =
+          "block";
+
+        nextButton.style.display =
+          "none";
+      }
+
+
+      /*
+        Tombol kembali selalu tersedia.
+      */
 
       backButton.style.display =
         "block";
@@ -1075,10 +1207,19 @@
 
     function selectOption(optionId) {
 
-      if (answered) return;
+      const state =
+        questionStates[currentIndex];
 
 
-      selectedOptionId =
+      /*
+        Kalau soal sudah dijawab,
+        pilihan tidak boleh diubah.
+      */
+
+      if (state.answered) return;
+
+
+      state.selectedOptionId =
         optionId;
 
 
@@ -1115,10 +1256,19 @@
 
     async function checkAnswer() {
 
-      if (answered) return;
+      const state =
+        questionStates[currentIndex];
 
 
-      if (!selectedOptionId) {
+      /*
+        Jangan cek ulang soal yang
+        sudah pernah dijawab.
+      */
+
+      if (state.answered) return;
+
+
+      if (!state.selectedOptionId) {
 
         alert(
           "Pilih salah satu jawaban terlebih dahulu."
@@ -1132,6 +1282,15 @@
         questions[currentIndex];
 
 
+      /*
+        Nonaktifkan tombol sementara
+        agar tidak terjadi double click.
+      */
+
+      checkButton.disabled =
+        true;
+
+
       const {
         data,
         error
@@ -1143,9 +1302,13 @@
               current.id,
 
             p_option_id:
-              selectedOptionId
+              state.selectedOptionId
           }
         );
+
+
+      checkButton.disabled =
+        false;
 
 
       if (error) {
@@ -1163,17 +1326,30 @@
       }
 
 
-      answered = true;
-
-
       const isCorrect =
         data === true ||
         data?.is_correct === true;
 
 
-      if (isCorrect) {
+      /*
+        Simpan hasil ke state soal.
+      */
 
-        correctCount++;
+      state.answered =
+        true;
+
+      state.isCorrect =
+        isCorrect;
+
+
+      updateScore();
+
+
+      /*
+        Tampilkan hasil.
+      */
+
+      if (isCorrect) {
 
         showCorrect();
 
@@ -1182,10 +1358,6 @@
         showWrong();
 
       }
-
-
-      scoreText.textContent =
-        `Benar: ${correctCount}`;
 
 
       checkButton.style.display =
@@ -1271,19 +1443,19 @@
         });
 
 
+      const state =
+        questionStates[currentIndex];
+
+
       const selected =
         document.querySelector(
-          `[data-option-id="${selectedOptionId}"]`
+          `[data-option-id="${state.selectedOptionId}"]`
         );
 
 
       if (selected) {
 
-        if (
-          feedback.classList.contains(
-            "correct"
-          )
-        ) {
+        if (state.isCorrect) {
 
           selected.classList.add(
             "correct"
@@ -1307,7 +1479,11 @@
 
     function nextQuestion() {
 
-      if (!answered) return;
+      const state =
+        questionStates[currentIndex];
+
+
+      if (!state.answered) return;
 
 
       if (
@@ -1323,7 +1499,9 @@
 
       currentIndex++;
 
+
       renderQuestion();
+
 
       window.scrollTo({
         top: 0,
@@ -1338,6 +1516,11 @@
 
     function goBack() {
 
+      /*
+        Jika sedang di soal pertama,
+        kembali ke Bank Soal.
+      */
+
       if (currentIndex === 0) {
 
         window.location.href =
@@ -1349,7 +1532,15 @@
 
       currentIndex--;
 
+
+      /*
+        State soal sebelumnya akan
+        otomatis dipulihkan oleh
+        renderQuestion().
+      */
+
       renderQuestion();
+
 
       window.scrollTo({
         top: 0,
@@ -1374,6 +1565,9 @@
 
       finishCard.style.display =
         "block";
+
+
+      updateScore();
 
 
       const percentage =
