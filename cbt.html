@@ -599,9 +599,11 @@
     async function loadExam() {
 
       if (!quizId) {
+
         showError(
           "ID CBT tidak ditemukan."
         );
+
         return;
       }
 
@@ -634,6 +636,11 @@
 
       quiz = quizData;
 
+      /*
+        Ambil soal TANPA quiz_options.
+        Kunci jawaban tidak ikut terbaca.
+      */
+
       const {
         data: questionData,
         error: questionError
@@ -642,12 +649,7 @@
         .select(`
           id,
           question_number,
-          question,
-          quiz_options (
-            id,
-            option_text,
-            is_correct
-          )
+          question
         `)
         .eq("quiz_id", quizId)
         .order("question_number", {
@@ -677,9 +679,72 @@
         return;
       }
 
+      /*
+        Ambil pilihan dari VIEW aman.
+        VIEW hanya memiliki:
+        id
+        question_id
+        option_text
+
+        is_correct tidak dikirim.
+      */
+
+      const questionIds =
+        questions.map(
+          question => question.id
+        );
+
+      const {
+        data: optionData,
+        error: optionError
+      } = await supabaseClient
+        .from("quiz_question_options")
+        .select(`
+          id,
+          question_id,
+          option_text
+        `)
+        .in("question_id", questionIds)
+        .order("id", {
+          ascending: true
+        });
+
+      if (optionError) {
+
+        console.error(optionError);
+
+        showError(
+          "Gagal memuat pilihan jawaban."
+        );
+
+        return;
+      }
+
+      /*
+        Gabungkan pilihan dengan masing-masing soal.
+      */
+
+      questions =
+        questions.map(question => {
+
+          return {
+            ...question,
+
+            quiz_options:
+              (optionData || [])
+                .filter(
+                  option =>
+                    option.question_id ===
+                    question.id
+                )
+          };
+
+        });
+
       document.getElementById(
         "quizTitle"
-      ).textContent = quiz.title;
+      ).textContent =
+        quiz.title;
 
       document.getElementById(
         "quizDescription"
@@ -689,11 +754,13 @@
 
       document.getElementById(
         "loading"
-      ).style.display = "none";
+      ).style.display =
+        "none";
 
       document.getElementById(
         "examContent"
-      ).style.display = "block";
+      ).style.display =
+        "block";
 
       createQuestionNavigation();
 
@@ -852,9 +919,11 @@
             option.id;
 
           if (selected) {
+
             wrapper.classList.add(
               "selected"
             );
+
           }
 
           const letter =
@@ -1028,15 +1097,6 @@
 
     function submitExam() {
 
-      /*
-        Untuk tahap berikutnya,
-        bagian ini akan kita hubungkan
-        dengan sistem penyimpanan hasil CBT.
-
-        Jangan melakukan penilaian di browser
-        untuk CBT resmi.
-      */
-
       closeSubmitModal();
 
       alert(
@@ -1159,4 +1219,4 @@
   </script>
 
 </body>
-  </html>
+</html>
