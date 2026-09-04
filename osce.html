@@ -164,21 +164,14 @@
 
             const { data, error } =
                 await supabaseClient
-
                     .from("osce_stations")
-
                     .select(`
                         id,
                         title,
                         description,
                         objective,
-                        instructions,
-                        category_id,
-                        categories (
-                            name
-                        )
+                        instructions
                     `)
-
                     .order("created_at", {
                         ascending: false
                     });
@@ -234,18 +227,6 @@
                         <div class="feature-icon">
                             🩺
                         </div>
-
-                        ${
-                            station.categories?.name
-                            ? `
-                                <span>
-                                    ${escapeHTML(
-                                        station.categories.name
-                                    )}
-                                </span>
-                            `
-                            : ""
-                        }
 
                         <h3>
                             ${escapeHTML(
