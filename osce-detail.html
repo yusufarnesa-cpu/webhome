@@ -1,1 +1,1073 @@
+<!DOCTYPE html>
+<html lang="id">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>OSCE Station - Medical Learning Hub</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=2"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        .osce-detail-section {
+            padding: 60px 20px;
+        }
+
+        .osce-detail-container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 25px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .station-header {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        }
+
+        .station-header h1 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .station-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .station-box h3 {
+            margin-top: 0;
+        }
+
+        .checklist-container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        }
+
+        .checklist-item {
+            padding: 20px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checklist-number {
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 8px;
+        }
+
+        .checklist-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .score-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .score-label {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .score-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .score-option input {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+        }
+
+        .score-option span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 45px;
+            height: 42px;
+
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+
+            background: white;
+            color: #334155;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: all 0.15s ease;
+        }
+
+        .score-option span:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .score-option input:checked + span {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        .score-option input:focus-visible + span {
+            outline: 2px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        .score-summary {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 14px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .score-total {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1d4ed8;
+        }
+
+        .save-button {
+            border: none;
+            border-radius: 10px;
+            padding: 13px 22px;
+
+            background: #2563eb;
+            color: white;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            background: #1d4ed8;
+        }
+
+        .save-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+            <div class="logo">
+                🩺 Medical Learning Hub
+            </div>
+
+            <div class="nav-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="materi/index.html">
+                    Materi
+                </a>
+
+                <a href="quiz.html">
+                    Quiz
+                </a>
+
+                <a href="banksoal.html">
+                    Bank Soal
+                </a>
+
+                <a href="osce.html">
+                    OSCE
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- CONTENT -->
+
+    <section class="osce-detail-section">
+
+        <div class="osce-detail-container">
+
+
+            <a
+                href="osce.html"
+                class="back-link"
+            >
+                ← Kembali ke OSCE
+            </a>
+
+
+            <!-- STATION -->
+
+            <div
+                id="station-container"
+                class="loading"
+            >
+
+                Memuat station OSCE...
+
+            </div>
+
+
+            <!-- CHECKLIST -->
+
+            <div
+                id="checklist-container"
+            >
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <div
+                id="message"
+                class="message"
+            >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <h3>
+            🩺 Medical Learning Hub
+        </h3>
+
+        <p>
+            Platform pembelajaran medis.
+        </p>
+
+        <p class="copyright">
+            © 2026 Medical Learning Hub
+        </p>
+
+    </footer>
+
+
+
+<script>
+
+
+/* =====================================
+   SUPABASE
+===================================== */
+
+const SUPABASE_URL =
+    "https://hqzishiazabguknallei.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+
+/* =====================================
+   ELEMENTS
+===================================== */
+
+const stationContainer =
+    document.getElementById(
+        "station-container"
+    );
+
+const checklistContainer =
+    document.getElementById(
+        "checklist-container"
+    );
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+
+/* =====================================
+   STATION ID
+===================================== */
+
+const urlParams =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const stationId =
+    urlParams.get("id");
+
+
+
+/* =====================================
+   DATA
+===================================== */
+
+let station = null;
+
+let checklist = [];
+
+
+
+/* =====================================
+   ESCAPE HTML
+===================================== */
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+
+/* =====================================
+   LOAD STATION
+===================================== */
+
+async function loadStation() {
+
+    if (!stationId) {
+
+        stationContainer.innerHTML = `
+            <div class="message error">
+                Station OSCE tidak ditemukan.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    const { data, error } =
+        await supabaseClient
+
+            .from("osce_stations")
+
+            .select(`
+                id,
+                title,
+                description,
+                objective,
+                instructions
+            `)
+
+            .eq("id", stationId)
+
+            .single();
+
+
+    if (error) {
+
+        console.error(error);
+
+        stationContainer.innerHTML = `
+            <div class="message error">
+                Gagal memuat station OSCE.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    station = data;
+
+    renderStation();
+
+    await loadChecklist();
+
+}
+
+
+
+/* =====================================
+   RENDER STATION
+===================================== */
+
+function renderStation() {
+
+    stationContainer.className =
+        "station-header";
+
+    stationContainer.innerHTML = `
+
+        <h1>
+            ${escapeHTML(station.title)}
+        </h1>
+
+        <p>
+            ${escapeHTML(
+                station.description ||
+                "Station keterampilan klinis."
+            )}
+        </p>
+
+
+        ${
+            station.objective
+            ? `
+                <div class="station-box">
+
+                    <h3>
+                        Tujuan
+                    </h3>
+
+                    <p>
+                        ${escapeHTML(
+                            station.objective
+                        )}
+                    </p>
+
+                </div>
+            `
+            : ""
+        }
+
+
+        ${
+            station.instructions
+            ? `
+                <div class="station-box">
+
+                    <h3>
+                        Instruksi
+                    </h3>
+
+                    <p>
+                        ${escapeHTML(
+                            station.instructions
+                        )}
+                    </p>
+
+                </div>
+            `
+            : ""
+        }
+
+    `;
+
+}
+
+
+
+/* =====================================
+   LOAD CHECKLIST
+===================================== */
+
+async function loadChecklist() {
+
+    checklistContainer.innerHTML = `
+        <div class="loading">
+            Memuat checklist...
+        </div>
+    `;
+
+
+    const { data, error } =
+        await supabaseClient
+
+            .from("osce_checklists")
+
+            .select(`
+                id,
+                station_id,
+                step_number,
+                item,
+                points
+            `)
+
+            .eq(
+                "station_id",
+                stationId
+            )
+
+            .order(
+                "step_number",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(error);
+
+        checklistContainer.innerHTML = `
+            <div class="message error">
+                Gagal memuat checklist OSCE.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    checklist = data || [];
+
+    renderChecklist();
+
+}
+
+
+
+/* =====================================
+   RENDER CHECKLIST
+===================================== */
+
+function renderChecklist() {
+
+    if (!checklist.length) {
+
+        checklistContainer.innerHTML = `
+            <div class="checklist-container">
+
+                <h2>
+                    Checklist
+                </h2>
+
+                <p>
+                    Belum ada checklist untuk station ini.
+                </p>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    checklistContainer.innerHTML = `
+
+        <div class="checklist-container">
+
+            <h2>
+                Checklist Penilaian
+            </h2>
+
+            <p>
+                Berikan skor untuk setiap langkah
+                dengan memilih nilai 0–3.
+            </p>
+
+
+            <div>
+
+                ${
+                    checklist.map(
+                        (item, index) => `
+
+                            <div
+                                class="checklist-item"
+                            >
+
+                                <div
+                                    class="checklist-number"
+                                >
+                                    Langkah ${
+                                        escapeHTML(
+                                            item.step_number ||
+                                            index + 1
+                                        )
+                                    }
+                                </div>
+
+
+                                <div
+                                    class="checklist-text"
+                                >
+                                    ${escapeHTML(
+                                        item.item
+                                    )}
+                                </div>
+
+
+                                <div
+                                    class="score-row"
+                                >
+
+                                    <span
+                                        class="score-label"
+                                    >
+                                        Skor:
+                                    </span>
+
+
+                                    ${[0,1,2,3]
+                                        .map(
+                                            score => `
+
+                                                <label
+                                                    class="score-option"
+                                                >
+
+                                                    <input
+                                                        type="radio"
+                                                        name="score-${item.id}"
+                                                        value="${score}"
+                                                        data-checklist-id="${item.id}"
+                                                        onchange="updateTotal()"
+                                                    >
+
+                                                    <span>
+                                                        ${score}
+                                                    </span>
+
+                                                </label>
+
+                                            `
+                                        )
+                                        .join("")
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        `
+                    ).join("")
+                }
+
+            </div>
+
+
+            <div class="score-summary">
+
+                <div>
+
+                    <div>
+                        Total Skor
+                    </div>
+
+                    <div
+                        id="total-score"
+                        class="score-total"
+                    >
+                        0 / ${checklist.length * 3}
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="save-button"
+                    class="save-button"
+                    onclick="saveResult()"
+                >
+                    Simpan Hasil OSCE
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+
+/* =====================================
+   UPDATE TOTAL
+===================================== */
+
+function updateTotal() {
+
+    let total = 0;
+
+
+    checklist.forEach(item => {
+
+        const selected =
+            document.querySelector(
+                `input[name="score-${item.id}"]:checked`
+            );
+
+
+        if (selected) {
+
+            total += Number(
+                selected.value
+            );
+
+        }
+
+    });
+
+
+    const totalElement =
+        document.getElementById(
+            "total-score"
+        );
+
+
+    if (totalElement) {
+
+        totalElement.textContent =
+            `${total} / ${checklist.length * 3}`;
+
+    }
+
+}
+
+
+
+/* =====================================
+   SAVE RESULT
+===================================== */
+
+async function saveResult() {
+
+    message.className =
+        "message";
+
+    message.textContent =
+        "";
+
+
+    /* CHECK LOGIN */
+
+    const {
+        data: {
+            user
+        }
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (!user) {
+
+        showMessage(
+            "error",
+            "Silakan login terlebih dahulu untuk menyimpan hasil OSCE."
+        );
+
+        return;
+
+    }
+
+
+
+    /* CHECK ALL SCORES */
+
+    const scores = [];
+
+    let totalScore = 0;
+
+
+    for (const item of checklist) {
+
+        const selected =
+            document.querySelector(
+                `input[name="score-${item.id}"]:checked`
+            );
+
+
+        if (!selected) {
+
+            showMessage(
+                "error",
+                `Silakan isi skor untuk semua checklist terlebih dahulu.`
+            );
+
+            return;
+
+        }
+
+
+        const score =
+            Number(selected.value);
+
+
+        scores.push({
+
+            checklist_id:
+                item.id,
+
+            score:
+                score
+
+        });
+
+
+        totalScore += score;
+
+    }
+
+
+
+    const maxScore =
+        checklist.length * 3;
+
+
+
+    /* DISABLE BUTTON */
+
+    const saveButton =
+        document.getElementById(
+            "save-button"
+        );
+
+
+    saveButton.disabled = true;
+
+    saveButton.textContent =
+        "Menyimpan...";
+
+
+
+    /* CREATE ATTEMPT */
+
+    const {
+        data: attempt,
+        error: attemptError
+    } =
+        await supabaseClient
+
+            .from("osce_attempts")
+
+            .insert({
+
+                user_id:
+                    user.id,
+
+                station_id:
+                    Number(stationId),
+
+                total_score:
+                    totalScore,
+
+                max_score:
+                    maxScore
+
+            })
+
+            .select()
+
+            .single();
+
+
+    if (attemptError) {
+
+        console.error(
+            attemptError
+        );
+
+        showMessage(
+            "error",
+            "Gagal menyimpan hasil OSCE."
+        );
+
+        saveButton.disabled = false;
+
+        saveButton.textContent =
+            "Simpan Hasil OSCE";
+
+        return;
+
+    }
+
+
+
+    /* CREATE SCORES */
+
+    const scoreRows =
+        scores.map(score => ({
+
+            attempt_id:
+                attempt.id,
+
+            checklist_id:
+                score.checklist_id,
+
+            score:
+                score.score
+
+        }));
+
+
+    const {
+        error: scoreError
+    } =
+        await supabaseClient
+
+            .from("osce_scores")
+
+            .insert(scoreRows);
+
+
+    if (scoreError) {
+
+        console.error(
+            scoreError
+        );
+
+        showMessage(
+            "error",
+            "Hasil utama tersimpan, tetapi detail skor gagal disimpan."
+        );
+
+        saveButton.disabled = false;
+
+        saveButton.textContent =
+            "Simpan Hasil OSCE";
+
+        return;
+
+    }
+
+
+
+    /* SUCCESS */
+
+    showMessage(
+        "success",
+        `Hasil OSCE berhasil disimpan. Total skor: ${totalScore} / ${maxScore}.`
+    );
+
+
+    saveButton.disabled = true;
+
+    saveButton.textContent =
+        "Hasil Tersimpan";
+
+}
+
+
+
+/* =====================================
+   MESSAGE
+===================================== */
+
+function showMessage(
+    type,
+    text
+) {
+
+    message.className =
+        `message ${type}`;
+
+    message.textContent =
+        text;
+
+}
+
+
+
+/* =====================================
+   INITIAL LOAD
+===================================== */
+
+loadStation();
+
+
+</script>
+
+</body>
+
+</html>
