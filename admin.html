@@ -388,7 +388,6 @@
   </button>
 </header>
 
-
 <div class="container">
 
   <!-- =========================================================
@@ -638,11 +637,6 @@
       batas panjang output AI.
     </p>
 
-
-    <!-- =======================================================
-         CBT BATCH
-    ======================================================== -->
-
     <div class="success-box">
 
       <strong>🚀 Sistem CBT 4 Batch</strong><br><br>
@@ -658,7 +652,6 @@
       menggabungkannya menjadi <strong>1 CBT dengan 100 soal</strong>.
 
     </div>
-
 
     <h3>Informasi CBT</h3>
 
@@ -676,7 +669,6 @@
 
     </div>
 
-
     <div class="form-group">
 
       <label for="batchDescription">
@@ -689,7 +681,6 @@
       ></textarea>
 
     </div>
-
 
     <div class="two-column">
 
@@ -709,7 +700,6 @@
 
       </div>
 
-
       <div class="form-group">
 
         <label for="batchDuration">
@@ -726,7 +716,6 @@
       </div>
 
     </div>
-
 
     <h3>Paste JSON Batch</h3>
 
@@ -756,10 +745,7 @@
 
     </div>
 
-
     <div class="four-column">
-
-      <!-- BATCH 1 -->
 
       <div class="batch-card">
 
@@ -784,9 +770,6 @@
 
       </div>
 
-
-      <!-- BATCH 2 -->
-
       <div class="batch-card">
 
         <h4>🟩 Batch 2</h4>
@@ -810,9 +793,6 @@
 
       </div>
 
-
-      <!-- BATCH 3 -->
-
       <div class="batch-card">
 
         <h4>🟨 Batch 3</h4>
@@ -835,9 +815,6 @@
         </div>
 
       </div>
-
-
-      <!-- BATCH 4 -->
 
       <div class="batch-card">
 
@@ -864,7 +841,6 @@
 
     </div>
 
-
     <div class="stats">
 
       <div class="stat">
@@ -882,7 +858,6 @@
 
       </div>
 
-
       <div class="stat">
 
         <div
@@ -897,7 +872,6 @@
         </div>
 
       </div>
-
 
       <div class="stat">
 
@@ -915,7 +889,6 @@
       </div>
 
     </div>
-
 
     <div class="button-row">
 
@@ -942,7 +915,6 @@
 
     </div>
 
-
     <div
       id="batchMessage"
       class="message"
@@ -957,10 +929,8 @@
 
     <p class="description">
       Fitur ini tetap dipertahankan untuk CBT yang dibuat dalam
-      satu JSON. Gunakan sistem batch untuk CBT besar seperti
-      100 soal.
+      satu JSON.
     </p>
-
 
     <div class="warning-box">
 
@@ -971,7 +941,6 @@
       <strong>2 = pilihan kedua</strong>, dan seterusnya.
 
     </div>
-
 
     <h3>Format JSON CBT Tunggal</h3>
 
@@ -995,7 +964,6 @@
   ]
 }</div>
 
-
     <div class="form-group">
 
       <label for="cbtJson">
@@ -1009,7 +977,6 @@
       ></textarea>
 
     </div>
-
 
     <div class="button-row">
 
@@ -1029,12 +996,10 @@
 
     </div>
 
-
     <div
       id="cbtMessage"
       class="message"
     ></div>
-
 
     <h3>Daftar CBT</h3>
 
@@ -2697,7 +2662,10 @@
 
               explanation:
                 item.explanation ||
-                null
+                null,
+
+              question_number:
+                i + 1
 
             })
             .select()
@@ -3528,7 +3496,7 @@
 
 
       /*
-       * Gabungkan soal dari Batch 1 → 4.
+       * Gabungkan Batch 1 → 4.
        */
 
       const allQuestions =
@@ -3563,6 +3531,14 @@
           allQuestions[i];
 
 
+        /*
+         * Nomor soal otomatis 1–100.
+         */
+
+        const questionNumber =
+          i + 1;
+
+
         const {
           data: question,
           error: questionError
@@ -3578,7 +3554,10 @@
 
             explanation:
               item.explanation ||
-              null
+              null,
+
+            question_number:
+              questionNumber
 
           })
           .select()
@@ -3588,7 +3567,7 @@
         if (questionError) {
 
           throw new Error(
-            `Gagal menyimpan soal nomor ${i + 1}: ${questionError.message}`
+            `Gagal menyimpan soal nomor ${questionNumber}: ${questionError.message}`
           );
 
         }
@@ -3633,7 +3612,25 @@
         if (optionError) {
 
           throw new Error(
-            `Gagal menyimpan pilihan jawaban soal nomor ${i + 1}: ${optionError.message}`
+            `Gagal menyimpan pilihan jawaban soal nomor ${questionNumber}: ${optionError.message}`
+          );
+
+        }
+
+        /*
+         * Update progress setiap 10 soal.
+         */
+
+        if (
+          questionNumber === 1 ||
+          questionNumber % 10 === 0 ||
+          questionNumber === 100
+        ) {
+
+          showMessage(
+            "batchMessage",
+            `Menyimpan soal ${questionNumber}/100...`,
+            "info"
           );
 
         }
@@ -3643,7 +3640,7 @@
 
       showMessage(
         "batchMessage",
-        `🎉 CBT "${title}" berhasil dibuat dengan 100 soal. Status awal: DRAFT.`,
+        `🎉 CBT "${title}" berhasil dibuat dengan 100 soal. Nomor soal 1–100 sudah tersimpan. Status awal: DRAFT.`,
         "success"
       );
 
@@ -3662,9 +3659,8 @@
        * Jika gagal di tengah proses,
        * hapus quiz utama.
        *
-       * quiz_questions menggunakan
-       * ON DELETE CASCADE sehingga
-       * soal dan opsi ikut dibersihkan.
+       * ON DELETE CASCADE akan
+       * membersihkan soal dan opsi.
        */
 
       if (quiz) {
