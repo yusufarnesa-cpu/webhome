@@ -1,882 +1,740 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Materi | Medical Learning Hub</title>
+    <title>Materi Pembelajaran | Medical Learning Hub</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
             background: #f5f7fb;
             color: #1f2937;
         }
 
-
-        /* =========================
-           NAVBAR
-        ========================= */
-
         nav {
             background: #0f172a;
-            color: white;
-            padding: 18px 7%;
+            padding: 16px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .logo {
+        nav .logo {
+            color: white;
             font-size: 20px;
             font-weight: bold;
+        }
+
+        nav .menu {
+            display: flex;
+            gap: 20px;
         }
 
         nav a {
             color: white;
             text-decoration: none;
-            margin-left: 20px;
             font-size: 14px;
         }
 
         nav a:hover {
-            opacity: 0.8;
+            text-decoration: underline;
         }
 
-
-        /* =========================
-           HERO
-        ========================= */
-
         .hero {
-            padding: 60px 7% 40px;
             background: white;
+            padding: 50px 20px 35px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .hero h1 {
+            margin: 0 0 12px;
             font-size: 36px;
-            margin-bottom: 12px;
+            color: #0f172a;
         }
 
         .hero p {
+            margin: 0;
             color: #64748b;
-            max-width: 700px;
-            line-height: 1.6;
+            font-size: 16px;
         }
 
-
-        /* =========================
-           FILTER AREA
-        ========================= */
-
-        .filter-section {
-            width: 86%;
-            max-width: 1200px;
-            margin: 30px auto 0;
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
         }
+
+        /* FILTER */
 
         .filter-box {
             background: white;
-            padding: 22px;
+            padding: 20px;
             border-radius: 14px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-        }
-
-        .filter-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #0f172a;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         .filter-grid {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr;
-            gap: 12px;
+            gap: 15px;
         }
 
-        .search-input,
-        .filter-select {
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .filter-group label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #475569;
+        }
+
+        .filter-group input,
+        .filter-group select {
             width: 100%;
-            padding: 13px 14px;
-            border: 1px solid #d0d5dd;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
             border-radius: 9px;
             font-size: 14px;
             background: white;
-            color: #1f2937;
             outline: none;
         }
 
-        .search-input:focus,
-        .filter-select:focus {
+        .filter-group input:focus,
+        .filter-group select:focus {
             border-color: #2563eb;
         }
 
         .result-info {
-            margin-top: 14px;
-            color: #64748b;
+            margin-top: 15px;
             font-size: 14px;
+            color: #64748b;
         }
 
-
-        /* =========================
-           CONTAINER
-        ========================= */
-
-        .container {
-            width: 86%;
-            max-width: 1200px;
-            margin: 40px auto;
-        }
-
-
-        /* =========================
-           CATEGORY
-        ========================= */
+        /* CATEGORY */
 
         .category-block {
-            margin-bottom: 50px;
+            margin-bottom: 35px;
         }
 
         .category-title {
-            font-size: 26px;
-            margin-bottom: 20px;
+            margin: 0 0 15px;
+            font-size: 25px;
             color: #0f172a;
             border-left: 5px solid #2563eb;
             padding-left: 12px;
         }
 
-
-        /* =========================
-           GRID
-        ========================= */
-
         .materials-grid {
             display: grid;
-            grid-template-columns: repeat(
-                auto-fit,
-                minmax(280px, 1fr)
-            );
-            gap: 22px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
 
-
-        /* =========================
-           CARD
-        ========================= */
+        /* CARD */
 
         .material-card {
             background: white;
             border-radius: 14px;
-            padding: 24px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-            transition: 0.2s;
+            padding: 22px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .material-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.10);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
         }
 
         .material-card h3 {
-            font-size: 20px;
-            margin-bottom: 12px;
+            margin: 0 0 10px;
+            font-size: 19px;
             color: #111827;
         }
 
-        .description {
+        .material-card p {
             color: #64748b;
+            font-size: 14px;
             line-height: 1.6;
-            margin-bottom: 18px;
         }
 
         .meta {
+            margin-top: 10px;
             font-size: 13px;
-            color: #64748b;
+            color: #475569;
             line-height: 1.8;
-            margin-bottom: 20px;
         }
 
         .meta strong {
-            color: #334155;
+            color: #1e293b;
         }
-
-
-        /* =========================
-           BUTTON
-        ========================= */
 
         .open-button {
             display: inline-block;
-            margin-top: auto;
+            margin-top: 18px;
+            padding: 11px 15px;
             background: #2563eb;
             color: white;
-            padding: 12px 18px;
-            border-radius: 8px;
             text-decoration: none;
+            border-radius: 8px;
             text-align: center;
+            font-size: 14px;
             font-weight: bold;
-            transition: 0.2s;
         }
 
         .open-button:hover {
             background: #1d4ed8;
         }
 
-
-        /* =========================
-           EMPTY
-        ========================= */
+        /* EMPTY */
 
         .empty {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 12px;
             color: #64748b;
-            text-align: center;
+            font-size: 14px;
+            border: 1px dashed #cbd5e1;
         }
 
-
-        /* =========================
-           LOADING
-        ========================= */
-
-        .loading {
+        .no-result {
+            background: white;
+            padding: 30px;
             text-align: center;
-            padding: 50px;
+            border-radius: 14px;
             color: #64748b;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
-
-
-        /* =========================
-           FOOTER
-        ========================= */
 
         footer {
-            margin-top: 80px;
             background: #0f172a;
             color: #cbd5e1;
             text-align: center;
-            padding: 30px;
-            font-size: 14px;
+            padding: 25px 20px;
+            font-size: 13px;
         }
 
+        /* RESPONSIVE */
 
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 700px) {
-
-            nav {
-                flex-direction: column;
-                gap: 15px;
+        @media (max-width: 900px) {
+            .materials-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            nav a {
-                margin-left: 10px;
-                margin-right: 10px;
+            .filter-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filter-group:first-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                padding: 15px 18px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            nav .menu {
+                gap: 12px;
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
             .hero h1 {
                 font-size: 28px;
             }
 
-            .container,
-            .filter-section {
-                width: 92%;
-            }
-
             .filter-grid {
                 grid-template-columns: 1fr;
             }
 
+            .filter-group:first-child {
+                grid-column: auto;
+            }
+
+            .materials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-title {
+                font-size: 22px;
+            }
         }
-
     </style>
-
 </head>
-
 
 <body>
 
-
-<!-- =========================
-     NAVBAR
-========================= -->
-
-<nav>
-
-    <div class="logo">
-        Medical Learning Hub
-    </div>
-
-    <div>
-
-        <a href="../index.html">
-            Home
-        </a>
-
-        <a href="index.html">
-            Materi
-        </a>
-
-        <a href="#">
-            Quiz
-        </a>
-
-        <a href="#">
-            Referensi
-        </a>
-
-    </div>
-
-</nav>
-
-
-<!-- =========================
-     HERO
-========================= -->
-
-<section class="hero">
-
-    <h1>
-        Materi Pembelajaran
-    </h1>
-
-    <p>
-        Kumpulan materi pembelajaran kedokteran yang
-        disusun berdasarkan kategori dan dapat diakses
-        secara terstruktur melalui Medical Learning Hub.
-    </p>
-
-</section>
-
-
-<!-- =========================
-     SEARCH & FILTER
-========================= -->
-
-<section class="filter-section">
-
-    <div class="filter-box">
-
-        <div class="filter-title">
-            Cari dan Filter Materi
+    <!-- NAVBAR -->
+    <nav>
+        <div class="logo">
+            Medical Learning Hub
         </div>
 
-        <div class="filter-grid">
+        <div class="menu">
+            <a href="../index.html">Home</a>
+            <a href="index.html">Materi Pembelajaran</a>
+            <a href="#">Quiz</a>
+            <a href="#">Referensi</a>
+        </div>
+    </nav>
 
-            <input
-                type="text"
-                id="searchInput"
-                class="search-input"
-                placeholder="🔎 Cari judul, mata kuliah, topik..."
-            >
+    <!-- HERO -->
+    <section class="hero">
+        <h1>Materi Pembelajaran</h1>
+        <p>
+            Jelajahi materi kedokteran berdasarkan kategori dan semester.
+        </p>
+    </section>
 
-            <select
-                id="categoryFilter"
-                class="filter-select"
-            >
+    <main class="container">
 
+        <!-- SEARCH & FILTER -->
+        <div class="filter-box">
+
+            <div class="filter-grid">
+
+                <div class="filter-group">
+                    <label for="searchInput">
+                        Cari Materi
+                    </label>
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Cari judul, mata kuliah, topik..."
+                    >
+                </div>
+
+                <div class="filter-group">
+                    <label for="categoryFilter">
+                        Kategori
+                    </label>
+
+                    <select id="categoryFilter">
+                        <option value="">
+                            Semua Kategori
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="semesterFilter">
+                        Semester
+                    </label>
+
+                    <select id="semesterFilter">
+                        <option value="">
+                            Semua Semester
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div id="resultInfo" class="result-info">
+                Memuat materi...
+            </div>
+
+        </div>
+
+        <!-- MATERIALS -->
+        <div id="materials-container">
+            <div class="empty">
+                Memuat materi...
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        © 2026 Medical Learning Hub
+    </footer>
+
+
+    <script>
+
+        /* ================================
+           SUPABASE
+        ================================= */
+
+        const SUPABASE_URL =
+            "https://hqzishiazabguknallei.supabase.co";
+
+        const SUPABASE_ANON_KEY =
+            "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY
+            );
+
+
+        /* ================================
+           GLOBAL DATA
+        ================================= */
+
+        let allCategories = [];
+        let allMaterials = [];
+
+
+        /* ================================
+           LOAD DATA
+        ================================= */
+
+        async function loadMaterials() {
+
+            const container =
+                document.getElementById("materials-container");
+
+            const resultInfo =
+                document.getElementById("resultInfo");
+
+            try {
+
+                /* LOAD CATEGORIES */
+
+                const {
+                    data: categories,
+                    error: categoryError
+                } = await supabaseClient
+                    .from("categories")
+                    .select("*")
+                    .order("id", {
+                        ascending: true
+                    });
+
+                if (categoryError) {
+                    throw categoryError;
+                }
+
+
+                /* LOAD MATERIALS */
+
+                const {
+                    data: materials,
+                    error: materialError
+                } = await supabaseClient
+                    .from("materials")
+                    .select("*")
+                    .eq("status", "published")
+                    .order("created_at", {
+                        ascending: false
+                    });
+
+                if (materialError) {
+                    throw materialError;
+                }
+
+
+                allCategories = categories || [];
+                allMaterials = materials || [];
+
+
+                /* POPULATE FILTER */
+
+                populateCategoryFilter();
+                populateSemesterFilter();
+
+
+                /* INITIAL RENDER */
+
+                renderMaterials(allMaterials);
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                container.innerHTML = `
+                    <div class="empty">
+                        Gagal memuat materi.
+                    </div>
+                `;
+
+                resultInfo.textContent =
+                    "Terjadi kesalahan saat memuat data.";
+            }
+        }
+
+
+        /* ================================
+           CATEGORY FILTER
+        ================================= */
+
+        function populateCategoryFilter() {
+
+            const select =
+                document.getElementById("categoryFilter");
+
+            select.innerHTML = `
                 <option value="">
                     Semua Kategori
                 </option>
+            `;
 
-            </select>
+            allCategories.forEach(function(category) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = category.id;
+
+                option.textContent = category.name;
+
+                select.appendChild(option);
+
+            });
+        }
 
 
-            <select
-                id="semesterFilter"
-                class="filter-select"
-            >
+        /* ================================
+           SEMESTER FILTER
+        ================================= */
 
+        function populateSemesterFilter() {
+
+            const select =
+                document.getElementById("semesterFilter");
+
+            const semesters = [];
+
+            allMaterials.forEach(function(material) {
+
+                if (
+                    material.semester &&
+                    !semesters.includes(material.semester)
+                ) {
+                    semesters.push(material.semester);
+                }
+
+            });
+
+
+            semesters.sort(function(a, b) {
+
+                return String(a).localeCompare(
+                    String(b),
+                    undefined,
+                    {
+                        numeric: true
+                    }
+                );
+
+            });
+
+
+            select.innerHTML = `
                 <option value="">
                     Semua Semester
                 </option>
-
-            </select>
-
-        </div>
+            `;
 
 
-        <div
-            id="resultInfo"
-            class="result-info"
-        >
-            Memuat materi...
-        </div>
+            semesters.forEach(function(semester) {
 
-    </div>
+                const option =
+                    document.createElement("option");
 
-</section>
+                option.value = semester;
 
+                option.textContent =
+                    "Semester " + semester;
 
-<!-- =========================
-     MATERIALS
-========================= -->
+                select.appendChild(option);
 
-<main class="container">
-
-    <div id="materials-container">
-
-        <div class="loading">
-            Memuat materi...
-        </div>
-
-    </div>
-
-</main>
-
-
-<!-- =========================
-     FOOTER
-========================= -->
-
-<footer>
-
-    Medical Learning Hub © 2026
-
-</footer>
-
-
-<script>
-
-
-/* ==============================
-   SUPABASE
-============================== */
-
-const SUPABASE_URL =
-    "https://hqzishiazabguknallei.supabase.co";
-
-
-const SUPABASE_ANON_KEY =
-    "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
-
-
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-    );
-
-
-/* ==============================
-   ELEMENTS
-============================== */
-
-const container =
-    document.getElementById(
-        "materials-container"
-    );
-
-
-const searchInput =
-    document.getElementById(
-        "searchInput"
-    );
-
-
-const categoryFilter =
-    document.getElementById(
-        "categoryFilter"
-    );
-
-
-const semesterFilter =
-    document.getElementById(
-        "semesterFilter"
-    );
-
-
-const resultInfo =
-    document.getElementById(
-        "resultInfo"
-    );
-
-
-/* ==============================
-   GLOBAL DATA
-============================== */
-
-let allCategories = [];
-
-let allMaterials = [];
-
-
-/* ==============================
-   LOAD DATA
-============================== */
-
-async function loadMaterials() {
-
-    try {
-
-        /* GET CATEGORIES */
-
-        const {
-            data: categories,
-            error: categoryError
-        } = await supabaseClient
-            .from("categories")
-            .select("*")
-            .order("id", {
-                ascending: true
             });
-
-
-        if (categoryError) {
-            throw categoryError;
         }
 
 
-        /* GET MATERIALS */
+        /* ================================
+           FILTER MATERIALS
+        ================================= */
 
-        const {
-            data: materials,
-            error: materialError
-        } = await supabaseClient
-            .from("materials")
-            .select("*")
-            .eq("status", "published")
-            .order("created_at", {
-                ascending: false
-            });
+        function filterMaterials() {
 
+            const search =
+                document
+                    .getElementById("searchInput")
+                    .value
+                    .toLowerCase()
+                    .trim();
 
-        if (materialError) {
-            throw materialError;
-        }
+            const category =
+                document
+                    .getElementById("categoryFilter")
+                    .value;
 
+            const semester =
+                document
+                    .getElementById("semesterFilter")
+                    .value;
 
-        allCategories =
-            categories || [];
 
+            const filtered =
+                allMaterials.filter(function(material) {
 
-        allMaterials =
-            materials || [];
+                    const searchableText = [
 
+                        material.title,
+                        material.description,
+                        material.subject,
+                        material.topic,
+                        material.author
 
-        /* POPULATE FILTERS */
+                    ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
 
-        populateCategoryFilter();
 
-        populateSemesterFilter();
+                    const matchSearch =
+                        !search ||
+                        searchableText.includes(search);
 
 
-        /* FIRST DISPLAY */
+                    const matchCategory =
+                        !category ||
+                        String(material.category_id) ===
+                        String(category);
 
-        renderMaterials(
-            allMaterials
-        );
 
-    }
+                    const matchSemester =
+                        !semester ||
+                        String(material.semester) ===
+                        String(semester);
 
-    catch (error) {
 
-        console.error(
-            "Gagal memuat materi:",
-            error
-        );
-
-
-        container.innerHTML = `
-
-            <div class="empty">
-
-                Gagal memuat materi.
-
-                <br><br>
-
-                <small>
-                    ${escapeHtml(
-                        error.message || error
-                    )}
-                </small>
-
-            </div>
-
-        `;
-
-        resultInfo.textContent =
-            "Materi gagal dimuat.";
-
-    }
-
-}
-
-
-/* ==============================
-   CATEGORY FILTER
-============================== */
-
-function populateCategoryFilter() {
-
-    categoryFilter.innerHTML = `
-
-        <option value="">
-            Semua Kategori
-        </option>
-
-    `;
-
-
-    allCategories.forEach(
-        function(category) {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                category.id;
-
-            option.textContent =
-                category.name;
-
-            categoryFilter.appendChild(
-                option
-            );
-
-        }
-    );
-
-}
-
-
-/* ==============================
-   SEMESTER FILTER
-============================== */
-
-function populateSemesterFilter() {
-
-    const semesters =
-        allMaterials
-            .map(function(material) {
-                return material.semester;
-            })
-            .filter(function(semester) {
-                return semester !== null &&
-                       semester !== undefined &&
-                       String(semester).trim() !== "";
-            })
-            .map(function(semester) {
-                return String(semester).trim();
-            });
-
-
-    const uniqueSemesters =
-        [...new Set(semesters)]
-            .sort(function(a, b) {
-
-                const numberA =
-                    parseInt(a);
-
-                const numberB =
-                    parseInt(b);
-
-                if (
-                    !isNaN(numberA) &&
-                    !isNaN(numberB)
-                ) {
-                    return numberA - numberB;
-                }
-
-                return a.localeCompare(b);
-            });
-
-
-    semesterFilter.innerHTML = `
-
-        <option value="">
-            Semua Semester
-        </option>
-
-    `;
-
-
-    uniqueSemesters.forEach(
-        function(semester) {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                semester;
-
-            option.textContent =
-                "Semester " + semester;
-
-            semesterFilter.appendChild(
-                option
-            );
-
-        }
-    );
-
-}
-
-
-/* ==============================
-   FILTER MATERIALS
-============================== */
-
-function filterMaterials() {
-
-    const search =
-        searchInput.value
-            .trim()
-            .toLowerCase();
-
-
-    const selectedCategory =
-        categoryFilter.value;
-
-
-    const selectedSemester =
-        semesterFilter.value;
-
-
-    const filtered =
-        allMaterials.filter(
-            function(material) {
-
-                /* SEARCH */
-
-                const searchableText = [
-
-                    material.title,
-
-                    material.description,
-
-                    material.subject,
-
-                    material.topic,
-
-                    material.author
-
-                ]
-                .filter(Boolean)
-                .join(" ")
-                .toLowerCase();
-
-
-                const matchesSearch =
-                    !search ||
-                    searchableText.includes(
-                        search
+                    return (
+                        matchSearch &&
+                        matchCategory &&
+                        matchSemester
                     );
 
-
-                /* CATEGORY */
-
-                const matchesCategory =
-                    !selectedCategory ||
-                    Number(
-                        material.category_id
-                    ) === Number(
-                        selectedCategory
-                    );
+                });
 
 
-                /* SEMESTER */
-
-                const matchesSemester =
-                    !selectedSemester ||
-                    String(
-                        material.semester || ""
-                    ).trim() ===
-                    selectedSemester;
+            renderMaterials(filtered);
+        }
 
 
-                return (
-                    matchesSearch &&
-                    matchesCategory &&
-                    matchesSemester
+        /* ================================
+           RENDER MATERIALS
+        ================================= */
+
+        function renderMaterials(materials) {
+
+            const container =
+                document.getElementById(
+                    "materials-container"
                 );
 
+            const resultInfo =
+                document.getElementById(
+                    "resultInfo"
+                );
+
+
+            container.innerHTML = "";
+
+
+            /* HAS ACTIVE FILTER? */
+
+            const search =
+                document
+                    .getElementById("searchInput")
+                    .value
+                    .trim();
+
+            const category =
+                document
+                    .getElementById("categoryFilter")
+                    .value;
+
+            const semester =
+                document
+                    .getElementById("semesterFilter")
+                    .value;
+
+
+            const hasActiveFilter =
+                search !== "" ||
+                category !== "" ||
+                semester !== "";
+
+
+            /* RESULT INFO */
+
+            resultInfo.textContent =
+                materials.length +
+                " materi ditemukan";
+
+
+            /* ================================
+               ACTIVE FILTER + NO RESULT
+            ================================= */
+
+            if (
+                materials.length === 0 &&
+                hasActiveFilter
+            ) {
+
+                container.innerHTML = `
+                    <div class="no-result">
+                        <strong>Tidak ada materi yang cocok.</strong>
+                        <br>
+                        Coba gunakan kata kunci atau filter yang berbeda.
+                    </div>
+                `;
+
+                return;
             }
-        );
 
 
-    renderMaterials(
-        filtered
-    );
+            /* ================================
+               NO CATEGORY
+            ================================= */
 
-}
+            if (allCategories.length === 0) {
 
+                container.innerHTML = `
+                    <div class="empty">
+                        Belum ada kategori materi.
+                    </div>
+                `;
 
-/* ==============================
-   RENDER MATERIALS
-============================== */
-
-function renderMaterials(
-    materials
-) {
-
-    container.innerHTML = "";
+                return;
+            }
 
 
-    resultInfo.textContent =
-        materials.length +
-        " materi ditemukan";
+            /* ================================
+               RENDER EVERY CATEGORY
+            ================================= */
 
+            allCategories.forEach(function(category) {
 
-    /* NO RESULT */
-
-    if (
-        !materials ||
-        materials.length === 0
-    ) {
-
-        container.innerHTML = `
-
-            <div class="empty">
-
-                <h3>
-                    Materi tidak ditemukan
-                </h3>
-
-                <br>
-
-                <p>
-                    Coba gunakan kata kunci
-                    atau filter yang berbeda.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    /* LOOP CATEGORY */
-
-    allCategories.forEach(
-        function(category) {
-
-            const categoryMaterials =
-                materials.filter(
-                    function(material) {
+                const categoryMaterials =
+                    materials.filter(function(material) {
 
                         return Number(
                             material.category_id
@@ -884,261 +742,283 @@ function renderMaterials(
                             category.id
                         );
 
+                    });
+
+
+                /*
+                 * Saat tidak ada filter aktif,
+                 * SEMUA kategori tetap ditampilkan.
+                 */
+
+                if (
+                    categoryMaterials.length === 0 &&
+                    hasActiveFilter
+                ) {
+                    return;
+                }
+
+
+                /* CATEGORY BLOCK */
+
+                const categoryBlock =
+                    document.createElement("section");
+
+                categoryBlock.className =
+                    "category-block";
+
+
+                /* CATEGORY TITLE */
+
+                const categoryTitle =
+                    document.createElement("h2");
+
+                categoryTitle.className =
+                    "category-title";
+
+                categoryTitle.textContent =
+                    category.name;
+
+
+                categoryBlock.appendChild(
+                    categoryTitle
+                );
+
+
+                /* EMPTY CATEGORY */
+
+                if (
+                    categoryMaterials.length === 0
+                ) {
+
+                    const empty =
+                        document.createElement("div");
+
+                    empty.className =
+                        "empty";
+
+                    empty.textContent =
+                        "Belum ada materi pada kategori ini.";
+
+                    categoryBlock.appendChild(
+                        empty
+                    );
+
+                    container.appendChild(
+                        categoryBlock
+                    );
+
+                    return;
+                }
+
+
+                /* MATERIAL GRID */
+
+                const grid =
+                    document.createElement("div");
+
+                grid.className =
+                    "materials-grid";
+
+
+                /* MATERIAL CARDS */
+
+                categoryMaterials.forEach(
+                    function(material) {
+
+                        const card =
+                            document.createElement("article");
+
+                        card.className =
+                            "material-card";
+
+
+                        const title =
+                            document.createElement("h3");
+
+                        title.textContent =
+                            material.title ||
+                            "Tanpa Judul";
+
+
+                        const description =
+                            document.createElement("p");
+
+                        description.textContent =
+                            material.description ||
+                            "Tidak ada deskripsi.";
+
+
+                        const meta =
+                            document.createElement("div");
+
+                        meta.className =
+                            "meta";
+
+
+                        let metaHTML = "";
+
+
+                        if (material.subject) {
+
+                            metaHTML += `
+                                <strong>Mata Kuliah:</strong>
+                                ${escapeHTML(material.subject)}
+                                <br>
+                            `;
+
+                        }
+
+
+                        if (material.semester) {
+
+                            metaHTML += `
+                                <strong>Semester:</strong>
+                                ${escapeHTML(material.semester)}
+                                <br>
+                            `;
+
+                        }
+
+
+                        if (material.topic) {
+
+                            metaHTML += `
+                                <strong>Topik:</strong>
+                                ${escapeHTML(material.topic)}
+                                <br>
+                            `;
+
+                        }
+
+
+                        if (material.author) {
+
+                            metaHTML += `
+                                <strong>Penulis:</strong>
+                                ${escapeHTML(material.author)}
+                            `;
+
+                        }
+
+
+                        meta.innerHTML =
+                            metaHTML;
+
+
+                        /* OPEN BUTTON */
+
+                        const button =
+                            document.createElement("a");
+
+                        button.className =
+                            "open-button";
+
+                        button.href =
+                            "../detail.html?id=" +
+                            encodeURIComponent(
+                                material.id
+                            );
+
+                        button.textContent =
+                            "Buka Materi →";
+
+
+                        /* APPEND */
+
+                        card.appendChild(title);
+
+                        card.appendChild(
+                            description
+                        );
+
+                        card.appendChild(meta);
+
+                        card.appendChild(button);
+
+                        grid.appendChild(card);
+
                     }
                 );
 
 
-            /* SKIP EMPTY CATEGORY */
+                categoryBlock.appendChild(grid);
+
+                container.appendChild(
+                    categoryBlock
+                );
+
+            });
+
+
+            /* ================================
+               FALLBACK
+            ================================= */
 
             if (
-                categoryMaterials.length === 0
+                container.children.length === 0
             ) {
-                return;
+
+                container.innerHTML = `
+                    <div class="no-result">
+                        Tidak ada materi yang cocok.
+                    </div>
+                `;
+
             }
+        }
 
 
-            /* CATEGORY BLOCK */
+        /* ================================
+           ESCAPE HTML
+        ================================= */
 
-            const categoryBlock =
-                document.createElement(
-                    "section"
-                );
+        function escapeHTML(value) {
 
-            categoryBlock.className =
-                "category-block";
-
-
-            /* CATEGORY TITLE */
-
-            const categoryTitle =
-                document.createElement(
-                    "h2"
-                );
-
-            categoryTitle.className =
-                "category-title";
-
-            categoryTitle.textContent =
-                category.name;
-
-
-            categoryBlock.appendChild(
-                categoryTitle
-            );
-
-
-            /* GRID */
-
-            const grid =
-                document.createElement(
-                    "div"
-                );
-
-            grid.className =
-                "materials-grid";
-
-
-            /* MATERIAL CARDS */
-
-            categoryMaterials.forEach(
-                function(material) {
-
-                    const card =
-                        document.createElement(
-                            "article"
-                        );
-
-                    card.className =
-                        "material-card";
-
-
-                    /* TITLE */
-
-                    const title =
-                        document.createElement(
-                            "h3"
-                        );
-
-                    title.textContent =
-                        material.title ||
-                        "Tanpa judul";
-
-
-                    /* DESCRIPTION */
-
-                    const description =
-                        document.createElement(
-                            "p"
-                        );
-
-                    description.className =
-                        "description";
-
-                    description.textContent =
-                        material.description ||
-                        "Tidak ada deskripsi materi.";
-
-
-                    /* META */
-
-                    const meta =
-                        document.createElement(
-                            "div"
-                        );
-
-                    meta.className =
-                        "meta";
-
-
-                    meta.innerHTML = `
-
-                        ${
-                            material.subject
-                            ? `<strong>Mata Kuliah:</strong>
-                               ${escapeHtml(
-                                   material.subject
-                               )}<br>`
-                            : ""
-                        }
-
-                        ${
-                            material.semester
-                            ? `<strong>Semester:</strong>
-                               ${escapeHtml(
-                                   material.semester
-                               )}<br>`
-                            : ""
-                        }
-
-                        ${
-                            material.topic
-                            ? `<strong>Topik:</strong>
-                               ${escapeHtml(
-                                   material.topic
-                               )}<br>`
-                            : ""
-                        }
-
-                        ${
-                            material.author
-                            ? `<strong>Penulis:</strong>
-                               ${escapeHtml(
-                                   material.author
-                               )}`
-                            : ""
-                        }
-
-                    `;
-
-
-                    /* BUTTON */
-
-                    const button =
-                        document.createElement(
-                            "a"
-                        );
-
-                    button.className =
-                        "open-button";
-
-                    button.textContent =
-                        "Buka Materi →";
-
-
-                    button.href =
-                        "../detail.html?id=" +
-                        material.id;
-
-
-                    /* APPEND */
-
-                    card.appendChild(
-                        title
-                    );
-
-                    card.appendChild(
-                        description
-                    );
-
-                    card.appendChild(
-                        meta
-                    );
-
-                    card.appendChild(
-                        button
-                    );
-
-
-                    grid.appendChild(
-                        card
-                    );
-
-                }
-            );
-
-
-            categoryBlock.appendChild(
-                grid
-            );
-
-
-            container.appendChild(
-                categoryBlock
-            );
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
 
         }
-    );
-
-}
 
 
-/* ==============================
-   EVENTS
-============================== */
+        /* ================================
+           EVENT LISTENERS
+        ================================= */
 
-searchInput.addEventListener(
-    "input",
-    filterMaterials
-);
-
-
-categoryFilter.addEventListener(
-    "change",
-    filterMaterials
-);
+        document
+            .getElementById("searchInput")
+            .addEventListener(
+                "input",
+                filterMaterials
+            );
 
 
-semesterFilter.addEventListener(
-    "change",
-    filterMaterials
-);
+        document
+            .getElementById("categoryFilter")
+            .addEventListener(
+                "change",
+                filterMaterials
+            );
 
 
-/* ==============================
-   SECURITY
-============================== */
-
-function escapeHtml(text) {
-
-    return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
+        document
+            .getElementById("semesterFilter")
+            .addEventListener(
+                "change",
+                filterMaterials
+            );
 
 
-/* ==============================
-   START
-============================== */
+        /* ================================
+           START
+        ================================= */
 
-loadMaterials();
+        loadMaterials();
 
-</script>
-
+    </script>
 
 </body>
-
 </html>
