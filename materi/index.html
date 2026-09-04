@@ -1,544 +1,646 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Materi | Medical Learning Hub</title>
 
-  <title>Blok Kuliah</title>
-
-  <style>
+<style>
     * {
-      box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
     }
 
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f7fb;
-      color: #222;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f7fb;
+        color: #172033;
     }
 
-    header {
-      background: #1e3a8a;
-      color: white;
-      padding: 25px 20px;
-      text-align: center;
+    /* NAVBAR */
+
+    .navbar {
+        background: white;
+        border-bottom: 1px solid #e8edf5;
+        position: sticky;
+        top: 0;
+        z-index: 100;
     }
 
-    header h1 {
-      margin: 0 0 8px;
+    .nav-container {
+        width: 92%;
+        max-width: 1150px;
+        min-height: 70px;
+        margin: auto;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
     }
+
+    .logo {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 25px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nav-links a {
+        color: #172033;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .nav-links a:hover {
+        color: #2563eb;
+    }
+
+    /* HEADER */
+
+    .page-header {
+        padding: 75px 20px;
+        text-align: center;
+
+        background:
+            radial-gradient(
+                circle at top right,
+                rgba(37, 99, 235, 0.12),
+                transparent 35%
+            ),
+            #f5f7fb;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 30px;
+
+        background: #e8f0ff;
+        color: #2563eb;
+
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .page-header h1 {
+        margin: 20px 0 12px;
+        font-size: clamp(35px, 6vw, 55px);
+    }
+
+    .page-header p {
+        max-width: 650px;
+        margin: auto;
+
+        color: #667085;
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    /* CONTAINER */
 
     .container {
-      max-width: 1000px;
-      margin: 25px auto;
-      padding: 0 15px;
+        width: 92%;
+        max-width: 1150px;
+        margin: auto;
+        padding: 60px 0 90px;
     }
 
-    /* FORM */
-
-    .form-box {
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    .section-heading {
+        margin-bottom: 30px;
     }
 
-    .form-box h2 {
-      margin-top: 0;
-      color: #1e3a8a;
+    .section-heading h2 {
+        margin: 0 0 8px;
+        font-size: 30px;
     }
 
-    label {
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 6px;
-      font-weight: bold;
+    .section-heading p {
+        margin: 0;
+        color: #667085;
     }
 
-    input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 15px;
+    /* MATERIAL GRID */
+
+    .materials-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
     }
 
-    button {
-      width: 100%;
-      margin-top: 20px;
-      padding: 13px;
-      border: none;
-      border-radius: 8px;
-      background: #16a34a;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
+    .material-card {
+        background: white;
+        border: 1px solid #e8edf5;
+        border-radius: 18px;
+        padding: 25px;
+
+        transition: 0.2s;
+
+        box-shadow: 0 5px 20px rgba(20, 30, 60, 0.04);
     }
 
-    button:disabled {
-      background: #999;
+    .material-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(20, 30, 60, 0.09);
     }
 
-    #status {
-      margin-top: 15px;
-      text-align: center;
-      font-weight: bold;
+    .material-icon {
+        width: 50px;
+        height: 50px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #eef4ff;
+        border-radius: 14px;
+
+        font-size: 24px;
+
+        margin-bottom: 18px;
     }
 
-    /* BLOK */
-
-    .blok {
-      background: white;
-      border-radius: 15px;
-      padding: 22px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    .material-card h3 {
+        margin: 0 0 12px;
+        font-size: 21px;
+        line-height: 1.35;
     }
 
-    .blok h2 {
-      margin-top: 0;
-      color: #1e3a8a;
+    .material-card p {
+        color: #667085;
+        line-height: 1.6;
+        margin: 0 0 18px;
     }
 
-    .catatan {
-      border-top: 1px solid #ddd;
-      padding: 15px 0;
+    .material-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-bottom: 20px;
     }
 
-    .catatan:first-child {
-      border-top: none;
+    .material-tag {
+        background: #eef4ff;
+        color: #2563eb;
+
+        padding: 5px 9px;
+        border-radius: 6px;
+
+        font-size: 12px;
+        font-weight: 700;
     }
 
-    .catatan h3 {
-      margin: 0 0 8px;
+    .material-author {
+        color: #667085;
+        font-size: 13px;
+        margin-bottom: 18px;
     }
 
-    .info {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 10px;
+    .open-button {
+        display: inline-block;
+
+        background: #2563eb;
+        color: white;
+
+        padding: 11px 16px;
+        border-radius: 9px;
+
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
     }
 
-    .btn {
-      display: inline-block;
-      padding: 9px 15px;
-      background: #1e3a8a;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
+    .open-button:hover {
+        background: #1d4ed8;
     }
 
-    .kosong {
-      color: #999;
-      font-size: 14px;
+    /* EMPTY / LOADING */
+
+    .loading,
+    .empty {
+        grid-column: 1 / -1;
+
+        background: white;
+        border: 1px solid #e8edf5;
+        border-radius: 18px;
+
+        padding: 45px 20px;
+
+        text-align: center;
+        color: #667085;
     }
-  </style>
-</head>
 
-<body>
+    /* FOOTER */
 
-<header>
-  <h1>Blok Kuliah</h1>
-  <p>Kumpulan Catatan Kuliah Harian</p>
+    footer {
+        background: white;
+        border-top: 1px solid #e8edf5;
+
+        text-align: center;
+        padding: 45px 20px;
+    }
+
+    footer h3 {
+        margin: 0 0 8px;
+    }
+
+    footer p {
+        color: #667085;
+    }
+
+    .copyright {
+        margin-top: 25px;
+        font-size: 13px;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 800px) {
+
+        .nav-container {
+            flex-direction: column;
+            padding: 18px 0;
+        }
+
+        .nav-links {
+            gap: 15px;
+        }
+
+        .page-header {
+            padding: 60px 20px;
+        }
+
+        .container {
+            padding-top: 45px;
+        }
+
+        .materials-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .section-heading h2 {
+            font-size: 26px;
+        }
+    }
+
+    @media (min-width: 801px) and (max-width: 1050px) {
+
+        .materials-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
+</head><body><!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <div class="logo">
+            🩺 Medical Learning Hub
+        </div>
+
+        <div class="nav-links">
+
+            <a href="../index.html">
+                Home
+            </a>
+
+            <a href="index.html">
+                Materi
+            </a>
+
+            <a href="#">
+                Quiz
+            </a>
+
+            <a href="#">
+                Referensi
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- HEADER -->
+
+<header class="page-header">
+
+    <span class="badge">
+        MEDICAL MATERIALS
+    </span>
+
+    <h1>
+        Materi Kuliah
+    </h1>
+
+    <p>
+        Kumpulan materi pembelajaran kedokteran yang
+        disusun secara terstruktur dan dapat diakses
+        kapan saja.
+    </p>
+
 </header>
 
-<div class="container">
 
-  <!-- FORM TAMBAH CATATAN -->
+<!-- MATERIALS -->
 
-  <div class="form-box">
+<main class="container">
 
-    <h2>➕ Tambah Catatan Kuliah</h2>
+    <div class="section-heading">
 
-    <form id="catatanForm">
+        <h2>
+            Semua Materi
+        </h2>
 
-      <label>Nama</label>
-      <input
-        type="text"
-        id="nama"
-        required
-        placeholder="Masukkan nama"
-      >
+        <p>
+            Materi terbaru akan otomatis muncul setelah
+            ditambahkan melalui Admin Dashboard.
+        </p>
 
-      <label>Tanggal</label>
-      <input
-        type="date"
-        id="tanggal"
-        required
-      >
-
-      <label>Blok</label>
-      <input
-        type="text"
-        id="blok"
-        required
-        placeholder="Contoh: THT"
-      >
-
-      <label>Topik Kuliah</label>
-      <input
-        type="text"
-        id="topik"
-        required
-        placeholder="Contoh: Anatomi Telinga"
-      >
-
-      <label>Link Catatan</label>
-      <input
-        type="url"
-        id="link"
-        required
-        placeholder="https://..."
-      >
-
-      <button type="submit" id="submitBtn">
-        Kirim Catatan
-      </button>
-
-    </form>
-
-    <div id="status"></div>
-
-  </div>
-
-
-  <!-- BLOK 1 -->
-
-  <section class="blok">
-
-    <h2>1. Bioetik dan Medikolegal</h2>
-
-    <div id="bioetik">
-      <p class="kosong">Memuat catatan...</p>
     </div>
 
-  </section>
 
+    <div
+        id="materials-container"
+        class="materials-grid"
+    >
 
-  <!-- BLOK 2 -->
+        <div class="loading">
+            Memuat materi...
+        </div>
 
-  <section class="blok">
-
-    <h2>2. THT</h2>
-
-    <div id="tht">
-      <p class="kosong">Memuat catatan...</p>
     </div>
 
-  </section>
+</main>
 
 
-  <!-- BLOK 3 -->
+<!-- FOOTER -->
 
-  <section class="blok">
+<footer>
 
-    <h2>3. Endocrine dan Metabolisme</h2>
+    <h3>
+        🩺 Medical Learning Hub
+    </h3>
 
-    <div id="endocrine">
-      <p class="kosong">Memuat catatan...</p>
-    </div>
+    <p>
+        Platform pembelajaran medis.
+    </p>
 
-  </section>
+    <p class="copyright">
+        © 2026 Medical Learning Hub
+    </p>
 
-
-  <!-- BLOK 4 -->
-
-  <section class="blok">
-
-    <h2>4. Neurology</h2>
-
-    <div id="neurology">
-      <p class="kosong">Memuat catatan...</p>
-    </div>
-
-  </section>
+</footer>
 
 
-  <!-- BLOK 5 -->
+<!-- SUPABASE -->
 
-  <section class="blok">
-
-    <h2>5. Reproductive System</h2>
-
-    <div id="reproductive">
-      <p class="kosong">Memuat catatan...</p>
-    </div>
-
-  </section>
-
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
-/* =================================================
-   MASUKKAN URL WEB APP APPS SCRIPT DI SINI
-   ================================================= */
+    const SUPABASE_URL =
+        "https://hqzishiazabguknallei.supabase.co";
 
-const SCRIPT_URL =
-"https://script.google.com/macros/s/AKfycbwiAQYoQP_3zmIarTdgIdWvHqmXWBrJO9TKvN6Jlkvb067wKc6ud54TXOOzIYlHdnxK/exec";
+    const SUPABASE_ANON_KEY =
+        "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
 
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
 
-/* =================================================
-   PEMETAAN BLOK
-   ================================================= */
 
-const blokMap = {
+    // =========================
+    // LOAD SEMUA MATERI
+    // =========================
 
-  "bioetik dan medikolegal": "bioetik",
+    async function loadMaterials() {
 
-  "tht": "tht",
+        const container =
+            document.getElementById(
+                "materials-container"
+            );
 
-  "endocrine dan metabolisme": "endocrine",
 
-  "neurology": "neurology",
+        const { data, error } =
+            await supabaseClient
 
-  "reproductive system": "reproductive"
+                .from("materials")
 
-};
+                .select("*")
 
+                .eq("status", "published")
 
-/* =================================================
-   FORM TAMBAH CATATAN
-   ================================================= */
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
 
-document
-  .getElementById("catatanForm")
-  .addEventListener("submit", function(e) {
 
-    e.preventDefault();
+        if (error) {
 
-    const submitBtn =
-      document.getElementById("submitBtn");
+            console.error(
+                "Gagal mengambil materi:",
+                error
+            );
 
-    const status =
-      document.getElementById("status");
+            container.innerHTML = `
+                <div class="empty">
+                    <strong>Gagal memuat materi.</strong>
+                    <br>
+                    Silakan coba refresh halaman.
+                </div>
+            `;
 
+            return;
+        }
 
-    const data = new URLSearchParams();
 
-    data.append(
-      "nama",
-      document.getElementById("nama").value
-    );
+        if (!data || data.length === 0) {
 
-    data.append(
-      "tanggal",
-      document.getElementById("tanggal").value
-    );
+            container.innerHTML = `
+                <div class="empty">
+                    Belum ada materi yang tersedia.
+                </div>
+            `;
 
-    data.append(
-      "blok",
-      document.getElementById("blok").value
-    );
+            return;
+        }
 
-    data.append(
-      "topik",
-      document.getElementById("topik").value
-    );
-
-    data.append(
-      "link",
-      document.getElementById("link").value
-    );
-
-
-    submitBtn.disabled = true;
-
-    submitBtn.textContent =
-      "Mengirim...";
-
-    status.textContent =
-      "Sedang menyimpan catatan...";
-
-
-    fetch(SCRIPT_URL, {
-
-      method: "POST",
-
-      body: data
-
-    })
-
-    .then(response => response.text())
-
-    .then(result => {
-
-      status.textContent =
-        "✅ Catatan berhasil ditambahkan!";
-
-      document
-        .getElementById("catatanForm")
-        .reset();
-
-      submitBtn.disabled = false;
-
-      submitBtn.textContent =
-        "Kirim Catatan";
-
-
-      // Muat ulang daftar catatan
-
-      setTimeout(() => {
-
-        location.reload();
-
-      }, 1000);
-
-    })
-
-    .catch(error => {
-
-      console.error(error);
-
-      status.textContent =
-        "❌ Gagal mengirim catatan.";
-
-      submitBtn.disabled = false;
-
-      submitBtn.textContent =
-        "Kirim Catatan";
-
-    });
-
-  });
-
-
-/* =================================================
-   MENGAMBIL CATATAN DARI GOOGLE SHEETS
-   ================================================= */
-
-fetch(SCRIPT_URL)
-
-  .then(response => response.json())
-
-  .then(data => {
-
-    // Bersihkan loading
-
-    Object.values(blokMap).forEach(id => {
-
-      document.getElementById(id).innerHTML = "";
-
-    });
-
-
-    data.forEach(item => {
-
-      const namaBlok =
-        String(item.blok || "")
-        .trim()
-        .toLowerCase();
-
-
-      const targetId =
-        blokMap[namaBlok];
-
-
-      if (!targetId) {
-        return;
-      }
-
-
-      const container =
-        document.getElementById(targetId);
-
-
-      const catatan =
-        document.createElement("div");
-
-      catatan.className =
-        "catatan";
-
-
-      const judul =
-        document.createElement("h3");
-
-      judul.textContent =
-        item.topik || "Catatan Kuliah";
-
-
-      const info =
-        document.createElement("div");
-
-      info.className =
-        "info";
-
-      info.textContent =
-        "Oleh: " +
-        (item.nama || "-") +
-        " • " +
-        (item.tanggal || "-");
-
-
-      const link =
-        document.createElement("a");
-
-      link.className =
-        "btn";
-
-      link.textContent =
-        "Buka Catatan";
-
-      link.href =
-        item.link || "#";
-
-      link.target =
-        "_blank";
-
-      link.rel =
-        "noopener noreferrer";
-
-
-      catatan.appendChild(judul);
-
-      catatan.appendChild(info);
-
-      catatan.appendChild(link);
-
-
-      container.appendChild(catatan);
-
-    });
-
-
-    // Jika blok masih kosong
-
-    Object.values(blokMap).forEach(id => {
-
-      const container =
-        document.getElementById(id);
-
-      if (container.children.length === 0) {
 
         container.innerHTML =
-          '<p class="kosong">' +
-          'Belum ada catatan untuk blok ini.' +
-          '</p>';
+            data.map(material => {
 
-      }
+                return `
 
-    });
+                    <article class="material-card">
 
-  })
+                        <div class="material-icon">
+                            📚
+                        </div>
 
-  .catch(error => {
+                        <h3>
+                            ${escapeHtml(
+                                material.title
+                            )}
+                        </h3>
 
-    console.error(error);
 
-    Object.values(blokMap).forEach(id => {
+                        <div class="material-meta">
 
-      document.getElementById(id).innerHTML =
-        '<p class="kosong">' +
-        'Gagal memuat catatan.' +
-        '</p>';
+                            ${
+                                material.subject
+                                ? `
+                                    <span class="material-tag">
+                                        ${escapeHtml(
+                                            material.subject
+                                        )}
+                                    </span>
+                                  `
+                                : ""
+                            }
 
-    });
 
-  });
+                            ${
+                                material.semester
+                                ? `
+                                    <span class="material-tag">
+                                        ${escapeHtml(
+                                            material.semester
+                                        )}
+                                    </span>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                material.topic
+                                ? `
+                                    <span class="material-tag">
+                                        ${escapeHtml(
+                                            material.topic
+                                        )}
+                                    </span>
+                                  `
+                                : ""
+                            }
+
+                        </div>
+
+
+                        <p>
+
+                            ${escapeHtml(
+                                material.description ||
+                                "Belum ada deskripsi materi."
+                            )}
+
+                        </p>
+
+
+                        ${
+                            material.author
+                            ? `
+                                <div class="material-author">
+                                    Oleh: ${escapeHtml(
+                                        material.author
+                                    )}
+                                </div>
+                              `
+                            : ""
+                        }
+
+
+                        <a
+                            href="#"
+                            class="open-button"
+                            onclick="openMaterial(${material.id}); return false;"
+                        >
+                            Buka Materi →
+                        </a>
+
+                    </article>
+
+                `;
+
+            }).join("");
+
+    }
+
+
+    // =========================
+    // ESCAPE HTML
+    // =========================
+
+    function escapeHtml(text) {
+
+        return String(text)
+
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+
+            .replace(
+                /</g,
+                "&lt;"
+            )
+
+            .replace(
+                />/g,
+                "&gt;"
+            )
+
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    // =========================
+    // BUKA MATERI
+    // =========================
+
+    function openMaterial(id) {
+
+        alert(
+            "Detail materi akan kita buat pada tahap berikutnya."
+        );
+
+    }
+
+
+    // =========================
+    // JALANKAN
+    // =========================
+
+    loadMaterials();
 
 </script>
 
