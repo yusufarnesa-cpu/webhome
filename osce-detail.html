@@ -1,342 +1,329 @@
-<!DOCTYPE html>
-<html lang="id">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>OSCE Station - Medical Learning Hub</title>
-
-    <link
-        rel="stylesheet"
-        href="style.css?v=2"
-    >
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-
-        .osce-detail-section {
-            padding: 60px 20px;
-        }
-
-        .osce-detail-container {
-            max-width: 1000px;
-            margin: auto;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 25px;
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .station-header {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-        }
-
-        .station-header h1 {
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        .station-box {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 12px;
-            background: #f8fafc;
-        }
-
-        .station-box h3 {
-            margin-top: 0;
-        }
-
-        .checklist-container {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-        }
-
-        .checklist-item {
-            padding: 20px 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .checklist-item:last-child {
-            border-bottom: none;
-        }
-
-        .checklist-number {
-            font-weight: 700;
-            color: #2563eb;
-            margin-bottom: 8px;
-        }
-
-        .checklist-text {
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .score-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .score-label {
-            font-weight: 600;
-            margin-right: 5px;
-        }
-
-        .score-option {
-            position: relative;
-            cursor: pointer;
-        }
-
-        .score-option input {
-            position: absolute;
-            opacity: 0;
-            width: 1px;
-            height: 1px;
-        }
-
-        .score-option span {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-
-            width: 45px;
-            height: 42px;
-
-            border: 2px solid #cbd5e1;
-            border-radius: 8px;
-
-            background: white;
-            color: #334155;
-
-            font-weight: 700;
-
-            cursor: pointer;
-
-            transition: all 0.15s ease;
-        }
-
-        .score-option span:hover {
-            border-color: #2563eb;
-            color: #2563eb;
-        }
-
-        .score-option input:checked + span {
-            background: #2563eb;
-            border-color: #2563eb;
-            color: white;
-        }
-
-        .score-option input:focus-visible + span {
-            outline: 2px solid #93c5fd;
-            outline-offset: 2px;
-        }
-
-        .score-summary {
-            margin-top: 30px;
-            padding: 25px;
-            border-radius: 14px;
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .score-total {
-            font-size: 28px;
-            font-weight: 800;
-            color: #1d4ed8;
-        }
-
-        .save-button {
-            border: none;
-            border-radius: 10px;
-            padding: 13px 22px;
-
-            background: #2563eb;
-            color: white;
-
-            font-size: 15px;
-            font-weight: 700;
-
-            cursor: pointer;
-        }
-
-        .save-button:hover {
-            background: #1d4ed8;
-        }
-
-        .save-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .message {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .message.success {
-            display: block;
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .message.error {
-            display: block;
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 50px 20px;
-        }
-
-    </style>
-
-</head>
-
-
-<body>
-
-
-    <!-- NAVBAR -->
-
-    <nav class="navbar">
-
-        <div class="nav-container">
-
-            <div class="logo">
-                🩺 Medical Learning Hub
-            </div>
-
-            <div class="nav-links">
-
-                <a href="index.html">
-                    Home
-                </a>
-
-                <a href="materi/index.html">
-                    Materi
-                </a>
-
-                <a href="quiz.html">
-                    Quiz
-                </a>
-
-                <a href="banksoal.html">
-                    Bank Soal
-                </a>
-
-                <a href="osce.html">
-                    OSCE
-                </a>
-
-            </div>
-
+<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>OSCE Station - Medical Learning Hub</title>
+
+<link
+    rel="stylesheet"
+    href="style.css?v=2"
+>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+    .osce-detail-section {
+        padding: 60px 20px;
+    }
+
+    .osce-detail-container {
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 25px;
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .station-header {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+    }
+
+    .station-header h1 {
+        margin-top: 0;
+        margin-bottom: 15px;
+    }
+
+    .station-box {
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 12px;
+        background: #f8fafc;
+    }
+
+    .station-box h3 {
+        margin-top: 0;
+    }
+
+    .checklist-container {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+    }
+
+    .checklist-item {
+        padding: 20px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .checklist-item:last-child {
+        border-bottom: none;
+    }
+
+    .checklist-number {
+        font-weight: 700;
+        color: #2563eb;
+        margin-bottom: 8px;
+    }
+
+    .checklist-text {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    .score-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .score-label {
+        font-weight: 600;
+        margin-right: 5px;
+    }
+
+    .score-option {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .score-option input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+    }
+
+    .score-option span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 45px;
+        height: 42px;
+
+        border: 2px solid #cbd5e1;
+        border-radius: 8px;
+
+        background: white;
+        color: #334155;
+
+        font-weight: 700;
+
+        cursor: pointer;
+
+        transition: all 0.15s ease;
+    }
+
+    .score-option span:hover {
+        border-color: #2563eb;
+        color: #2563eb;
+    }
+
+    .score-option input:checked + span {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white;
+    }
+
+    .score-option input:focus-visible + span {
+        outline: 2px solid #93c5fd;
+        outline-offset: 2px;
+    }
+
+    .score-summary {
+        margin-top: 30px;
+        padding: 25px;
+        border-radius: 14px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .score-total {
+        font-size: 28px;
+        font-weight: 800;
+        color: #1d4ed8;
+    }
+
+    .save-button {
+        border: none;
+        border-radius: 10px;
+        padding: 13px 22px;
+
+        background: #2563eb;
+        color: white;
+
+        font-size: 15px;
+        font-weight: 700;
+
+        cursor: pointer;
+    }
+
+    .save-button:hover {
+        background: #1d4ed8;
+    }
+
+    .save-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .message {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 10px;
+        display: none;
+    }
+
+    .message.success {
+        display: block;
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .message.error {
+        display: block;
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 50px 20px;
+    }
+
+</style>
+
+</head><body><!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <div class="logo">
+            🩺 Medical Learning Hub
         </div>
 
-    </nav>
+        <div class="nav-links">
 
-
-
-    <!-- CONTENT -->
-
-    <section class="osce-detail-section">
-
-        <div class="osce-detail-container">
-
-
-            <a
-                href="osce.html"
-                class="back-link"
-            >
-                ← Kembali ke OSCE
+            <a href="index.html">
+                Home
             </a>
 
+            <a href="materi/index.html">
+                Materi
+            </a>
 
-            <!-- STATION -->
+            <a href="quiz.html">
+                Quiz
+            </a>
 
-            <div
-                id="station-container"
-                class="loading"
-            >
+            <a href="banksoal.html">
+                Bank Soal
+            </a>
 
-                Memuat station OSCE...
-
-            </div>
-
-
-            <!-- CHECKLIST -->
-
-            <div
-                id="checklist-container"
-            >
-
-            </div>
-
-
-            <!-- MESSAGE -->
-
-            <div
-                id="message"
-                class="message"
-            >
-
-            </div>
+            <a href="osce.html">
+                OSCE
+            </a>
 
         </div>
 
-    </section>
+    </div>
+
+</nav>
 
 
 
-    <!-- FOOTER -->
+<!-- CONTENT -->
 
-    <footer>
+<section class="osce-detail-section">
 
-        <h3>
-            🩺 Medical Learning Hub
-        </h3>
-
-        <p>
-            Platform pembelajaran medis.
-        </p>
-
-        <p class="copyright">
-            © 2026 Medical Learning Hub
-        </p>
-
-    </footer>
+    <div class="osce-detail-container">
 
 
+        <a
+            href="osce.html"
+            class="back-link"
+        >
+            ← Kembali ke OSCE
+        </a>
+
+
+        <!-- STATION -->
+
+        <div
+            id="station-container"
+            class="loading"
+        >
+
+            Memuat station OSCE...
+
+        </div>
+
+
+        <!-- CHECKLIST -->
+
+        <div
+            id="checklist-container"
+        >
+
+        </div>
+
+
+        <!-- MESSAGE -->
+
+        <div
+            id="message"
+            class="message"
+        >
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <h3>
+        🩺 Medical Learning Hub
+    </h3>
+
+    <p>
+        Platform pembelajaran medis.
+    </p>
+
+    <p class="copyright">
+        © 2026 Medical Learning Hub
+    </p>
+
+</footer>
 
 <script>
 
@@ -830,9 +817,11 @@ async function saveResult() {
         "";
 
 
-    /* CHECK LOGIN */
+    /* =====================================
+       GET CURRENT USER
+    ===================================== */
 
-    const {
+    let {
         data: {
             user
         }
@@ -840,20 +829,47 @@ async function saveResult() {
         await supabaseClient.auth.getUser();
 
 
+
+    /* =====================================
+       CREATE ANONYMOUS USER IF NEEDED
+    ===================================== */
+
     if (!user) {
 
-        showMessage(
-            "error",
-            "Silakan login terlebih dahulu untuk menyimpan hasil OSCE."
-        );
+        const {
+            data: anonymousData,
+            error: anonymousError
+        } =
+            await supabaseClient.auth.signInAnonymously();
 
-        return;
+
+        if (anonymousError) {
+
+            console.error(
+                "Anonymous sign-in error:",
+                anonymousError
+            );
+
+            showMessage(
+                "error",
+                "Hasil belum dapat disimpan. Pastikan Anonymous Sign-In sudah diaktifkan di Supabase."
+            );
+
+            return;
+
+        }
+
+
+        user =
+            anonymousData.user;
 
     }
 
 
 
-    /* CHECK ALL SCORES */
+    /* =====================================
+       CHECK ALL SCORES
+    ===================================== */
 
     const scores = [];
 
@@ -872,7 +888,7 @@ async function saveResult() {
 
             showMessage(
                 "error",
-                `Silakan isi skor untuk semua checklist terlebih dahulu.`
+                "Silakan isi skor untuk semua checklist terlebih dahulu."
             );
 
             return;
@@ -881,7 +897,9 @@ async function saveResult() {
 
 
         const score =
-            Number(selected.value);
+            Number(
+                selected.value
+            );
 
 
         scores.push({
@@ -901,12 +919,18 @@ async function saveResult() {
 
 
 
+    /* =====================================
+       MAX SCORE
+    ===================================== */
+
     const maxScore =
         checklist.length * 3;
 
 
 
-    /* DISABLE BUTTON */
+    /* =====================================
+       DISABLE BUTTON
+    ===================================== */
 
     const saveButton =
         document.getElementById(
@@ -921,7 +945,9 @@ async function saveResult() {
 
 
 
-    /* CREATE ATTEMPT */
+    /* =====================================
+       CREATE ATTEMPT
+    ===================================== */
 
     const {
         data: attempt,
@@ -955,6 +981,7 @@ async function saveResult() {
     if (attemptError) {
 
         console.error(
+            "Attempt error:",
             attemptError
         );
 
@@ -974,7 +1001,9 @@ async function saveResult() {
 
 
 
-    /* CREATE SCORES */
+    /* =====================================
+       CREATE SCORES
+    ===================================== */
 
     const scoreRows =
         scores.map(score => ({
@@ -998,12 +1027,15 @@ async function saveResult() {
 
             .from("osce_scores")
 
-            .insert(scoreRows);
+            .insert(
+                scoreRows
+            );
 
 
     if (scoreError) {
 
         console.error(
+            "Score error:",
             scoreError
         );
 
@@ -1023,7 +1055,9 @@ async function saveResult() {
 
 
 
-    /* SUCCESS */
+    /* =====================================
+       SUCCESS
+    ===================================== */
 
     showMessage(
         "success",
@@ -1066,8 +1100,4 @@ function showMessage(
 loadStation();
 
 
-</script>
-
-</body>
-
-</html>
+</script></body></html>
