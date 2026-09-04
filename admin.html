@@ -121,6 +121,12 @@
       line-height: 1.5;
     }
 
+    .batch-area {
+      min-height: 260px;
+      font-family: monospace;
+      line-height: 1.5;
+    }
+
     .btn-primary {
       background: #2563eb;
       color: white;
@@ -269,10 +275,46 @@
       line-height: 1.5;
     }
 
+    .success-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
     .two-column {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
+    }
+
+    .four-column {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .batch-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 15px;
+      background: #f8fafc;
+    }
+
+    .batch-card h4 {
+      margin: 0 0 8px;
+      color: #0f172a;
+    }
+
+    .batch-status {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 8px;
     }
 
     .stats {
@@ -302,6 +344,12 @@
       margin-top: 4px;
     }
 
+    @media (max-width: 900px) {
+      .four-column {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
     @media (max-width: 700px) {
       header {
         align-items: flex-start;
@@ -309,6 +357,10 @@
       }
 
       .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .four-column {
         grid-template-columns: 1fr;
       }
 
@@ -354,6 +406,7 @@
 
     <div class="form-group">
       <label for="categoryName">Nama Blok</label>
+
       <input
         type="text"
         id="categoryName"
@@ -363,6 +416,7 @@
 
     <div class="form-group">
       <label for="categoryDescription">Deskripsi</label>
+
       <textarea
         id="categoryDescription"
         placeholder="Deskripsi singkat blok..."
@@ -403,7 +457,8 @@
     </p>
 
     <div class="form-group">
-      <label for="formTitle">Judul Materi</label>
+      <label for="title">Judul Materi</label>
+
       <input
         type="text"
         id="title"
@@ -415,6 +470,7 @@
 
       <div class="form-group">
         <label for="subject">Mata Kuliah</label>
+
         <input
           type="text"
           id="subject"
@@ -424,6 +480,7 @@
 
       <div class="form-group">
         <label for="semester">Semester</label>
+
         <input
           type="text"
           id="semester"
@@ -435,6 +492,7 @@
 
     <div class="form-group">
       <label for="topic">Topik</label>
+
       <input
         type="text"
         id="topic"
@@ -444,6 +502,7 @@
 
     <div class="form-group">
       <label for="category">Blok / Kategori</label>
+
       <select id="category">
         <option value="">Pilih kategori</option>
       </select>
@@ -451,6 +510,7 @@
 
     <div class="form-group">
       <label for="description">Deskripsi</label>
+
       <textarea
         id="description"
         placeholder="Deskripsi singkat materi..."
@@ -459,6 +519,7 @@
 
     <div class="form-group">
       <label for="content">Isi Materi</label>
+
       <textarea
         id="content"
         class="content-area"
@@ -524,13 +585,11 @@
       <label for="resourceType">Jenis</label>
 
       <select id="resourceType">
-
         <option value="PDF">PDF</option>
         <option value="Video">Video</option>
         <option value="Website">Website</option>
         <option value="Artikel">Artikel</option>
         <option value="Buku">Buku</option>
-
       </select>
     </div>
 
@@ -574,23 +633,333 @@
     <h2>🧠 Kelola CBT</h2>
 
     <p class="description">
-      Import ujian CBT beserta seluruh soal dan pilihan jawaban
-      menggunakan JSON yang dibuat oleh AI.
+      Buat CBT dengan memasukkan soal dari AI dalam format JSON.
+      Untuk CBT besar, gunakan sistem 4 batch agar tidak terbentur
+      batas panjang output AI.
     </p>
+
+
+    <!-- =======================================================
+         CBT BATCH
+    ======================================================== -->
+
+    <div class="success-box">
+
+      <strong>🚀 Sistem CBT 4 Batch</strong><br><br>
+
+      Buat soal menggunakan AI dengan pembagian:<br>
+
+      • Batch 1 → Soal 1–25<br>
+      • Batch 2 → Soal 26–50<br>
+      • Batch 3 → Soal 51–75<br>
+      • Batch 4 → Soal 76–100<br><br>
+
+      Setelah keempat JSON ditempel, sistem akan otomatis
+      menggabungkannya menjadi <strong>1 CBT dengan 100 soal</strong>.
+
+    </div>
+
+
+    <h3>Informasi CBT</h3>
+
+    <div class="form-group">
+
+      <label for="batchTitle">
+        Judul CBT
+      </label>
+
+      <input
+        type="text"
+        id="batchTitle"
+        placeholder="Contoh: CBT Anatomi THT"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label for="batchDescription">
+        Deskripsi CBT
+      </label>
+
+      <textarea
+        id="batchDescription"
+        placeholder="Contoh: CBT Anatomi THT untuk mahasiswa kedokteran."
+      ></textarea>
+
+    </div>
+
+
+    <div class="two-column">
+
+      <div class="form-group">
+
+        <label for="batchCategory">
+          Kategori
+        </label>
+
+        <select id="batchCategory">
+
+          <option value="">
+            Pilih kategori
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="batchDuration">
+          Durasi (menit)
+        </label>
+
+        <input
+          type="number"
+          id="batchDuration"
+          min="1"
+          value="100"
+        >
+
+      </div>
+
+    </div>
+
+
+    <h3>Paste JSON Batch</h3>
 
     <div class="info-box">
 
-      <strong>Alur penggunaan:</strong><br>
+      <strong>Format setiap batch harus seperti ini:</strong>
 
-      1. Generate soal menggunakan AI.<br>
-      2. Minta AI menghasilkan format JSON sesuai template di bawah.<br>
-      3. Copy seluruh JSON.<br>
-      4. Paste ke kotak JSON di bawah.<br>
-      5. Klik <strong>Import CBT</strong>.<br>
-      6. Sistem akan menyimpan ujian, soal, pilihan, dan kunci jawaban
-      ke Supabase.
+      <div class="json-example">{
+  "batch": 1,
+  "start_question": 1,
+  "end_question": 25,
+  "questions": [
+    {
+      "question": "Pertanyaan...",
+      "options": [
+        "Pilihan A",
+        "Pilihan B",
+        "Pilihan C",
+        "Pilihan D",
+        "Pilihan E"
+      ],
+      "answer": 2,
+      "explanation": "Penjelasan..."
+    }
+  ]
+}</div>
 
     </div>
+
+
+    <div class="four-column">
+
+      <!-- BATCH 1 -->
+
+      <div class="batch-card">
+
+        <h4>🟦 Batch 1</h4>
+
+        <div class="batch-status">
+          Soal 1–25
+        </div>
+
+        <textarea
+          id="batch1Json"
+          class="batch-area"
+          placeholder="Paste JSON Batch 1 di sini..."
+        ></textarea>
+
+        <div
+          id="batch1Status"
+          class="batch-status"
+        >
+          Belum diperiksa
+        </div>
+
+      </div>
+
+
+      <!-- BATCH 2 -->
+
+      <div class="batch-card">
+
+        <h4>🟩 Batch 2</h4>
+
+        <div class="batch-status">
+          Soal 26–50
+        </div>
+
+        <textarea
+          id="batch2Json"
+          class="batch-area"
+          placeholder="Paste JSON Batch 2 di sini..."
+        ></textarea>
+
+        <div
+          id="batch2Status"
+          class="batch-status"
+        >
+          Belum diperiksa
+        </div>
+
+      </div>
+
+
+      <!-- BATCH 3 -->
+
+      <div class="batch-card">
+
+        <h4>🟨 Batch 3</h4>
+
+        <div class="batch-status">
+          Soal 51–75
+        </div>
+
+        <textarea
+          id="batch3Json"
+          class="batch-area"
+          placeholder="Paste JSON Batch 3 di sini..."
+        ></textarea>
+
+        <div
+          id="batch3Status"
+          class="batch-status"
+        >
+          Belum diperiksa
+        </div>
+
+      </div>
+
+
+      <!-- BATCH 4 -->
+
+      <div class="batch-card">
+
+        <h4>🟥 Batch 4</h4>
+
+        <div class="batch-status">
+          Soal 76–100
+        </div>
+
+        <textarea
+          id="batch4Json"
+          class="batch-area"
+          placeholder="Paste JSON Batch 4 di sini..."
+        ></textarea>
+
+        <div
+          id="batch4Status"
+          class="batch-status"
+        >
+          Belum diperiksa
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="stats">
+
+      <div class="stat">
+
+        <div
+          id="batchCount"
+          class="stat-number"
+        >
+          0/4
+        </div>
+
+        <div class="stat-label">
+          Batch valid
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div
+          id="questionCount"
+          class="stat-number"
+        >
+          0/100
+        </div>
+
+        <div class="stat-label">
+          Total soal
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div
+          id="duplicateCount"
+          class="stat-number"
+        >
+          0
+        </div>
+
+        <div class="stat-label">
+          Duplikasi
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="button-row">
+
+      <button
+        class="btn-primary"
+        onclick="validateAllBatches()"
+      >
+        🔍 Validasi Semua Batch
+      </button>
+
+      <button
+        class="btn-success"
+        onclick="importBatchCBT()"
+      >
+        🚀 Gabungkan & Import 100 Soal
+      </button>
+
+      <button
+        class="btn-secondary"
+        onclick="clearBatchForm()"
+      >
+        Bersihkan Batch
+      </button>
+
+    </div>
+
+
+    <div
+      id="batchMessage"
+      class="message"
+    ></div>
+
+
+    <!-- =======================================================
+         IMPORT CBT LAMA
+    ======================================================== -->
+
+    <h3>Import CBT Tunggal</h3>
+
+    <p class="description">
+      Fitur ini tetap dipertahankan untuk CBT yang dibuat dalam
+      satu JSON. Gunakan sistem batch untuk CBT besar seperti
+      100 soal.
+    </p>
 
 
     <div class="warning-box">
@@ -604,7 +973,7 @@
     </div>
 
 
-    <h3>Format JSON</h3>
+    <h3>Format JSON CBT Tunggal</h3>
 
     <div class="json-example">{
   "title": "Ujian Anatomi THT",
@@ -627,12 +996,10 @@
 }</div>
 
 
-    <h3>Import JSON CBT</h3>
-
     <div class="form-group">
 
       <label for="cbtJson">
-        Paste JSON dari AI
+        Paste JSON CBT
       </label>
 
       <textarea
@@ -663,15 +1030,20 @@
     </div>
 
 
-    <div id="cbtMessage" class="message"></div>
+    <div
+      id="cbtMessage"
+      class="message"
+    ></div>
 
 
     <h3>Daftar CBT</h3>
 
     <div id="cbtList">
+
       <div class="empty">
         Memuat CBT...
       </div>
+
     </div>
 
   </div>
@@ -686,9 +1058,11 @@
     <h2>📖 Daftar Referensi</h2>
 
     <div id="resources">
+
       <div class="empty">
         Memuat referensi...
       </div>
+
     </div>
 
   </div>
@@ -703,9 +1077,11 @@
     <h2>📚 Daftar Materi</h2>
 
     <div id="materials">
+
       <div class="empty">
         Memuat materi...
       </div>
+
     </div>
 
   </div>
@@ -741,7 +1117,10 @@
 
   function escapeHtml(value) {
 
-    if (value === null || value === undefined) {
+    if (
+      value === null ||
+      value === undefined
+    ) {
       return "";
     }
 
@@ -751,6 +1130,7 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+
   }
 
 
@@ -768,11 +1148,14 @@
   ) {
 
     const element =
-      document.getElementById(elementId);
+      document.getElementById(
+        elementId
+      );
 
     if (!element) return;
 
-    element.textContent = message;
+    element.textContent =
+      message;
 
     element.className =
       "message " + type;
@@ -794,13 +1177,17 @@
     } = await supabaseClient.auth.getUser();
 
 
-    if (error || !user) {
+    if (
+      error ||
+      !user
+    ) {
 
       alert(
         "Anda belum login sebagai admin."
       );
 
-      window.location.href = "login.html";
+      window.location.href =
+        "login.html";
 
       return false;
 
@@ -827,7 +1214,8 @@
         "Akses ditolak. Halaman ini hanya untuk admin."
       );
 
-      window.location.href = "index.html";
+      window.location.href =
+        "index.html";
 
       return false;
 
@@ -876,7 +1264,10 @@
       );
 
 
-    if (!data || data.length === 0) {
+    if (
+      !data ||
+      data.length === 0
+    ) {
 
       categoryList.innerHTML =
         '<div class="empty">Belum ada kategori.</div>';
@@ -893,7 +1284,10 @@
             </div>
 
             <div class="item-description">
-              ${escapeHtml(category.description || "Tidak ada deskripsi.")}
+              ${escapeHtml(
+                category.description ||
+                "Tidak ada deskripsi."
+              )}
             </div>
 
             <button
@@ -910,12 +1304,20 @@
     }
 
 
-    populateCategorySelect(data);
+    populateCategorySelect(
+      data
+    );
+
+    populateBatchCategorySelect(
+      data
+    );
 
   }
 
 
-  function populateCategorySelect(categories) {
+  function populateCategorySelect(
+    categories
+  ) {
 
     const select =
       document.getElementById(
@@ -927,20 +1329,64 @@
       '<option value="">Pilih kategori</option>';
 
 
-    categories.forEach(category => {
+    categories.forEach(
+      category => {
 
-      const option =
-        document.createElement("option");
+        const option =
+          document.createElement(
+            "option"
+          );
 
-      option.value =
-        category.id;
+        option.value =
+          category.id;
 
-      option.textContent =
-        category.name;
+        option.textContent =
+          category.name;
 
-      select.appendChild(option);
+        select.appendChild(
+          option
+        );
 
-    });
+      }
+    );
+
+  }
+
+
+  function populateBatchCategorySelect(
+    categories
+  ) {
+
+    const select =
+      document.getElementById(
+        "batchCategory"
+      );
+
+
+    select.innerHTML =
+      '<option value="">Pilih kategori</option>';
+
+
+    categories.forEach(
+      category => {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          category.id;
+
+        option.textContent =
+          category.name;
+
+        select.appendChild(
+          option
+        );
+
+      }
+    );
 
   }
 
@@ -1001,6 +1447,7 @@
     document.getElementById(
       "categoryName"
     ).value = "";
+
 
     document.getElementById(
       "categoryDescription"
@@ -1097,7 +1544,10 @@
       );
 
 
-    if (!data || data.length === 0) {
+    if (
+      !data ||
+      data.length === 0
+    ) {
 
       container.innerHTML =
         '<div class="empty">Belum ada materi.</div>';
@@ -1113,25 +1563,38 @@
         <div class="item">
 
           <div class="item-title">
-            ${escapeHtml(material.title)}
+            ${escapeHtml(
+              material.title
+            )}
           </div>
 
           <div class="item-meta">
 
-            ${escapeHtml(material.subject || "-")}
-            •
-            ${escapeHtml(material.semester || "-")}
-            •
             ${escapeHtml(
-              material.categories?.name || "Tanpa kategori"
+              material.subject || "-"
+            )}
+
+            •
+
+            ${escapeHtml(
+              material.semester || "-"
+            )}
+
+            •
+
+            ${escapeHtml(
+              material.categories?.name ||
+              "Tanpa kategori"
             )}
 
           </div>
 
           <div class="item-description">
+
             ${escapeHtml(
               material.description || ""
             )}
+
           </div>
 
           <div class="button-row">
@@ -1222,12 +1685,17 @@
       subject,
       semester,
       topic,
-      category_id: categoryId
-        ? Number(categoryId)
-        : null,
+
+      category_id:
+        categoryId
+          ? Number(categoryId)
+          : null,
+
       description,
       content,
-      status: "published"
+
+      status:
+        "published"
 
     };
 
@@ -1242,7 +1710,10 @@
       } = await supabaseClient
         .from("materials")
         .update(materialData)
-        .eq("id", editingId));
+        .eq(
+          "id",
+          editingId
+        ));
 
     } else {
 
@@ -1250,7 +1721,9 @@
         error
       } = await supabaseClient
         .from("materials")
-        .insert(materialData));
+        .insert(
+          materialData
+        ));
 
     }
 
@@ -1297,11 +1770,17 @@
     } = await supabaseClient
       .from("materials")
       .select("*")
-      .eq("id", id)
+      .eq(
+        "id",
+        id
+      )
       .single();
 
 
-    if (error || !data) {
+    if (
+      error ||
+      !data
+    ) {
 
       alert(
         "Gagal mengambil data materi."
@@ -1312,7 +1791,8 @@
     }
 
 
-    editingId = id;
+    editingId =
+      id;
 
 
     document.getElementById(
@@ -1388,7 +1868,10 @@
     } = await supabaseClient
       .from("materials")
       .delete()
-      .eq("id", id);
+      .eq(
+        "id",
+        id
+      );
 
 
     if (error) {
@@ -1414,7 +1897,8 @@
 
   function clearForm() {
 
-    editingId = null;
+    editingId =
+      null;
 
 
     document.getElementById(
@@ -1457,7 +1941,6 @@
     ).className =
       "message";
 
-
   }
 
 
@@ -1472,10 +1955,15 @@
       error
     } = await supabaseClient
       .from("materials")
-      .select("id, title")
-      .order("title", {
-        ascending: true
-      });
+      .select(
+        "id, title"
+      )
+      .order(
+        "title",
+        {
+          ascending: true
+        }
+      );
 
 
     if (error) {
@@ -1497,20 +1985,26 @@
       '<option value="">Pilih materi</option>';
 
 
-    data.forEach(material => {
+    data.forEach(
+      material => {
 
-      const option =
-        document.createElement("option");
+        const option =
+          document.createElement(
+            "option"
+          );
 
-      option.value =
-        material.id;
+        option.value =
+          material.id;
 
-      option.textContent =
-        material.title;
+        option.textContent =
+          material.title;
 
-      select.appendChild(option);
+        select.appendChild(
+          option
+        );
 
-    });
+      }
+    );
 
   }
 
@@ -1596,7 +2090,9 @@
         description,
         type,
         url,
-        material_id: Number(materialId)
+
+        material_id:
+          Number(materialId)
 
       });
 
@@ -1657,9 +2153,12 @@
           title
         )
       `)
-      .order("created_at", {
-        ascending: false
-      });
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
 
     if (error) {
@@ -1682,7 +2181,10 @@
       );
 
 
-    if (!data || data.length === 0) {
+    if (
+      !data ||
+      data.length === 0
+    ) {
 
       container.innerHTML =
         '<div class="empty">Belum ada referensi.</div>';
@@ -1698,13 +2200,21 @@
         <div class="item">
 
           <div class="item-title">
-            ${escapeHtml(resource.title)}
+
+            ${escapeHtml(
+              resource.title
+            )}
+
           </div>
 
           <div class="item-meta">
 
-            ${escapeHtml(resource.type)}
+            ${escapeHtml(
+              resource.type
+            )}
+
             •
+
             ${escapeHtml(
               resource.materials?.title ||
               "Tanpa materi"
@@ -1713,24 +2223,30 @@
           </div>
 
           <div class="item-description">
+
             ${escapeHtml(
               resource.description || ""
             )}
+
           </div>
 
           <div class="button-row">
 
             <a
-              href="${escapeAttribute(resource.url || "#")}"
+              href="${escapeAttribute(
+                resource.url || "#"
+              )}"
               target="_blank"
               rel="noopener noreferrer"
             >
+
               <button
                 class="btn-primary"
                 type="button"
               >
                 Buka
               </button>
+
             </a>
 
             <button
@@ -1765,7 +2281,10 @@
     } = await supabaseClient
       .from("resources")
       .delete()
-      .eq("id", id);
+      .eq(
+        "id",
+        id
+      );
 
 
     if (error) {
@@ -1786,7 +2305,7 @@
 
 
   /* ============================================================
-     CBT
+     CBT - SINGLE JSON
   ============================================================ */
 
   function clearCBTForm() {
@@ -1806,7 +2325,10 @@
 
   function validateCBTJson(data) {
 
-    if (!data || typeof data !== "object") {
+    if (
+      !data ||
+      typeof data !== "object"
+    ) {
 
       throw new Error(
         "JSON tidak valid atau kosong."
@@ -1840,7 +2362,9 @@
 
 
     if (
-      !Array.isArray(data.questions) ||
+      !Array.isArray(
+        data.questions
+      ) ||
       data.questions.length === 0
     ) {
 
@@ -1855,9 +2379,13 @@
       data.duration_minutes !== undefined &&
       (
         !Number.isInteger(
-          Number(data.duration_minutes)
+          Number(
+            data.duration_minutes
+          )
         ) ||
-        Number(data.duration_minutes) <= 0
+        Number(
+          data.duration_minutes
+        ) <= 0
       )
     ) {
 
@@ -1875,63 +2403,10 @@
           index + 1;
 
 
-        if (
-          !item.question ||
-          typeof item.question !== "string"
-        ) {
-
-          throw new Error(
-            `Soal nomor ${number}: field 'question' wajib diisi.`
-          );
-
-        }
-
-
-        if (
-          !Array.isArray(item.options) ||
-          item.options.length < 2
-        ) {
-
-          throw new Error(
-            `Soal nomor ${number}: minimal harus memiliki 2 pilihan jawaban.`
-          );
-
-        }
-
-
-        item.options.forEach(
-          (option, optionIndex) => {
-
-            if (
-              typeof option !== "string" ||
-              !option.trim()
-            ) {
-
-              throw new Error(
-                `Soal nomor ${number}: pilihan nomor ${optionIndex + 1} kosong.`
-              );
-
-            }
-
-          }
+        validateQuestionItem(
+          item,
+          number
         );
-
-
-        const answer =
-          Number(item.answer);
-
-
-        if (
-          !Number.isInteger(answer) ||
-          answer < 1 ||
-          answer > item.options.length
-        ) {
-
-          throw new Error(
-            `Soal nomor ${number}: 'answer' harus antara 1 dan ${item.options.length}.`
-          );
-
-        }
 
       }
     );
@@ -1942,14 +2417,103 @@
   }
 
 
-  async function findCategoryId(categoryName) {
+  function validateQuestionItem(
+    item,
+    displayNumber
+  ) {
+
+    if (
+      !item ||
+      typeof item !== "object"
+    ) {
+
+      throw new Error(
+        `Soal nomor ${displayNumber} tidak valid.`
+      );
+
+    }
+
+
+    if (
+      !item.question ||
+      typeof item.question !== "string"
+    ) {
+
+      throw new Error(
+        `Soal nomor ${displayNumber}: field 'question' wajib diisi.`
+      );
+
+    }
+
+
+    if (
+      !Array.isArray(
+        item.options
+      ) ||
+      item.options.length < 2
+    ) {
+
+      throw new Error(
+        `Soal nomor ${displayNumber}: minimal harus memiliki 2 pilihan jawaban.`
+      );
+
+    }
+
+
+    item.options.forEach(
+      (
+        option,
+        optionIndex
+      ) => {
+
+        if (
+          typeof option !== "string" ||
+          !option.trim()
+        ) {
+
+          throw new Error(
+            `Soal nomor ${displayNumber}: pilihan nomor ${optionIndex + 1} kosong.`
+          );
+
+        }
+
+      }
+    );
+
+
+    const answer =
+      Number(
+        item.answer
+      );
+
+
+    if (
+      !Number.isInteger(answer) ||
+      answer < 1 ||
+      answer > item.options.length
+    ) {
+
+      throw new Error(
+        `Soal nomor ${displayNumber}: 'answer' harus antara 1 dan ${item.options.length}.`
+      );
+
+    }
+
+  }
+
+
+  async function findCategoryId(
+    categoryName
+  ) {
 
     const {
       data,
       error
     } = await supabaseClient
       .from("categories")
-      .select("id, name");
+      .select(
+        "id, name"
+      );
 
 
     if (error) {
@@ -1973,14 +2537,15 @@
         item =>
           item.name
             .trim()
-            .toLowerCase() === normalized
+            .toLowerCase() ===
+          normalized
       );
 
 
     if (!category) {
 
       throw new Error(
-        `Kategori "${categoryName}" tidak ditemukan. Tambahkan kategori tersebut terlebih dahulu di bagian Kelola Blok Materi.`
+        `Kategori "${categoryName}" tidak ditemukan. Tambahkan kategori tersebut terlebih dahulu.`
       );
 
     }
@@ -2041,7 +2606,9 @@
 
     try {
 
-      validateCBTJson(data);
+      validateCBTJson(
+        data
+      );
 
 
       showMessage(
@@ -2059,14 +2626,11 @@
 
       const duration =
         data.duration_minutes
-          ? Number(data.duration_minutes)
+          ? Number(
+              data.duration_minutes
+            )
           : 60;
 
-
-      /*
-       * Status default dibuat draft.
-       * CBT belum langsung terbuka untuk mahasiswa.
-       */
 
       const {
         data: quiz,
@@ -2079,7 +2643,8 @@
             data.title.trim(),
 
           description:
-            data.description || null,
+            data.description ||
+            null,
 
           category_id:
             categoryId,
@@ -2107,12 +2672,6 @@
 
       try {
 
-        /*
-         * Insert semua soal satu per satu
-         * agar kita dapat menghubungkan question_id
-         * dengan options.
-         */
-
         for (
           let i = 0;
           i < data.questions.length;
@@ -2137,7 +2696,8 @@
                 item.question.trim(),
 
               explanation:
-                item.explanation || null
+                item.explanation ||
+                null
 
             })
             .select()
@@ -2154,12 +2714,17 @@
 
 
           const answer =
-            Number(item.answer);
+            Number(
+              item.answer
+            );
 
 
           const options =
             item.options.map(
-              (optionText, optionIndex) => ({
+              (
+                optionText,
+                optionIndex
+              ) => ({
 
                 question_id:
                   question.id,
@@ -2168,7 +2733,8 @@
                   optionText.trim(),
 
                 is_correct:
-                  optionIndex + 1 === answer
+                  optionIndex + 1 ===
+                  answer
 
               })
             );
@@ -2178,7 +2744,9 @@
             error: optionError
           } = await supabaseClient
             .from("quiz_options")
-            .insert(options);
+            .insert(
+              options
+            );
 
 
           if (optionError) {
@@ -2191,22 +2759,17 @@
 
         }
 
-
-      } catch (importError) {
-
-        /*
-         * Jika terjadi kegagalan saat menyimpan soal,
-         * hapus quiz utama.
-         *
-         * Karena quiz_questions menggunakan
-         * ON DELETE CASCADE, soal dan opsi
-         * akan ikut dibersihkan.
-         */
+      } catch (
+        importError
+      ) {
 
         await supabaseClient
           .from("quizzes")
           .delete()
-          .eq("id", quiz.id);
+          .eq(
+            "id",
+            quiz.id
+          );
 
 
         throw importError;
@@ -2222,7 +2785,6 @@
 
 
       clearCBTForm();
-
 
       loadCBTs();
 
@@ -2243,6 +2805,897 @@
   }
 
 
+  /* ============================================================
+     CBT - BATCH SYSTEM
+  ============================================================ */
+
+  function getBatchConfig(
+    batchNumber
+  ) {
+
+    const configs = {
+
+      1: {
+        textarea: "batch1Json",
+        status: "batch1Status",
+        start: 1,
+        end: 25
+      },
+
+      2: {
+        textarea: "batch2Json",
+        status: "batch2Status",
+        start: 26,
+        end: 50
+      },
+
+      3: {
+        textarea: "batch3Json",
+        status: "batch3Status",
+        start: 51,
+        end: 75
+      },
+
+      4: {
+        textarea: "batch4Json",
+        status: "batch4Status",
+        start: 76,
+        end: 100
+      }
+
+    };
+
+
+    return configs[
+      batchNumber
+    ];
+
+  }
+
+
+  function parseBatch(
+    batchNumber
+  ) {
+
+    const config =
+      getBatchConfig(
+        batchNumber
+      );
+
+
+    const raw =
+      document.getElementById(
+        config.textarea
+      ).value.trim();
+
+
+    if (!raw) {
+
+      throw new Error(
+        `Batch ${batchNumber} masih kosong.`
+      );
+
+    }
+
+
+    let data;
+
+
+    try {
+
+      data =
+        JSON.parse(raw);
+
+    } catch (error) {
+
+      throw new Error(
+        `Batch ${batchNumber}: JSON tidak valid.`
+      );
+
+    }
+
+
+    if (
+      !data ||
+      typeof data !== "object"
+    ) {
+
+      throw new Error(
+        `Batch ${batchNumber}: format JSON tidak valid.`
+      );
+
+    }
+
+
+    if (
+      Number(
+        data.batch
+      ) !== batchNumber
+    ) {
+
+      throw new Error(
+        `Batch ${batchNumber}: field 'batch' harus bernilai ${batchNumber}.`
+      );
+
+    }
+
+
+    if (
+      Number(
+        data.start_question
+      ) !== config.start
+    ) {
+
+      throw new Error(
+        `Batch ${batchNumber}: 'start_question' harus ${config.start}.`
+      );
+
+    }
+
+
+    if (
+      Number(
+        data.end_question
+      ) !== config.end
+    ) {
+
+      throw new Error(
+        `Batch ${batchNumber}: 'end_question' harus ${config.end}.`
+      );
+
+    }
+
+
+    if (
+      !Array.isArray(
+        data.questions
+      )
+    ) {
+
+      throw new Error(
+        `Batch ${batchNumber}: field 'questions' harus berupa array.`
+      );
+
+    }
+
+
+    if (
+      data.questions.length !== 25
+    ) {
+
+      throw new Error(
+        `Batch ${batchNumber}: harus tepat 25 soal, tetapi ditemukan ${data.questions.length} soal.`
+      );
+
+    }
+
+
+    data.questions.forEach(
+      (
+        item,
+        index
+      ) => {
+
+        const actualNumber =
+          config.start +
+          index;
+
+
+        validateQuestionItem(
+          item,
+          actualNumber
+        );
+
+      }
+    );
+
+
+    return data;
+
+  }
+
+
+  function updateBatchStatus(
+    batchNumber,
+    message,
+    success = false
+  ) {
+
+    const config =
+      getBatchConfig(
+        batchNumber
+      );
+
+
+    const element =
+      document.getElementById(
+        config.status
+      );
+
+
+    if (!element) return;
+
+
+    element.textContent =
+      message;
+
+
+    element.style.color =
+      success
+        ? "#166534"
+        : "#991b1b";
+
+  }
+
+
+  function resetBatchStats() {
+
+    document.getElementById(
+      "batchCount"
+    ).textContent =
+      "0/4";
+
+
+    document.getElementById(
+      "questionCount"
+    ).textContent =
+      "0/100";
+
+
+    document.getElementById(
+      "duplicateCount"
+    ).textContent =
+      "0";
+
+  }
+
+
+  function normalizeQuestion(
+    question
+  ) {
+
+    return String(
+      question
+    )
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
+
+  }
+
+
+  function findDuplicateQuestions(
+    batches
+  ) {
+
+    const seen =
+      new Map();
+
+
+    const duplicates =
+      [];
+
+
+    batches.forEach(
+      (
+        batch,
+        batchIndex
+      ) => {
+
+        batch.questions.forEach(
+          (
+            item,
+            questionIndex
+          ) => {
+
+            const key =
+              normalizeQuestion(
+                item.question
+              );
+
+
+            const number =
+              getBatchConfig(
+                batchIndex + 1
+              ).start +
+              questionIndex;
+
+
+            if (
+              seen.has(key)
+            ) {
+
+              duplicates.push({
+                question: item.question,
+                first: seen.get(key),
+                duplicate: number
+              });
+
+            } else {
+
+              seen.set(
+                key,
+                number
+              );
+
+            }
+
+          }
+        );
+
+      }
+    );
+
+
+    return duplicates;
+
+  }
+
+
+  function validateAllBatches() {
+
+    try {
+
+      const batches =
+        [];
+
+
+      for (
+        let i = 1;
+        i <= 4;
+        i++
+      ) {
+
+        const data =
+          parseBatch(
+            i
+          );
+
+
+        batches.push(
+          data
+        );
+
+
+        updateBatchStatus(
+          i,
+          "✓ Valid — 25 soal",
+          true
+        );
+
+      }
+
+
+      const duplicates =
+        findDuplicateQuestions(
+          batches
+        );
+
+
+      document.getElementById(
+        "batchCount"
+      ).textContent =
+        "4/4";
+
+
+      document.getElementById(
+        "questionCount"
+      ).textContent =
+        "100/100";
+
+
+      document.getElementById(
+        "duplicateCount"
+      ).textContent =
+        duplicates.length;
+
+
+      if (
+        duplicates.length > 0
+      ) {
+
+        throw new Error(
+          `Ditemukan ${duplicates.length} soal duplikat antar-batch. Periksa kembali sebelum import.`
+        );
+
+      }
+
+
+      showMessage(
+        "batchMessage",
+        "✓ Semua batch valid. 4 batch berisi tepat 100 soal dan tidak ditemukan duplikasi.",
+        "success"
+      );
+
+
+      return true;
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      showMessage(
+        "batchMessage",
+        error.message,
+        "error"
+      );
+
+
+      return false;
+
+    }
+
+  }
+
+
+  function clearBatchForm() {
+
+    document.getElementById(
+      "batchTitle"
+    ).value = "";
+
+
+    document.getElementById(
+      "batchDescription"
+    ).value = "";
+
+
+    document.getElementById(
+      "batchCategory"
+    ).value = "";
+
+
+    document.getElementById(
+      "batchDuration"
+    ).value = "100";
+
+
+    for (
+      let i = 1;
+      i <= 4;
+      i++
+    ) {
+
+      const config =
+        getBatchConfig(
+          i
+        );
+
+
+      document.getElementById(
+        config.textarea
+      ).value = "";
+
+
+      updateBatchStatus(
+        i,
+        "Belum diperiksa"
+      );
+
+    }
+
+
+    resetBatchStats();
+
+
+    document.getElementById(
+      "batchMessage"
+    ).className =
+      "message";
+
+  }
+
+
+  async function importBatchCBT() {
+
+    const title =
+      document.getElementById(
+        "batchTitle"
+      ).value.trim();
+
+
+    const description =
+      document.getElementById(
+        "batchDescription"
+      ).value.trim();
+
+
+    const categoryId =
+      document.getElementById(
+        "batchCategory"
+      ).value;
+
+
+    const duration =
+      Number(
+        document.getElementById(
+          "batchDuration"
+        ).value
+      );
+
+
+    if (!title) {
+
+      showMessage(
+        "batchMessage",
+        "Judul CBT wajib diisi.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if (!categoryId) {
+
+      showMessage(
+        "batchMessage",
+        "Kategori CBT wajib dipilih.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !Number.isInteger(
+        duration
+      ) ||
+      duration <= 0
+    ) {
+
+      showMessage(
+        "batchMessage",
+        "Durasi CBT harus berupa angka lebih dari 0.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    showMessage(
+      "batchMessage",
+      "Memvalidasi keempat batch...",
+      "info"
+    );
+
+
+    let batches;
+
+
+    try {
+
+      batches = [];
+
+
+      for (
+        let i = 1;
+        i <= 4;
+        i++
+      ) {
+
+        const data =
+          parseBatch(
+            i
+          );
+
+
+        batches.push(
+          data
+        );
+
+
+        updateBatchStatus(
+          i,
+          "✓ Valid — 25 soal",
+          true
+        );
+
+      }
+
+
+      const duplicates =
+        findDuplicateQuestions(
+          batches
+        );
+
+
+      document.getElementById(
+        "batchCount"
+      ).textContent =
+        "4/4";
+
+
+      document.getElementById(
+        "questionCount"
+      ).textContent =
+        "100/100";
+
+
+      document.getElementById(
+        "duplicateCount"
+      ).textContent =
+        duplicates.length;
+
+
+      if (
+        duplicates.length > 0
+      ) {
+
+        throw new Error(
+          `Ditemukan ${duplicates.length} soal duplikat. Import dibatalkan.`
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "batchMessage",
+        error.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const confirmed =
+      confirm(
+        `Gabungkan 4 batch menjadi CBT "${title}" dengan 100 soal?`
+      );
+
+
+    if (!confirmed) {
+
+      showMessage(
+        "batchMessage",
+        "Import dibatalkan.",
+        "info"
+      );
+
+      return;
+
+    }
+
+
+    showMessage(
+      "batchMessage",
+      "Membuat CBT dan menyimpan 100 soal...",
+      "info"
+    );
+
+
+    let quiz = null;
+
+
+    try {
+
+      /*
+       * Membuat SATU record quiz.
+       */
+
+      const {
+        data,
+        error: quizError
+      } = await supabaseClient
+        .from("quizzes")
+        .insert({
+
+          title,
+
+          description:
+            description ||
+            null,
+
+          category_id:
+            Number(
+              categoryId
+            ),
+
+          duration_minutes:
+            duration,
+
+          status:
+            "draft"
+
+        })
+        .select()
+        .single();
+
+
+      if (quizError) {
+
+        throw new Error(
+          "Gagal membuat CBT: " +
+          quizError.message
+        );
+
+      }
+
+
+      quiz =
+        data;
+
+
+      /*
+       * Gabungkan soal dari Batch 1 → 4.
+       */
+
+      const allQuestions =
+        batches.flatMap(
+          batch =>
+            batch.questions
+        );
+
+
+      if (
+        allQuestions.length !== 100
+      ) {
+
+        throw new Error(
+          `Jumlah soal setelah penggabungan tidak sesuai. Ditemukan ${allQuestions.length} soal.`
+        );
+
+      }
+
+
+      /*
+       * Insert soal satu per satu.
+       */
+
+      for (
+        let i = 0;
+        i < allQuestions.length;
+        i++
+      ) {
+
+        const item =
+          allQuestions[i];
+
+
+        const {
+          data: question,
+          error: questionError
+        } = await supabaseClient
+          .from("quiz_questions")
+          .insert({
+
+            quiz_id:
+              quiz.id,
+
+            question:
+              item.question.trim(),
+
+            explanation:
+              item.explanation ||
+              null
+
+          })
+          .select()
+          .single();
+
+
+        if (questionError) {
+
+          throw new Error(
+            `Gagal menyimpan soal nomor ${i + 1}: ${questionError.message}`
+          );
+
+        }
+
+
+        const answer =
+          Number(
+            item.answer
+          );
+
+
+        const options =
+          item.options.map(
+            (
+              optionText,
+              optionIndex
+            ) => ({
+
+              question_id:
+                question.id,
+
+              option_text:
+                optionText.trim(),
+
+              is_correct:
+                optionIndex + 1 ===
+                answer
+
+            })
+          );
+
+
+        const {
+          error: optionError
+        } = await supabaseClient
+          .from("quiz_options")
+          .insert(
+            options
+          );
+
+
+        if (optionError) {
+
+          throw new Error(
+            `Gagal menyimpan pilihan jawaban soal nomor ${i + 1}: ${optionError.message}`
+          );
+
+        }
+
+      }
+
+
+      showMessage(
+        "batchMessage",
+        `🎉 CBT "${title}" berhasil dibuat dengan 100 soal. Status awal: DRAFT.`,
+        "success"
+      );
+
+
+      clearBatchForm();
+
+      loadCBTs();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      /*
+       * Jika gagal di tengah proses,
+       * hapus quiz utama.
+       *
+       * quiz_questions menggunakan
+       * ON DELETE CASCADE sehingga
+       * soal dan opsi ikut dibersihkan.
+       */
+
+      if (quiz) {
+
+        await supabaseClient
+          .from("quizzes")
+          .delete()
+          .eq(
+            "id",
+            quiz.id
+          );
+
+      }
+
+
+      showMessage(
+        "batchMessage",
+        error.message ||
+        "Gagal mengimport CBT batch.",
+        "error"
+      );
+
+    }
+
+  }
+
+
+  /* ============================================================
+     LOAD CBT
+  ============================================================ */
+
   async function loadCBTs() {
 
     const {
@@ -2256,9 +3709,12 @@
           name
         )
       `)
-      .order("created_at", {
-        ascending: false
-      });
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
 
     const container =
@@ -2279,7 +3735,10 @@
     }
 
 
-    if (!data || data.length === 0) {
+    if (
+      !data ||
+      data.length === 0
+    ) {
 
       container.innerHTML =
         '<div class="empty">Belum ada CBT.</div>';
@@ -2290,102 +3749,111 @@
 
 
     container.innerHTML =
-      data.map(quiz => {
+      data.map(
+        quiz => {
 
-        let badgeClass =
-          "badge";
+          let badgeClass =
+            "badge";
 
 
-        if (
-          quiz.status === "published"
-        ) {
+          if (
+            quiz.status ===
+            "published"
+          ) {
 
-          badgeClass +=
-            " badge-published";
+            badgeClass +=
+              " badge-published";
 
-        } else if (
-          quiz.status === "draft"
-        ) {
+          } else if (
+            quiz.status ===
+            "draft"
+          ) {
 
-          badgeClass +=
-            " badge-draft";
+            badgeClass +=
+              " badge-draft";
 
-        } else if (
-          quiz.status === "closed"
-        ) {
+          } else if (
+            quiz.status ===
+            "closed"
+          ) {
 
-          badgeClass +=
-            " badge-closed";
+            badgeClass +=
+              " badge-closed";
+
+          }
+
+
+          return `
+
+            <div class="item">
+
+              <div class="item-title">
+
+                ${escapeHtml(
+                  quiz.title
+                )}
+
+              </div>
+
+
+              <div class="item-meta">
+
+                Kategori:
+                ${escapeHtml(
+                  quiz.categories?.name ||
+                  "Tanpa kategori"
+                )}
+
+                •
+
+                Durasi:
+                ${escapeHtml(
+                  quiz.duration_minutes ||
+                  60
+                )}
+                menit
+
+                •
+
+                <span
+                  class="${badgeClass}"
+                >
+                  ${escapeHtml(
+                    quiz.status ||
+                    "draft"
+                  )}
+                </span>
+
+              </div>
+
+
+              <div class="item-description">
+
+                ${escapeHtml(
+                  quiz.description ||
+                  "Tidak ada deskripsi."
+                )}
+
+              </div>
+
+
+              <div class="button-row">
+
+                <button
+                  class="btn-danger"
+                  onclick="deleteCBT(${quiz.id})"
+                >
+                  Hapus CBT
+                </button>
+
+              </div>
+
+            </div>
+
+          `;
 
         }
-
-
-        return `
-
-          <div class="item">
-
-            <div class="item-title">
-
-              ${escapeHtml(
-                quiz.title
-              )}
-
-            </div>
-
-
-            <div class="item-meta">
-
-              Kategori:
-              ${escapeHtml(
-                quiz.categories?.name ||
-                "Tanpa kategori"
-              )}
-
-              •
-
-              Durasi:
-              ${escapeHtml(
-                quiz.duration_minutes ||
-                60
-              )} menit
-
-              •
-
-              <span class="${badgeClass}">
-                ${escapeHtml(
-                  quiz.status || "draft"
-                )}
-              </span>
-
-            </div>
-
-
-            <div class="item-description">
-
-              ${escapeHtml(
-                quiz.description ||
-                "Tidak ada deskripsi."
-              )}
-
-            </div>
-
-
-            <div class="button-row">
-
-              <button
-                class="btn-danger"
-                onclick="deleteCBT(${quiz.id})"
-              >
-                Hapus CBT
-              </button>
-
-            </div>
-
-          </div>
-
-        `;
-
-      }).join("");
+      ).join("");
 
   }
 
@@ -2406,7 +3874,10 @@
     } = await supabaseClient
       .from("quizzes")
       .delete()
-      .eq("id", id);
+      .eq(
+        "id",
+        id
+      );
 
 
     if (error) {
