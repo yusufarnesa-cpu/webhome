@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CBT | Medical Learning Hub</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    nav {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .timer {
+      background: #eff6ff;
+      color: #2563eb;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .timer.warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .timer.danger {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1200px;
+      margin: 30px auto 60px;
+    }
+
+    .exam-header {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 20px;
+    }
+
+    .exam-header h1 {
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+
+    .exam-header p {
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    .progress-wrapper {
+      margin-top: 20px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #2563eb;
+      width: 0%;
+      transition: width 0.2s;
+    }
+
+    .exam-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .question-card,
+    .navigation-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+    }
+
+    .question-card {
+      padding: 30px;
+    }
+
+    .question-number {
+      color: #2563eb;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .question-text {
+      font-size: 20px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+      color: #111827;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option {
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 15px;
+      cursor: pointer;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      transition: 0.2s;
+    }
+
+    .option:hover {
+      border-color: #2563eb;
+      background: #f8fbff;
+    }
+
+    .option.selected {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .option-letter {
+      min-width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid #d1d5db;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .option.selected .option-letter {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .option-text {
+      line-height: 1.5;
+      padding-top: 4px;
+    }
+
+    .question-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 10px;
+      padding: 12px 20px;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-success {
+      background: #16a34a;
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .navigation-card {
+      padding: 20px;
+      position: sticky;
+      top: 90px;
+    }
+
+    .navigation-card h3 {
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .question-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .question-number-btn {
+      width: 100%;
+      height: 38px;
+      padding: 0;
+      border: 1px solid #d1d5db;
+      background: white;
+      color: #374151;
+      font-size: 12px;
+    }
+
+    .question-number-btn.answered {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #166534;
+    }
+
+    .question-number-btn.current {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .question-number-btn.current.answered {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .legend {
+      margin-top: 18px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 7px;
+    }
+
+    .legend-box {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      background: white;
+    }
+
+    .legend-box.answered {
+      background: #dcfce7;
+      border-color: #86efac;
+    }
+
+    .legend-box.current {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+
+    .loading,
+    .error {
+      background: white;
+      border-radius: 16px;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .error {
+      color: #dc2626;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 500;
+    }
+
+    .modal {
+      background: white;
+      width: 100%;
+      max-width: 450px;
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .modal h2 {
+      margin-bottom: 12px;
+    }
+
+    .modal p {
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    @media (max-width: 850px) {
+      .exam-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .navigation-card {
+        position: static;
+        order: -1;
+      }
+
+      .question-grid {
+        grid-template-columns: repeat(10, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        padding: 14px 4%;
+      }
+
+      .container {
+        width: 94%;
+      }
+
+      .question-card {
+        padding: 20px;
+      }
+
+      .question-text {
+        font-size: 17px;
+      }
+
+      .question-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+
+      .question-actions {
+        flex-direction: column;
+      }
+
+      .question-actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="quiz.html" class="logo">
+      Medical Learning Hub
+    </a>
+
+    <div id="timer" class="timer">
+      --:--
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <div id="loading" class="loading">
+      Memuat CBT...
+    </div>
+
+    <div id="examContent" style="display:none;">
+
+      <section class="exam-header">
+
+        <h1 id="quizTitle">
+          CBT
+        </h1>
+
+        <p id="quizDescription"></p>
+
+        <div class="progress-wrapper">
+
+          <div class="progress-info">
+            <span id="progressText">
+              Soal 1 dari 100
+            </span>
+
+            <span id="answeredText">
+              0 terjawab
+            </span>
+          </div>
+
+          <div class="progress-bar">
+            <div
+              id="progressFill"
+              class="progress-fill"
+            ></div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <div class="exam-layout">
+
+        <section class="question-card">
+
+          <div
+            id="questionNumber"
+            class="question-number"
+          >
+            Soal 1
+          </div>
+
+          <div
+            id="questionText"
+            class="question-text"
+          ></div>
+
+          <div
+            id="options"
+            class="options"
+          ></div>
+
+          <div class="question-actions">
+
+            <button
+              id="previousBtn"
+              class="btn-secondary"
+              onclick="previousQuestion()"
+            >
+              ← Sebelumnya
+            </button>
+
+            <button
+              id="nextBtn"
+              class="btn-primary"
+              onclick="nextQuestion()"
+            >
+              Berikutnya →
+            </button>
+
+          </div>
+
+        </section>
+
+        <aside class="navigation-card">
+
+          <h3>
+            Navigasi Soal
+          </h3>
+
+          <div
+            id="questionGrid"
+            class="question-grid"
+          ></div>
+
+          <div class="legend">
+
+            <div class="legend-item">
+              <span class="legend-box current"></span>
+              Soal aktif
+            </div>
+
+            <div class="legend-item">
+              <span class="legend-box answered"></span>
+              Sudah dijawab
+            </div>
+
+            <div class="legend-item">
+              <span class="legend-box"></span>
+              Belum dijawab
+            </div>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <div
+    id="submitModal"
+    class="modal-overlay"
+  >
+
+    <div class="modal">
+
+      <h2>
+        Kumpulkan CBT?
+      </h2>
+
+      <p id="submitMessage">
+        Pastikan jawabanmu sudah diperiksa sebelum mengumpulkan ujian.
+      </p>
+
+      <div class="modal-actions">
+
+        <button
+          class="btn-secondary"
+          onclick="closeSubmitModal()"
+        >
+          Kembali
+        </button>
+
+        <button
+          class="btn-success"
+          onclick="submitExam()"
+        >
+          Kumpulkan
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://hqzishiazabguknallei.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const quizId =
+      params.get("id");
+
+    let quiz = null;
+    let questions = [];
+    let answers = {};
+    let currentQuestion = 0;
+
+    let remainingSeconds = 0;
+    let timerInterval = null;
+
+    async function loadExam() {
+
+      if (!quizId) {
+        showError(
+          "ID CBT tidak ditemukan."
+        );
+        return;
+      }
+
+      const {
+        data: quizData,
+        error: quizError
+      } = await supabaseClient
+        .from("quizzes")
+        .select(`
+          id,
+          title,
+          description,
+          duration_minutes,
+          status
+        `)
+        .eq("id", quizId)
+        .eq("status", "published")
+        .single();
+
+      if (quizError) {
+
+        console.error(quizError);
+
+        showError(
+          "CBT tidak ditemukan atau belum dipublikasikan."
+        );
+
+        return;
+      }
+
+      quiz = quizData;
+
+      const {
+        data: questionData,
+        error: questionError
+      } = await supabaseClient
+        .from("quiz_questions")
+        .select(`
+          id,
+          question_number,
+          question,
+          quiz_options (
+            id,
+            option_text,
+            is_correct
+          )
+        `)
+        .eq("quiz_id", quizId)
+        .order("question_number", {
+          ascending: true
+        });
+
+      if (questionError) {
+
+        console.error(questionError);
+
+        showError(
+          "Gagal memuat soal CBT."
+        );
+
+        return;
+      }
+
+      questions =
+        questionData || [];
+
+      if (!questions.length) {
+
+        showError(
+          "CBT ini belum memiliki soal."
+        );
+
+        return;
+      }
+
+      document.getElementById(
+        "quizTitle"
+      ).textContent = quiz.title;
+
+      document.getElementById(
+        "quizDescription"
+      ).textContent =
+        quiz.description ||
+        "Silakan kerjakan seluruh soal dengan teliti.";
+
+      document.getElementById(
+        "loading"
+      ).style.display = "none";
+
+      document.getElementById(
+        "examContent"
+      ).style.display = "block";
+
+      createQuestionNavigation();
+
+      startTimer(
+        (quiz.duration_minutes || 60) * 60
+      );
+
+      renderQuestion();
+
+    }
+
+    function createQuestionNavigation() {
+
+      const grid =
+        document.getElementById(
+          "questionGrid"
+        );
+
+      grid.innerHTML = "";
+
+      questions.forEach(
+        (question, index) => {
+
+          const button =
+            document.createElement("button");
+
+          button.className =
+            "question-number-btn";
+
+          button.textContent =
+            question.question_number ||
+            index + 1;
+
+          button.onclick = () => {
+
+            currentQuestion = index;
+
+            renderQuestion();
+
+          };
+
+          grid.appendChild(button);
+
+        }
+      );
+
+    }
+
+    function renderQuestion() {
+
+      const question =
+        questions[currentQuestion];
+
+      if (!question) {
+        return;
+      }
+
+      const number =
+        question.question_number ||
+        currentQuestion + 1;
+
+      document.getElementById(
+        "questionNumber"
+      ).textContent =
+        `Soal ${number}`;
+
+      document.getElementById(
+        "questionText"
+      ).textContent =
+        question.question;
+
+      document.getElementById(
+        "progressText"
+      ).textContent =
+        `Soal ${currentQuestion + 1} dari ${questions.length}`;
+
+      const answeredCount =
+        Object.keys(answers).length;
+
+      document.getElementById(
+        "answeredText"
+      ).textContent =
+        `${answeredCount} terjawab`;
+
+      const progress =
+        ((currentQuestion + 1) /
+          questions.length) * 100;
+
+      document.getElementById(
+        "progressFill"
+      ).style.width =
+        `${progress}%`;
+
+      renderOptions(
+        question
+      );
+
+      updateQuestionNavigation();
+
+      document.getElementById(
+        "previousBtn"
+      ).disabled =
+        currentQuestion === 0;
+
+      const nextButton =
+        document.getElementById(
+          "nextBtn"
+        );
+
+      if (
+        currentQuestion ===
+        questions.length - 1
+      ) {
+
+        nextButton.textContent =
+          "Kumpulkan CBT";
+
+        nextButton.className =
+          "btn-success";
+
+      } else {
+
+        nextButton.textContent =
+          "Berikutnya →";
+
+        nextButton.className =
+          "btn-primary";
+
+      }
+
+    }
+
+    function renderOptions(question) {
+
+      const container =
+        document.getElementById(
+          "options"
+        );
+
+      container.innerHTML = "";
+
+      const options =
+        question.quiz_options || [];
+
+      options.forEach(
+        (option, index) => {
+
+          const wrapper =
+            document.createElement("div");
+
+          wrapper.className =
+            "option";
+
+          const selected =
+            answers[question.id] ===
+            option.id;
+
+          if (selected) {
+            wrapper.classList.add(
+              "selected"
+            );
+          }
+
+          const letter =
+            document.createElement("div");
+
+          letter.className =
+            "option-letter";
+
+          letter.textContent =
+            String.fromCharCode(
+              65 + index
+            );
+
+          const text =
+            document.createElement("div");
+
+          text.className =
+            "option-text";
+
+          text.textContent =
+            option.option_text;
+
+          wrapper.appendChild(letter);
+          wrapper.appendChild(text);
+
+          wrapper.onclick = () => {
+
+            selectOption(
+              question.id,
+              option.id
+            );
+
+          };
+
+          container.appendChild(
+            wrapper
+          );
+
+        }
+      );
+
+    }
+
+    function selectOption(
+      questionId,
+      optionId
+    ) {
+
+      answers[questionId] =
+        optionId;
+
+      renderQuestion();
+
+    }
+
+    function updateQuestionNavigation() {
+
+      const buttons =
+        document.querySelectorAll(
+          ".question-number-btn"
+        );
+
+      buttons.forEach(
+        (button, index) => {
+
+          button.classList.remove(
+            "current",
+            "answered"
+          );
+
+          const question =
+            questions[index];
+
+          if (
+            answers[question.id]
+          ) {
+
+            button.classList.add(
+              "answered"
+            );
+
+          }
+
+          if (
+            index === currentQuestion
+          ) {
+
+            button.classList.add(
+              "current"
+            );
+
+          }
+
+        }
+      );
+
+    }
+
+    function previousQuestion() {
+
+      if (currentQuestion > 0) {
+
+        currentQuestion--;
+
+        renderQuestion();
+
+      }
+
+    }
+
+    function nextQuestion() {
+
+      if (
+        currentQuestion <
+        questions.length - 1
+      ) {
+
+        currentQuestion++;
+
+        renderQuestion();
+
+      } else {
+
+        openSubmitModal();
+
+      }
+
+    }
+
+    function openSubmitModal() {
+
+      const answered =
+        Object.keys(answers).length;
+
+      const unanswered =
+        questions.length -
+        answered;
+
+      const message =
+        document.getElementById(
+          "submitMessage"
+        );
+
+      if (unanswered > 0) {
+
+        message.textContent =
+          `Masih ada ${unanswered} soal yang belum dijawab. Apakah kamu tetap ingin mengumpulkan CBT?`;
+
+      } else {
+
+        message.textContent =
+          "Semua soal sudah dijawab. Apakah kamu yakin ingin mengumpulkan CBT?";
+
+      }
+
+      document.getElementById(
+        "submitModal"
+      ).style.display =
+        "flex";
+
+    }
+
+    function closeSubmitModal() {
+
+      document.getElementById(
+        "submitModal"
+      ).style.display =
+        "none";
+
+    }
+
+    function submitExam() {
+
+      /*
+        Untuk tahap berikutnya,
+        bagian ini akan kita hubungkan
+        dengan sistem penyimpanan hasil CBT.
+
+        Jangan melakukan penilaian di browser
+        untuk CBT resmi.
+      */
+
+      closeSubmitModal();
+
+      alert(
+        "Jawaban berhasil dikumpulkan. Sistem hasil CBT akan kita sambungkan pada tahap berikutnya."
+      );
+
+    }
+
+    function startTimer(seconds) {
+
+      remainingSeconds =
+        seconds;
+
+      updateTimer();
+
+      timerInterval =
+        setInterval(() => {
+
+          remainingSeconds--;
+
+          updateTimer();
+
+          if (
+            remainingSeconds <= 0
+          ) {
+
+            clearInterval(
+              timerInterval
+            );
+
+            alert(
+              "Waktu CBT telah habis."
+            );
+
+            submitExam();
+
+          }
+
+        }, 1000);
+
+    }
+
+    function updateTimer() {
+
+      const timer =
+        document.getElementById(
+          "timer"
+        );
+
+      const minutes =
+        Math.floor(
+          remainingSeconds / 60
+        );
+
+      const seconds =
+        remainingSeconds % 60;
+
+      timer.textContent =
+        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+      timer.classList.remove(
+        "warning",
+        "danger"
+      );
+
+      if (
+        remainingSeconds <= 300
+      ) {
+
+        timer.classList.add(
+          "danger"
+        );
+
+      } else if (
+        remainingSeconds <= 600
+      ) {
+
+        timer.classList.add(
+          "warning"
+        );
+
+      }
+
+    }
+
+    function showError(message) {
+
+      document.getElementById(
+        "loading"
+      ).className =
+        "error";
+
+      document.getElementById(
+        "loading"
+      ).innerHTML =
+        message;
+
+    }
+
+    window.addEventListener(
+      "beforeunload",
+      function(event) {
+
+        if (
+          questions.length > 0 &&
+          Object.keys(answers).length > 0
+        ) {
+
+          event.preventDefault();
+
+          event.returnValue = "";
+
+        }
+
+      }
+    );
+
+    loadExam();
+
+  </script>
+
+</body>
+  </html>
