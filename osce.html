@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OSCE - Medical Learning Hub</title>
+
+    <link rel="stylesheet" href="style.css?v=2">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+            <div class="logo">
+                🩺 Medical Learning Hub
+            </div>
+
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="materi/index.html">Materi</a>
+                <a href="quiz.html">Quiz</a>
+                <a href="banksoal.html">Bank Soal</a>
+                <a href="osce.html">OSCE</a>
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- HERO -->
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                CLINICAL SKILLS
+            </span>
+
+            <h1>
+                OSCE<br>
+                <span>Clinical Skills Practice</span>
+            </h1>
+
+            <p>
+                Kumpulan station OSCE untuk membantu
+                mempersiapkan keterampilan klinis secara
+                lebih terstruktur.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- OSCE SECTION -->
+    <section class="latest-section">
+
+        <div class="section-heading">
+
+            <span>OSCE STATIONS</span>
+
+            <h2>
+                Pilih Station OSCE
+            </h2>
+
+            <p>
+                Pilih station untuk melihat tujuan,
+                instruksi, dan checklist keterampilan klinis.
+            </p>
+
+        </div>
+
+
+        <!-- SEARCH -->
+        <div class="search-container">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Cari station OSCE..."
+            >
+
+        </div>
+
+
+        <!-- STATIONS -->
+        <div
+            id="osce-list"
+            class="materials-grid"
+        >
+
+            <div class="loading">
+                Memuat station OSCE...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <h3>
+            🩺 Medical Learning Hub
+        </h3>
+
+        <p>
+            Platform pembelajaran medis.
+        </p>
+
+        <p class="copyright">
+            © 2026 Medical Learning Hub
+        </p>
+
+    </footer>
+
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://hqzishiazabguknallei.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        const osceList =
+            document.getElementById("osce-list");
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+
+        let stations = [];
+
+
+        // =========================
+        // LOAD OSCE STATIONS
+        // =========================
+
+        async function loadStations() {
+
+            osceList.innerHTML = `
+                <div class="loading">
+                    Memuat station OSCE...
+                </div>
+            `;
+
+
+            const { data, error } =
+                await supabaseClient
+
+                    .from("osce_stations")
+
+                    .select(`
+                        id,
+                        title,
+                        description,
+                        objective,
+                        instructions,
+                        category_id,
+                        categories (
+                            name
+                        )
+                    `)
+
+                    .order("created_at", {
+                        ascending: false
+                    });
+
+
+            if (error) {
+
+                console.error(
+                    "Error loading OSCE:",
+                    error
+                );
+
+                osceList.innerHTML = `
+                    <div class="loading">
+                        Gagal memuat station OSCE.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            stations = data || [];
+
+            renderStations(stations);
+
+        }
+
+
+        // =========================
+        // RENDER STATIONS
+        // =========================
+
+        function renderStations(data) {
+
+            if (!data.length) {
+
+                osceList.innerHTML = `
+                    <div class="loading">
+                        Belum ada station OSCE.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            osceList.innerHTML =
+                data.map(station => `
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+                            🩺
+                        </div>
+
+                        ${
+                            station.categories?.name
+                            ? `
+                                <span>
+                                    ${escapeHTML(
+                                        station.categories.name
+                                    )}
+                                </span>
+                            `
+                            : ""
+                        }
+
+                        <h3>
+                            ${escapeHTML(
+                                station.title
+                            )}
+                        </h3>
+
+                        <p>
+                            ${escapeHTML(
+                                station.description ||
+                                "Station keterampilan klinis."
+                            )}
+                        </p>
+
+                        <a href="osce-detail.html?id=${station.id}">
+                            Lihat Station →
+                        </a>
+
+                    </div>
+
+                `).join("");
+
+        }
+
+
+        // =========================
+        // SEARCH
+        // =========================
+
+        searchInput.addEventListener(
+            "input",
+            function () {
+
+                const keyword =
+                    this.value
+                        .toLowerCase()
+                        .trim();
+
+
+                const filtered =
+                    stations.filter(station => {
+
+                        const title =
+                            station.title ||
+                            "";
+
+                        const description =
+                            station.description ||
+                            "";
+
+                        const objective =
+                            station.objective ||
+                            "";
+
+
+                        return (
+                            title
+                                .toLowerCase()
+                                .includes(keyword)
+
+                            ||
+
+                            description
+                                .toLowerCase()
+                                .includes(keyword)
+
+                            ||
+
+                            objective
+                                .toLowerCase()
+                                .includes(keyword)
+                        );
+
+                    });
+
+
+                renderStations(filtered);
+
+            }
+        );
+
+
+        // =========================
+        // ESCAPE HTML
+        // =========================
+
+        function escapeHTML(value) {
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        // =========================
+        // INITIAL LOAD
+        // =========================
+
+        loadStations();
+
+    </script>
+
+</body>
+</html>
