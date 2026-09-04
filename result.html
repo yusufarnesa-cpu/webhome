@@ -1,7 +1,12 @@
-<!DOCTYPE html><html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Hasil CBT | Medical Learning Hub</title>  <style>
+<!DOCTYPE html><html lang="id"><head>
+  <meta charset="UTF-8"><meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
+«»
+
+  <title>Hasil CBT | Medical Learning Hub</title>  <style>
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -29,8 +34,8 @@
 
     .container {
       width: 92%;
-      max-width: 800px;
-      margin: 50px auto;
+      max-width: 1000px;
+      margin: 40px auto 60px;
     }
 
     .result-card {
@@ -39,6 +44,7 @@
       border-radius: 20px;
       padding: 35px;
       text-align: center;
+      margin-bottom: 25px;
     }
 
     .result-icon {
@@ -63,29 +69,30 @@
       margin-bottom: 25px;
     }
 
-    .score {
-      font-size: 56px;
-      font-weight: bold;
-      color: #2563eb;
-      margin: 20px 0 30px;
-    }
-
     .score-label {
       color: #6b7280;
       font-size: 14px;
     }
 
+    .score {
+      font-size: 56px;
+      font-weight: bold;
+      color: #2563eb;
+      margin: 10px 0 25px;
+    }
+
     .stats {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 12px;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .stat {
       border: 1px solid #e5e7eb;
       border-radius: 12px;
       padding: 18px 10px;
+      background: white;
     }
 
     .stat-number {
@@ -99,6 +106,10 @@
       color: #6b7280;
     }
 
+    .total {
+      color: #2563eb;
+    }
+
     .correct {
       color: #16a34a;
     }
@@ -107,8 +118,14 @@
       color: #dc2626;
     }
 
-    .total {
-      color: #2563eb;
+    .unanswered {
+      color: #d97706;
+    }
+
+    .time-info {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 25px;
     }
 
     .actions {
@@ -134,9 +151,155 @@
       color: white;
     }
 
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
     .btn-secondary {
       background: #e5e7eb;
       color: #374151;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    .btn-success {
+      background: #16a34a;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #15803d;
+    }
+
+    .review-section {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 30px;
+    }
+
+    .review-header {
+      margin-bottom: 25px;
+    }
+
+    .review-header h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .review-header p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .question-review {
+      border: 1px solid #e5e7eb;
+      border-radius: 15px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+
+    .question-header {
+      padding: 14px 18px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .question-number {
+      font-weight: bold;
+    }
+
+    .status {
+      font-size: 13px;
+      font-weight: bold;
+      padding: 6px 10px;
+      border-radius: 20px;
+    }
+
+    .status.correct-status {
+      color: #166534;
+      background: #dcfce7;
+    }
+
+    .status.wrong-status {
+      color: #991b1b;
+      background: #fee2e2;
+    }
+
+    .status.unanswered-status {
+      color: #92400e;
+      background: #fef3c7;
+    }
+
+    .question-body {
+      padding: 20px;
+    }
+
+    .question-text {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+      font-weight: 500;
+    }
+
+    .answer-box {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .answer-item {
+      padding: 12px 15px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .selected-answer {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .correct-answer {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+    }
+
+    .unanswered-answer {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+    }
+
+    .answer-label {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .explanation {
+      background: #f8fafc;
+      border-left: 4px solid #2563eb;
+      padding: 15px;
+      border-radius: 0 10px 10px 0;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .explanation-title {
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #2563eb;
+    }
+
+    .loading {
+      text-align: center;
+      color: #6b7280;
+      padding: 30px;
     }
 
     .error {
@@ -144,33 +307,81 @@
       background: #fee2e2;
       padding: 20px;
       border-radius: 12px;
+      text-align: center;
     }
 
-    @media (max-width: 600px) {
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 700px) {
 
       .container {
         width: 94%;
-        margin: 30px auto;
+        margin: 25px auto 40px;
       }
 
-      .result-card {
-        padding: 25px 18px;
+      .result-card,
+      .review-section {
+        padding: 22px 16px;
       }
 
       .stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
       }
 
       .score {
         font-size: 46px;
       }
 
+      .question-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
     }
-  </style></head><body>  <nav>
-    <a href="quiz.html" class="logo">
-      Medical Learning Hub
-    </a>
-  </nav>  <main class="container"><div id="resultContainer" class="result-card">
+
+    @media print {
+
+      nav,
+      .actions {
+        display: none !important;
+      }
+
+      body {
+        background: white;
+      }
+
+      .container {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+      }
+
+      .result-card,
+      .review-section,
+      .question-review {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+
+    }
+
+  </style></head><body>  <nav><a
+  href="quiz.html"
+  class="logo"
+>
+  Medical Learning Hub
+</a>
+
+  </nav>  <main class="container"><!-- =========================================
+     HASIL UTAMA
+========================================== -->
+
+<section
+  id="resultContainer"
+  class="result-card"
+>
 
   <div class="result-icon">
     🎉
@@ -183,12 +394,16 @@
   <p
     id="quizTitle"
     class="quiz-title"
-  ></p>
+  >
+    Memuat hasil...
+  </p>
 
   <div
     id="participant"
     class="participant"
-  ></div>
+  >
+    Peserta: -
+  </div>
 
   <div class="score-label">
     NILAI
@@ -201,9 +416,12 @@
     -
   </div>
 
+
   <div class="stats">
 
+
     <div class="stat">
+
       <div
         id="totalQuestions"
         class="stat-number total"
@@ -214,9 +432,12 @@
       <div class="stat-label">
         Total Soal
       </div>
+
     </div>
 
+
     <div class="stat">
+
       <div
         id="correctAnswers"
         class="stat-number correct"
@@ -227,9 +448,12 @@
       <div class="stat-label">
         Jawaban Benar
       </div>
+
     </div>
 
+
     <div class="stat">
+
       <div
         id="wrongAnswers"
         class="stat-number wrong"
@@ -240,18 +464,46 @@
       <div class="stat-label">
         Jawaban Salah
       </div>
+
     </div>
+
+
+    <div class="stat">
+
+      <div
+        id="unanswered"
+        class="stat-number unanswered"
+      >
+        -
+      </div>
+
+      <div class="stat-label">
+        Tidak Dijawab
+      </div>
+
+    </div>
+
 
   </div>
 
+
+  <div
+    id="timeInfo"
+    class="time-info"
+  >
+    Waktu pengerjaan: -
+  </div>
+
+
   <div class="actions">
 
-    <a
-      href="quiz.html"
-      class="btn-primary"
+    <button
+      id="retryButton"
+      class="btn-success"
     >
-      ← Kembali ke Daftar CBT
-    </a>
+      🔄 Ulangi CBT
+    </button>
+
 
     <button
       class="btn-secondary"
@@ -260,117 +512,552 @@
       🖨️ Cetak Hasil
     </button>
 
+
+    <a
+      href="quiz.html"
+      class="btn-primary"
+    >
+      ← Daftar CBT
+    </a>
+
   </div>
 
-</div>
+</section>
 
-  </main>  <script>
 
-    const resultContainer =
-      document.getElementById(
-        "resultContainer"
+<!-- =========================================
+     PEMBAHASAN
+========================================== -->
+
+<section class="review-section">
+
+  <div class="review-header">
+
+    <h2>
+      📖 Pembahasan
+    </h2>
+
+    <p>
+      Tinjau jawaban dan pembahasan setiap soal.
+    </p>
+
+  </div>
+
+
+  <div
+    id="reviewContainer"
+    class="loading"
+  >
+    Memuat pembahasan...
+  </div>
+
+</section>
+
+  </main>  <!-- =========================================
+       SUPABASE
+  ========================================== -->  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script>
+
+    const SUPABASE_URL =
+      "https://hqzishiazabguknallei.supabase.co";
+
+
+    const SUPABASE_ANON_KEY =
+      "sb_publishable_r8rspBje6vjTvF9lKYzA_SakK9CD5";
+
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
       );
 
 
-    // Ambil hasil dari sessionStorage
-    const rawResult =
-      sessionStorage.getItem(
-        "cbt_result"
-      );
+    // =========================================
+    // ELEMENT
+    // =========================================
+
+    const quizTitle =
+      document.getElementById("quizTitle");
+
+    const participant =
+      document.getElementById("participant");
+
+    const score =
+      document.getElementById("score");
+
+    const totalQuestions =
+      document.getElementById("totalQuestions");
+
+    const correctAnswers =
+      document.getElementById("correctAnswers");
+
+    const wrongAnswers =
+      document.getElementById("wrongAnswers");
+
+    const unanswered =
+      document.getElementById("unanswered");
+
+    const timeInfo =
+      document.getElementById("timeInfo");
+
+    const reviewContainer =
+      document.getElementById("reviewContainer");
+
+    const retryButton =
+      document.getElementById("retryButton");
 
 
-    if (!rawResult) {
+    // =========================================
+    // ESCAPE HTML
+    // =========================================
 
-      resultContainer.innerHTML = `
-        <div class="error">
-          <h2>Hasil CBT tidak ditemukan</h2>
-          <p style="margin-top:10px;">
-            Silakan kembali ke daftar CBT.
-          </p>
-          <a
-            href="quiz.html"
-            class="btn-primary"
-            style="display:inline-block; margin-top:20px;"
-          >
-            Kembali ke CBT
-          </a>
-        </div>
-      `;
+    function escapeHtml(value) {
 
-    } else {
-
-      try {
-
-        const result =
-          JSON.parse(
-            rawResult
-          );
-
-
-        document.getElementById(
-          "quizTitle"
-        ).textContent =
-          result.quiz_title ||
-          "CBT";
-
-
-        document.getElementById(
-          "participant"
-        ).textContent =
-          `Peserta: ${result.participant_name || "-"}`;
-
-
-        document.getElementById(
-          "score"
-        ).textContent =
-          Number(
-            result.score || 0
-          ).toFixed(2);
-
-
-        document.getElementById(
-          "totalQuestions"
-        ).textContent =
-          result.total_questions ||
-          0;
-
-
-        document.getElementById(
-          "correctAnswers"
-        ).textContent =
-          result.correct_answers ||
-          0;
-
-
-        document.getElementById(
-          "wrongAnswers"
-        ).textContent =
-          result.wrong_answers ||
-          0;
-
-      } catch (error) {
-
-        console.error(error);
-
-        resultContainer.innerHTML = `
-          <div class="error">
-            <h2>Data hasil tidak dapat dibaca.</h2>
-            <p style="margin-top:10px;">
-              Silakan kembali ke daftar CBT.
-            </p>
-            <a
-              href="quiz.html"
-              class="btn-primary"
-              style="display:inline-block; margin-top:20px;"
-            >
-              Kembali ke CBT
-            </a>
-          </div>
-        `;
-
+      if (value === null || value === undefined) {
+        return "";
       }
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
     }
 
-  </script></body>
-</html>
+
+    // =========================================
+    // FORMAT WAKTU
+    // =========================================
+
+    function formatDuration(
+      startedAt,
+      submittedAt
+    ) {
+
+      if (!startedAt || !submittedAt) {
+        return "-";
+      }
+
+      const start =
+        new Date(startedAt);
+
+      const end =
+        new Date(submittedAt);
+
+      const seconds =
+        Math.max(
+          0,
+          Math.floor(
+            (end - start) / 1000
+          )
+        );
+
+      const minutes =
+        Math.floor(
+          seconds / 60
+        );
+
+      const remainingSeconds =
+        seconds % 60;
+
+      return `${minutes} menit ${remainingSeconds} detik`;
+
+    }
+
+
+    // =========================================
+    // LOAD RESULT
+    // =========================================
+
+    async function loadResult() {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+
+      const attemptId =
+        params.get("attempt");
+
+
+      if (!attemptId) {
+
+        showError(
+          "ID hasil CBT tidak ditemukan."
+        );
+
+        return;
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.rpc(
+          "get_quiz_attempt_result",
+          {
+            p_attempt_id:
+              Number(attemptId)
+          }
+        );
+
+
+      if (error) {
+
+        console.error(
+          "Error mengambil hasil:",
+          error
+        );
+
+        showError(
+          "Hasil CBT tidak dapat dimuat. Silakan kembali ke daftar CBT."
+        );
+
+        return;
+
+      }
+
+
+      if (!data) {
+
+        showError(
+          "Data hasil CBT tidak ditemukan."
+        );
+
+        return;
+
+      }
+
+
+      renderResult(data);
+
+    }
+
+
+    // =========================================
+    // RENDER RESULT
+    // =========================================
+
+    function renderResult(data) {
+
+      quizTitle.textContent =
+        data.quiz_title ||
+        "CBT";
+
+
+      participant.textContent =
+        `Peserta: ${
+          data.participant_name || "-"
+        }`;
+
+
+      score.textContent =
+        Number(
+          data.score || 0
+        ).toFixed(2);
+
+
+      totalQuestions.textContent =
+        data.total_questions || 0;
+
+
+      correctAnswers.textContent =
+        data.correct_answers || 0;
+
+
+      wrongAnswers.textContent =
+        data.wrong_answers || 0;
+
+
+      unanswered.textContent =
+        data.unanswered || 0;
+
+
+      timeInfo.textContent =
+        `Waktu pengerjaan: ${
+          formatDuration(
+            data.started_at,
+            data.submitted_at
+          )
+        }`;
+
+
+      // Tombol ulangi CBT
+      retryButton.onclick =
+        function() {
+
+          if (!data.quiz_id) {
+            return;
+          }
+
+          window.location.href =
+            `cbt.html?id=${data.quiz_id}`;
+
+        };
+
+
+      renderReview(
+        data.questions || []
+      );
+
+    }
+
+
+    // =========================================
+    // RENDER PEMBAHASAN
+    // =========================================
+
+    function renderReview(
+      questions
+    ) {
+
+      if (!questions.length) {
+
+        reviewContainer.innerHTML = `
+          <div class="error">
+            Pembahasan belum tersedia.
+          </div>
+        `;
+
+        return;
+
+      }
+
+
+      reviewContainer.className = "";
+
+
+      reviewContainer.innerHTML =
+        questions
+          .map(
+            (item) => {
+
+              let statusClass;
+              let statusText;
+
+
+              if (
+                item.is_answered !== true
+              ) {
+
+                statusClass =
+                  "unanswered-status";
+
+                statusText =
+                  "⚪ Tidak Dijawab";
+
+              } else if (
+                item.is_correct === true
+              ) {
+
+                statusClass =
+                  "correct-status";
+
+                statusText =
+                  "✅ Benar";
+
+              } else {
+
+                statusClass =
+                  "wrong-status";
+
+                statusText =
+                  "❌ Salah";
+
+              }
+
+
+              let selectedAnswer;
+
+
+              if (
+                item.is_answered === true
+              ) {
+
+                selectedAnswer = `
+                  <div class="answer-item selected-answer">
+
+                    <div class="answer-label">
+                      Jawaban Kamu
+                    </div>
+
+                    ${escapeHtml(
+                      item.selected_option
+                    )}
+
+                  </div>
+                `;
+
+              } else {
+
+                selectedAnswer = `
+                  <div class="answer-item unanswered-answer">
+
+                    <div class="answer-label">
+                      Jawaban Kamu
+                    </div>
+
+                    Tidak dijawab
+
+                  </div>
+                `;
+
+              }
+
+
+              return `
+
+                <article
+                  class="question-review"
+                >
+
+                  <div
+                    class="question-header"
+                  >
+
+                    <div
+                      class="question-number"
+                    >
+                      Soal ${
+                        escapeHtml(
+                          item.question_number
+                        )
+                      }
+                    </div>
+
+                    <div
+                      class="status ${statusClass}"
+                    >
+                      ${statusText}
+                    </div>
+
+                  </div>
+
+
+                  <div
+                    class="question-body"
+                  >
+
+                    <div
+                      class="question-text"
+                    >
+                      ${escapeHtml(
+                        item.question
+                      )}
+                    </div>
+
+
+                    <div class="answer-box">
+
+                      ${selectedAnswer}
+
+
+                      <div
+                        class="answer-item correct-answer"
+                      >
+
+                        <div
+                          class="answer-label"
+                        >
+                          Jawaban Benar
+                        </div>
+
+                        ${escapeHtml(
+                          item.correct_option
+                        )}
+
+                      </div>
+
+                    </div>
+
+
+                    <div class="explanation">
+
+                      <div
+                        class="explanation-title"
+                      >
+                        📖 Pembahasan
+                      </div>
+
+                      ${
+                        escapeHtml(
+                          item.explanation ||
+                          "Pembahasan belum tersedia."
+                        )
+                      }
+
+                    </div>
+
+                  </div>
+
+                </article>
+
+              `;
+
+            }
+          )
+          .join("");
+
+    }
+
+
+    // =========================================
+    // ERROR
+    // =========================================
+
+    function showError(
+      message
+    ) {
+
+      document.querySelector(
+        ".container"
+      ).innerHTML = `
+
+        <div class="result-card">
+
+          <div class="error">
+
+            <h2>
+              ${escapeHtml(message)}
+            </h2>
+
+            <p
+              style="
+                margin-top:10px;
+              "
+            >
+              Silakan kembali ke daftar CBT.
+            </p>
+
+            <a
+              href="quiz.html"
+              class="btn-primary"
+              style="
+                display:inline-block;
+                margin-top:20px;
+              "
+            >
+              ← Kembali ke CBT
+            </a>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+    // =========================================
+    // START
+    // =========================================
+
+    loadResult();
+
+  </script></body></html>
