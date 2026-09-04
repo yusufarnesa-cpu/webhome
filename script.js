@@ -1,10 +1,16 @@
-const SUPABASE_URL = "https://hqzishiazabguknallei.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+const SUPABASE_URL =
+    "https://hqzishiazabguknallei.supabase.co";
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
+const SUPABASE_ANON_KEY =
+    "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
 
 
 // =========================
@@ -13,91 +19,349 @@ const supabaseClient = window.supabase.createClient(
 
 async function loadLatestMaterials() {
 
-    const container = document.getElementById("latest-materials");
+    const container =
+        document.getElementById(
+            "latest-materials"
+        );
+
 
     if (!container) return;
 
-    const { data, error } = await supabaseClient
-        .from("materials")
-        .select("*")
-        .eq("status", "published")
-        .order("created_at", { ascending: false })
-        .limit(6);
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+
+            .from("materials")
+
+            .select("*")
+
+            .eq(
+                "status",
+                "published"
+            )
+
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+
+            .limit(6);
+
 
 
     // Jika terjadi error
+
     if (error) {
 
-        console.error("Gagal mengambil materi:", error);
+        console.error(
+            "Gagal mengambil materi:",
+            error
+        );
+
 
         container.innerHTML = `
+
             <div class="loading">
+
                 Gagal memuat materi.
+
             </div>
+
         `;
 
+
         return;
+
     }
+
 
 
     // Jika belum ada materi
-    if (!data || data.length === 0) {
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         container.innerHTML = `
+
             <div class="loading">
+
                 Belum ada materi yang tersedia.
+
             </div>
+
         `;
 
+
         return;
+
     }
 
 
+
     // Tampilkan materi
-    container.innerHTML = data.map(material => {
 
-        return `
-            <article class="material-card">
+    container.innerHTML =
 
-                <h3>
-                    ${escapeHtml(material.title)}
-                </h3>
+        data.map(
+            material => {
 
-                <div class="material-meta">
+                return `
 
-                    ${material.subject ? `
-                        <span class="material-tag">
-                            ${escapeHtml(material.subject)}
-                        </span>
-                    ` : ""}
+                    <article
+                        class="material-card"
+                    >
 
-                    ${material.semester ? `
-                        <span class="material-tag">
-                            ${escapeHtml(material.semester)}
-                        </span>
-                    ` : ""}
+                        <h3>
 
-                    ${material.topic ? `
-                        <span class="material-tag">
-                            ${escapeHtml(material.topic)}
-                        </span>
-                    ` : ""}
+                            ${escapeHtml(
+                                material.title
+                            )}
 
-                </div>
+                        </h3>
 
-                <p>
-                    ${escapeHtml(
-                        material.description ||
-                        "Belum ada deskripsi materi."
-                    )}
-                </p>
 
-            </article>
-        `;
+                        <div
+                            class="material-meta"
+                        >
 
-    }).join("");
+                            ${
+                                material.subject
+                                ? `
+
+                                    <span
+                                        class="material-tag"
+                                    >
+
+                                        ${escapeHtml(
+                                            material.subject
+                                        )}
+
+                                    </span>
+
+                                `
+                                : ""
+                            }
+
+
+                            ${
+                                material.semester
+                                ? `
+
+                                    <span
+                                        class="material-tag"
+                                    >
+
+                                        ${escapeHtml(
+                                            material.semester
+                                        )}
+
+                                    </span>
+
+                                `
+                                : ""
+                            }
+
+
+                            ${
+                                material.topic
+                                ? `
+
+                                    <span
+                                        class="material-tag"
+                                    >
+
+                                        ${escapeHtml(
+                                            material.topic
+                                        )}
+
+                                    </span>
+
+                                `
+                                : ""
+                            }
+
+                        </div>
+
+
+                        <p>
+
+                            ${escapeHtml(
+                                material.description ||
+                                "Belum ada deskripsi materi."
+                            )}
+
+                        </p>
+
+                    </article>
+
+                `;
+
+            }
+        ).join("");
 
 }
+
+
+
+// =========================
+// LOAD OSCE TERBARU
+// =========================
+
+async function loadLatestOSCE() {
+
+    const container =
+        document.getElementById(
+            "latest-osce"
+        );
+
+
+    if (!container) return;
+
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+
+            .from("osce_stations")
+
+            .select(`
+                id,
+                title,
+                description,
+                objective
+            `)
+
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+
+            .limit(3);
+
+
+
+    // Jika error
+
+    if (error) {
+
+        console.error(
+            "Gagal mengambil station OSCE:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="loading">
+
+                Gagal memuat station OSCE.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+
+    // Jika belum ada station
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="loading">
+
+                Belum ada station OSCE.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+
+    // Tampilkan station
+
+    container.innerHTML =
+
+        data.map(
+            station => {
+
+                return `
+
+                    <article
+                        class="material-card"
+                    >
+
+                        <div
+                            class="feature-icon"
+                        >
+                            🩺
+                        </div>
+
+
+                        <h3>
+
+                            ${escapeHtml(
+                                station.title
+                            )}
+
+                        </h3>
+
+
+                        <p>
+
+                            ${escapeHtml(
+                                station.description ||
+                                station.objective ||
+                                "Station keterampilan klinis."
+                            )}
+
+                        </p>
+
+
+                        <a
+                            href="osce-detail.html?id=${encodeURIComponent(
+                                station.id
+                            )}"
+                        >
+
+                            Lihat Station →
+
+                        </a>
+
+                    </article>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
 
 
 // =========================
@@ -106,18 +370,41 @@ async function loadLatestMaterials() {
 
 function escapeHtml(text) {
 
-    return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return String(text ?? "")
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
+
 // =========================
-// JALANKAN
+// JALANKAN HOMEPAGE
 // =========================
 
 loadLatestMaterials();
+
+loadLatestOSCE();
