@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Mode Latihan | Medical Learning Hub</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    .navbar {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      color: #2563eb;
+      font-weight: 700;
+      font-size: 20px;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .nav-links a:hover {
+      color: #2563eb;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: white;
+      padding: 40px 6%;
+    }
+
+    .hero-inner {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      opacity: 0.95;
+      line-height: 1.6;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 35px auto 60px;
+    }
+
+    .top-info {
+      background: white;
+      border-radius: 14px;
+      padding: 18px 22px;
+      margin-bottom: 20px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .top-info h2 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .progress-wrapper {
+      margin-top: 15px;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 7px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #2563eb;
+      transition: width 0.3s ease;
+    }
+
+    .question-card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .question-number {
+      color: #2563eb;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .question-text {
+      font-size: 19px;
+      line-height: 1.65;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option {
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 15px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      background: white;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .option:hover {
+      border-color: #93c5fd;
+      background: #eff6ff;
+    }
+
+    .option.selected {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .option.disabled {
+      cursor: default;
+    }
+
+    .option.correct {
+      border-color: #16a34a;
+      background: #f0fdf4;
+    }
+
+    .option.wrong {
+      border-color: #dc2626;
+      background: #fef2f2;
+    }
+
+    .option-letter {
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .option-text {
+      line-height: 1.5;
+      padding-top: 4px;
+    }
+
+    .feedback {
+      display: none;
+      margin-top: 22px;
+      padding: 18px;
+      border-radius: 12px;
+      line-height: 1.6;
+    }
+
+    .feedback.correct {
+      display: block;
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+
+    .feedback.wrong {
+      display: block;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+
+    .feedback-title {
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 13px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-check {
+      background: #2563eb;
+      color: white;
+      flex: 1;
+    }
+
+    .btn-check:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-next {
+      background: #111827;
+      color: white;
+      flex: 1;
+      display: none;
+    }
+
+    .btn-next:hover {
+      background: #030712;
+    }
+
+    .btn-back {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .state {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 35px;
+      text-align: center;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .state.error {
+      color: #dc2626;
+    }
+
+    .finish-card {
+      display: none;
+      background: white;
+      border-radius: 16px;
+      padding: 35px;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+    }
+
+    .finish-card h2 {
+      margin-bottom: 12px;
+    }
+
+    .finish-score {
+      font-size: 42px;
+      font-weight: 800;
+      color: #2563eb;
+      margin: 20px 0;
+    }
+
+    .finish-text {
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .btn-retry {
+      display: inline-block;
+      background: #2563eb;
+      color: white;
+      text-decoration: none;
+      padding: 13px 22px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    footer {
+      background: #111827;
+      color: #9ca3af;
+      text-align: center;
+      padding: 25px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 700px) {
+      .navbar {
+        padding: 14px 5%;
+      }
+
+      .logo {
+        font-size: 16px;
+      }
+
+      .nav-links {
+        gap: 10px;
+      }
+
+      .nav-links a {
+        font-size: 11px;
+      }
+
+      .hero {
+        padding: 35px 5%;
+      }
+
+      .hero h1 {
+        font-size: 27px;
+      }
+
+      .container {
+        width: 92%;
+      }
+
+      .question-card {
+        padding: 20px;
+      }
+
+      .question-text {
+        font-size: 17px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn-back,
+      .btn-check,
+      .btn-next {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+      Medical Learning Hub
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="materi/index.html">Materi</a>
+      <a href="quiz.html">CBT</a>
+      <a href="banksoal.html">Bank Soal</a>
+    </div>
+  </nav>
+
+
+  <section class="hero">
+    <div class="hero-inner">
+      <h1>Mode Latihan</h1>
+      <p>
+        Kerjakan soal satu per satu dan dapatkan pembahasan langsung
+        setelah memilih jawaban.
+      </p>
+    </div>
+  </section>
+
+
+  <main class="container">
+
+    <div id="loadingState" class="state">
+      Memuat soal latihan...
+    </div>
+
+
+    <div id="mainContent" style="display:none;">
+
+      <div class="top-info">
+
+        <h2 id="quizTitle">
+          Bank Soal
+        </h2>
+
+        <div class="progress-wrapper">
+
+          <div class="progress-text">
+            <span id="progressText">
+              Soal 1 dari 1
+            </span>
+
+            <span id="scoreText">
+              Benar: 0
+            </span>
+          </div>
+
+          <div class="progress-bar">
+            <div
+              id="progressFill"
+              class="progress-fill"
+            ></div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div id="questionCard" class="question-card">
+
+        <div
+          id="questionNumber"
+          class="question-number"
+        >
+          Soal 1
+        </div>
+
+        <div
+          id="questionText"
+          class="question-text"
+        >
+          Pertanyaan...
+        </div>
+
+        <div
+          id="options"
+          class="options"
+        ></div>
+
+
+        <div
+          id="feedback"
+          class="feedback"
+        >
+          <div
+            id="feedbackTitle"
+            class="feedback-title"
+          ></div>
+
+          <div
+            id="feedbackExplanation"
+          ></div>
+        </div>
+
+
+        <div class="actions">
+
+          <button
+            id="backButton"
+            class="btn-back"
+            onclick="goBack()"
+          >
+            ← Kembali
+          </button>
+
+          <button
+            id="checkButton"
+            class="btn-check"
+            onclick="checkAnswer()"
+          >
+            Cek Jawaban
+          </button>
+
+          <button
+            id="nextButton"
+            class="btn-next"
+            onclick="nextQuestion()"
+          >
+            Soal Berikutnya →
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="finishCard"
+        class="finish-card"
+      >
+
+        <h2>🎉 Latihan Selesai!</h2>
+
+        <div
+          id="finishScore"
+          class="finish-score"
+        >
+          0%
+        </div>
+
+        <p
+          id="finishText"
+          class="finish-text"
+        ></p>
+
+        <a
+          id="retryButton"
+          href="#"
+          class="btn-retry"
+        >
+          Ulangi Latihan
+        </a>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <footer>
+    © 2026 Medical Learning Hub
+  </footer>
+
+
+  <script>
+
+    /* ============================
+       SUPABASE
+    ============================ */
+
+    const SUPABASE_URL =
+      "https://hqzishiazabguknallei.supabase.co";
+
+    const SUPABASE_KEY =
+      "PASTE_PUBLISHABLE_KEY_KAMU_DI_SINI";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    /* ============================
+       STATE
+    ============================ */
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const quizId =
+      params.get("id");
+
+
+    let quiz = null;
+    let questions = [];
+
+    let currentIndex = 0;
+
+    let selectedOptionId = null;
+
+    let answered = false;
+
+    let correctCount = 0;
+
+
+    /* ============================
+       ELEMENTS
+    ============================ */
+
+    const loadingState =
+      document.getElementById(
+        "loadingState"
+      );
+
+    const mainContent =
+      document.getElementById(
+        "mainContent"
+      );
+
+    const quizTitle =
+      document.getElementById(
+        "quizTitle"
+      );
+
+    const progressText =
+      document.getElementById(
+        "progressText"
+      );
+
+    const scoreText =
+      document.getElementById(
+        "scoreText"
+      );
+
+    const progressFill =
+      document.getElementById(
+        "progressFill"
+      );
+
+    const questionNumber =
+      document.getElementById(
+        "questionNumber"
+      );
+
+    const questionText =
+      document.getElementById(
+        "questionText"
+      );
+
+    const optionsContainer =
+      document.getElementById(
+        "options"
+      );
+
+    const feedback =
+      document.getElementById(
+        "feedback"
+      );
+
+    const feedbackTitle =
+      document.getElementById(
+        "feedbackTitle"
+      );
+
+    const feedbackExplanation =
+      document.getElementById(
+        "feedbackExplanation"
+      );
+
+    const checkButton =
+      document.getElementById(
+        "checkButton"
+      );
+
+    const nextButton =
+      document.getElementById(
+        "nextButton"
+      );
+
+    const backButton =
+      document.getElementById(
+        "backButton"
+      );
+
+    const finishCard =
+      document.getElementById(
+        "finishCard"
+      );
+
+    const finishScore =
+      document.getElementById(
+        "finishScore"
+      );
+
+    const finishText =
+      document.getElementById(
+        "finishText"
+      );
+
+    const retryButton =
+      document.getElementById(
+        "retryButton"
+      );
+
+
+    /* ============================
+       ESCAPE HTML
+    ============================ */
+
+    function escapeHtml(value) {
+
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    /* ============================
+       LOAD QUIZ
+    ============================ */
+
+    async function loadQuiz() {
+
+      if (!quizId) {
+
+        showError(
+          "ID bank soal tidak ditemukan."
+        );
+
+        return;
+      }
+
+
+      const {
+        data: quizData,
+        error: quizError
+      } =
+        await supabaseClient
+          .from("quizzes")
+          .select(`
+            id,
+            title,
+            description,
+            status
+          `)
+          .eq("id", quizId)
+          .eq("status", "published")
+          .single();
+
+
+      if (quizError) {
+
+        console.error(quizError);
+
+        showError(
+          "Bank soal tidak ditemukan atau belum dipublikasikan."
+        );
+
+        return;
+      }
+
+
+      quiz = quizData;
+
+
+      const {
+        data: questionData,
+        error: questionError
+      } =
+        await supabaseClient
+          .from("quiz_questions")
+          .select(`
+            id,
+            question_number,
+            question,
+            explanation
+          `)
+          .eq("quiz_id", quizId)
+          .order("question_number", {
+            ascending: true
+          });
+
+
+      if (questionError) {
+
+        console.error(questionError);
+
+        showError(
+          "Gagal memuat pertanyaan."
+        );
+
+        return;
+      }
+
+
+      if (!questionData || questionData.length === 0) {
+
+        showError(
+          "Bank soal ini belum memiliki pertanyaan."
+        );
+
+        return;
+      }
+
+
+      /*
+        Ambil pilihan jawaban melalui view aman.
+        is_correct TIDAK dikirim ke browser.
+      */
+
+      const questionIds =
+        questionData.map(
+          q => q.id
+        );
+
+
+      const {
+        data: optionData,
+        error: optionError
+      } =
+        await supabaseClient
+          .from("quiz_question_options")
+          .select(`
+            id,
+            question_id,
+            option_text
+          `)
+          .in(
+            "question_id",
+            questionIds
+          );
+
+
+      if (optionError) {
+
+        console.error(optionError);
+
+        showError(
+          "Gagal memuat pilihan jawaban."
+        );
+
+        return;
+      }
+
+
+      questions =
+        questionData.map(question => {
+
+          const options =
+            (optionData || [])
+              .filter(
+                option =>
+                  option.question_id ===
+                  question.id
+              )
+              .sort(
+                (a, b) =>
+                  a.id - b.id
+              );
+
+
+          return {
+            ...question,
+            options
+          };
+
+        });
+
+
+      quizTitle.textContent =
+        quiz.title;
+
+
+      retryButton.href =
+        `latihan.html?id=${quizId}`;
+
+
+      loadingState.style.display =
+        "none";
+
+      mainContent.style.display =
+        "block";
+
+
+      renderQuestion();
+    }
+
+
+    /* ============================
+       RENDER QUESTION
+    ============================ */
+
+    function renderQuestion() {
+
+      const current =
+        questions[currentIndex];
+
+
+      if (!current) {
+
+        finishQuiz();
+
+        return;
+      }
+
+
+      selectedOptionId = null;
+
+      answered = false;
+
+
+      questionNumber.textContent =
+        `Soal ${currentIndex + 1}`;
+
+
+      questionText.textContent =
+        current.question;
+
+
+      progressText.textContent =
+        `Soal ${currentIndex + 1} dari ${questions.length}`;
+
+
+      scoreText.textContent =
+        `Benar: ${correctCount}`;
+
+
+      const progress =
+        ((currentIndex + 1) /
+          questions.length) *
+        100;
+
+
+      progressFill.style.width =
+        `${progress}%`;
+
+
+      optionsContainer.innerHTML =
+        current.options.map(
+          (option, index) => {
+
+            const letter =
+              String.fromCharCode(
+                65 + index
+              );
+
+
+            return `
+              <div
+                class="option"
+                data-option-id="${option.id}"
+                onclick="selectOption(${option.id})"
+              >
+
+                <div class="option-letter">
+                  ${letter}
+                </div>
+
+                <div class="option-text">
+                  ${escapeHtml(option.option_text)}
+                </div>
+
+              </div>
+            `;
+
+          }
+        ).join("");
+
+
+      feedback.className =
+        "feedback";
+
+      feedbackTitle.textContent =
+        "";
+
+      feedbackExplanation.textContent =
+        "";
+
+
+      checkButton.style.display =
+        "block";
+
+      nextButton.style.display =
+        "none";
+
+      backButton.style.display =
+        currentIndex > 0
+          ? "block"
+          : "block";
+    }
+
+
+    /* ============================
+       SELECT OPTION
+    ============================ */
+
+    function selectOption(optionId) {
+
+      if (answered) return;
+
+
+      selectedOptionId =
+        optionId;
+
+
+      document
+        .querySelectorAll(".option")
+        .forEach(option => {
+
+          option.classList.remove(
+            "selected"
+          );
+
+        });
+
+
+      const selected =
+        document.querySelector(
+          `[data-option-id="${optionId}"]`
+        );
+
+
+      if (selected) {
+
+        selected.classList.add(
+          "selected"
+        );
+
+      }
+    }
+
+
+    /* ============================
+       CHECK ANSWER
+    ============================ */
+
+    async function checkAnswer() {
+
+      if (answered) return;
+
+
+      if (!selectedOptionId) {
+
+        alert(
+          "Pilih salah satu jawaban terlebih dahulu."
+        );
+
+        return;
+      }
+
+
+      const current =
+        questions[currentIndex];
+
+
+      /*
+        Karena is_correct sengaja tidak
+        dikirim ke browser, pengecekan
+        jawaban dilakukan melalui RPC.
+      */
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.rpc(
+          "check_quiz_answer",
+          {
+            p_question_id:
+              current.id,
+
+            p_option_id:
+              selectedOptionId
+          }
+        );
+
+
+      if (error) {
+
+        console.error(error);
+
+        /*
+          Jika RPC belum tersedia,
+          jangan mengarang hasil jawaban.
+        */
+
+        alert(
+          "Fitur pengecekan jawaban belum tersedia di database."
+        );
+
+        return;
+      }
+
+
+      answered = true;
+
+
+      const isCorrect =
+        data === true ||
+        data?.is_correct === true;
+
+
+      if (isCorrect) {
+
+        correctCount++;
+
+        showCorrect();
+
+      } else {
+
+        showWrong();
+
+      }
+
+
+      scoreText.textContent =
+        `Benar: ${correctCount}`;
+
+
+      checkButton.style.display =
+        "none";
+
+      nextButton.style.display =
+        "block";
+
+
+      if (
+        currentIndex ===
+        questions.length - 1
+      ) {
+
+        nextButton.textContent =
+          "Lihat Hasil →";
+
+      } else {
+
+        nextButton.textContent =
+          "Soal Berikutnya →";
+
+      }
+    }
+
+
+    /* ============================
+       CORRECT
+    ============================ */
+
+    function showCorrect() {
+
+      feedback.className =
+        "feedback correct";
+
+      feedbackTitle.textContent =
+        "✓ Jawaban Benar!";
+
+      feedbackExplanation.textContent =
+        questions[currentIndex]
+          .explanation ||
+        "Tidak ada pembahasan untuk soal ini.";
+
+
+      markOptions();
+    }
+
+
+    /* ============================
+       WRONG
+    ============================ */
+
+    function showWrong() {
+
+      feedback.className =
+        "feedback wrong";
+
+      feedbackTitle.textContent =
+        "✕ Jawaban Belum Tepat";
+
+      feedbackExplanation.textContent =
+        questions[currentIndex]
+          .explanation ||
+        "Tidak ada pembahasan untuk soal ini.";
+
+
+      markOptions();
+    }
+
+
+    /* ============================
+       MARK OPTIONS
+    ============================ */
+
+    function markOptions() {
+
+      document
+        .querySelectorAll(".option")
+        .forEach(option => {
+
+          option.classList.add(
+            "disabled"
+          );
+
+        });
+
+
+      const selected =
+        document.querySelector(
+          `[data-option-id="${selectedOptionId}"]`
+        );
+
+
+      if (selected) {
+
+        if (
+          feedback.classList.contains(
+            "correct"
+          )
+        ) {
+
+          selected.classList.add(
+            "correct"
+          );
+
+        } else {
+
+          selected.classList.add(
+            "wrong"
+          );
+
+        }
+
+      }
+    }
+
+
+    /* ============================
+       NEXT QUESTION
+    ============================ */
+
+    function nextQuestion() {
+
+      if (!answered) return;
+
+
+      if (
+        currentIndex >=
+        questions.length - 1
+      ) {
+
+        finishQuiz();
+
+        return;
+      }
+
+
+      currentIndex++;
+
+      renderQuestion();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+
+    /* ============================
+       BACK
+    ============================ */
+
+    function goBack() {
+
+      if (currentIndex === 0) {
+
+        window.location.href =
+          `banksoal.html`;
+
+        return;
+      }
+
+
+      if (answered) {
+
+        currentIndex--;
+
+        renderQuestion();
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
+        return;
+      }
+
+
+      currentIndex--;
+
+      renderQuestion();
+    }
+
+
+    /* ============================
+       FINISH
+    ============================ */
+
+    function finishQuiz() {
+
+      document
+        .getElementById(
+          "questionCard"
+        )
+        .style.display = "none";
+
+
+      finishCard.style.display =
+        "block";
+
+
+      const percentage =
+        Math.round(
+          (correctCount /
+            questions.length) *
+          100
+        );
+
+
+      finishScore.textContent =
+        `${percentage}%`;
+
+
+      finishText.textContent =
+        `Kamu menjawab ${correctCount} dari ${questions.length} soal dengan benar.`;
+    }
+
+
+    /* ============================
+       ERROR
+    ============================ */
+
+    function showError(message) {
+
+      loadingState.className =
+        "state error";
+
+      loadingState.innerHTML =
+        escapeHtml(message);
+    }
+
+
+    /* ============================
+       START
+    ============================ */
+
+    loadQuiz();
+
+  </script>
+
+</body>
+  </html>
