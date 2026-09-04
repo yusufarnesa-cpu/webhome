@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Bank Soal | Medical Learning Hub</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .nav-links a:hover {
+      color: #2563eb;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: white;
+      padding: 55px 6%;
+    }
+
+    .hero-content {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .hero h1 {
+      font-size: 38px;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      max-width: 700px;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* MAIN */
+    .container {
+      width: 88%;
+      max-width: 1100px;
+      margin: 35px auto 60px;
+    }
+
+    /* SEARCH */
+    .search-box {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 28px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .search-box input:focus {
+      border-color: #2563eb;
+    }
+
+    /* HEADER */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+
+    .section-header h2 {
+      font-size: 24px;
+    }
+
+    .count {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    /* GRID */
+    .bank-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    /* CARD */
+    .bank-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid #e5e7eb;
+      transition: 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      min-height: 230px;
+    }
+
+    .bank-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .badge {
+      display: inline-block;
+      width: fit-content;
+      background: #eff6ff;
+      color: #2563eb;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .bank-card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+
+    .description {
+      color: #6b7280;
+      line-height: 1.6;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    .meta {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .card-bottom {
+      margin-top: auto;
+    }
+
+    .btn {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      background: #2563eb;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
+    }
+
+    /* STATES */
+    .state {
+      background: white;
+      border-radius: 14px;
+      padding: 35px;
+      text-align: center;
+      color: #6b7280;
+      border: 1px solid #e5e7eb;
+    }
+
+    .state.error {
+      color: #dc2626;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #111827;
+      color: #9ca3af;
+      text-align: center;
+      padding: 25px;
+      font-size: 13px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 700px) {
+      .navbar {
+        padding: 14px 5%;
+      }
+
+      .nav-links {
+        gap: 12px;
+      }
+
+      .nav-links a {
+        font-size: 12px;
+      }
+
+      .hero {
+        padding: 40px 5%;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+
+      .container {
+        width: 90%;
+      }
+
+      .bank-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+      Medical Learning Hub
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="materi/index.html">Materi</a>
+      <a href="quiz.html">CBT</a>
+      <a href="banksoal.html">Bank Soal</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Bank Soal</h1>
+      <p>
+        Kumpulan soal kedokteran untuk membantu kamu menguji pemahaman,
+        menemukan kelemahan, dan mempersiapkan diri sebelum menghadapi CBT.
+      </p>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <main class="container">
+
+    <!-- SEARCH -->
+    <div class="search-box">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Cari bank soal berdasarkan nama atau kategori..."
+      />
+    </div>
+
+    <!-- HEADER -->
+    <div class="section-header">
+      <h2>Kumpulan Bank Soal</h2>
+      <div class="count" id="resultCount">
+        Memuat...
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="bankGrid" class="bank-grid">
+      <div class="state">
+        Memuat bank soal...
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2026 Medical Learning Hub
+  </footer>
+
+  <script>
+    /* ============================
+       SUPABASE CONFIGURATION
+    ============================ */
+
+    const SUPABASE_URL =
+      "https://hqzishiazabguknallei.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    /* ============================
+       ELEMENTS
+    ============================ */
+
+    const bankGrid =
+      document.getElementById("bankGrid");
+
+    const resultCount =
+      document.getElementById("resultCount");
+
+    const searchInput =
+      document.getElementById("searchInput");
+
+
+    let bankSoalData = [];
+
+
+    /* ============================
+       LOAD BANK SOAL
+    ============================ */
+
+    async function loadBankSoal() {
+
+      bankGrid.innerHTML = `
+        <div class="state">
+          Memuat bank soal...
+        </div>
+      `;
+
+      /*
+        Hanya mengambil CBT yang sudah published.
+        CBT draft tidak akan muncul di Bank Soal.
+      */
+
+      const { data: quizzes, error } =
+        await supabaseClient
+          .from("quizzes")
+          .select(`
+            id,
+            title,
+            description,
+            duration_minutes,
+            status,
+            category_id,
+            categories (
+              name
+            )
+          `)
+          .eq("status", "published")
+          .order("created_at", {
+            ascending: false
+          });
+
+
+      if (error) {
+
+        console.error(error);
+
+        bankGrid.innerHTML = `
+          <div class="state error">
+            Gagal memuat bank soal.
+            <br><br>
+            ${escapeHtml(error.message)}
+          </div>
+        `;
+
+        resultCount.textContent = "Terjadi kesalahan";
+
+        return;
+      }
+
+
+      if (!quizzes || quizzes.length === 0) {
+
+        bankGrid.innerHTML = `
+          <div class="state">
+            Belum ada bank soal yang tersedia.
+          </div>
+        `;
+
+        resultCount.textContent = "0 bank soal";
+
+        return;
+      }
+
+
+      /*
+        Ambil jumlah soal untuk setiap quiz.
+      */
+
+      const result = [];
+
+      for (const quiz of quizzes) {
+
+        const { count, error: countError } =
+          await supabaseClient
+            .from("quiz_questions")
+            .select("id", {
+              count: "exact",
+              head: true
+            })
+            .eq("quiz_id", quiz.id);
+
+
+        if (countError) {
+
+          console.error(
+            "Gagal menghitung soal:",
+            countError
+          );
+
+          result.push({
+            ...quiz,
+            question_count: 0
+          });
+
+        } else {
+
+          result.push({
+            ...quiz,
+            question_count: count || 0
+          });
+
+        }
+      }
+
+
+      bankSoalData = result;
+
+      renderBankSoal(bankSoalData);
+    }
+
+
+    /* ============================
+       RENDER
+    ============================ */
+
+    function renderBankSoal(data) {
+
+      resultCount.textContent =
+        `${data.length} bank soal`;
+
+
+      if (data.length === 0) {
+
+        bankGrid.innerHTML = `
+          <div class="state">
+            Bank soal yang kamu cari tidak ditemukan.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      bankGrid.innerHTML =
+        data.map(quiz => {
+
+          const category =
+            quiz.categories?.name ||
+            "Tanpa kategori";
+
+
+          const description =
+            quiz.description ||
+            "Kumpulan soal untuk latihan mandiri.";
+
+
+          const duration =
+            quiz.duration_minutes
+              ? `${quiz.duration_minutes} menit`
+              : "Tanpa batas waktu";
+
+
+          return `
+            <article class="bank-card">
+
+              <span class="badge">
+                ${escapeHtml(category)}
+              </span>
+
+              <h3>
+                ${escapeHtml(quiz.title)}
+              </h3>
+
+              <p class="description">
+                ${escapeHtml(description)}
+              </p>
+
+              <div class="meta">
+
+                <span>
+                  📝 ${quiz.question_count} soal
+                </span>
+
+                <span>
+                  ⏱️ ${escapeHtml(duration)}
+                </span>
+
+              </div>
+
+              <div class="card-bottom">
+
+                <a
+                  href="latihan.html?id=${quiz.id}"
+                  class="btn"
+                >
+                  Mulai Latihan
+                </a>
+
+              </div>
+
+            </article>
+          `;
+
+        }).join("");
+    }
+
+
+    /* ============================
+       SEARCH
+    ============================ */
+
+    searchInput.addEventListener(
+      "input",
+      function () {
+
+        const keyword =
+          this.value
+            .trim()
+            .toLowerCase();
+
+
+        if (!keyword) {
+
+          renderBankSoal(bankSoalData);
+
+          return;
+        }
+
+
+        const filtered =
+          bankSoalData.filter(quiz => {
+
+            const title =
+              (quiz.title || "")
+                .toLowerCase();
+
+            const description =
+              (quiz.description || "")
+                .toLowerCase();
+
+            const category =
+              (quiz.categories?.name || "")
+                .toLowerCase();
+
+
+            return (
+              title.includes(keyword) ||
+              description.includes(keyword) ||
+              category.includes(keyword)
+            );
+
+          });
+
+
+        renderBankSoal(filtered);
+      }
+    );
+
+
+    /* ============================
+       SECURITY / HTML ESCAPE
+    ============================ */
+
+    function escapeHtml(value) {
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    /* ============================
+       START
+    ============================ */
+
+    loadBankSoal();
+
+  </script>
+
+</body>
+</html>
