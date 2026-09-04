@@ -80,6 +80,12 @@
       width: 100%;
     }
 
+    .add-category-btn {
+      background: #172033;
+      color: white;
+      width: 100%;
+    }
+
     .delete-btn {
       background: #e74c3c;
       color: white;
@@ -96,18 +102,21 @@
       float: right;
     }
 
-    .material {
+    .material,
+    .category-item {
       border: 1px solid #eee;
       border-radius: 10px;
       padding: 15px;
       margin-top: 12px;
     }
 
-    .material h3 {
+    .material h3,
+    .category-item h3 {
       margin-top: 0;
     }
 
-    #message {
+    #message,
+    #categoryMessage {
       margin-top: 12px;
       font-weight: bold;
     }
@@ -125,6 +134,18 @@
       margin-top: -8px;
       margin-bottom: 12px;
     }
+
+    .category-count {
+      font-size: 13px;
+      color: #667085;
+      margin-bottom: 10px;
+    }
+
+    .danger-info {
+      font-size: 13px;
+      color: #667085;
+      margin-top: 5px;
+    }
   </style>
 </head>
 
@@ -136,6 +157,60 @@
 </header>
 
 <div class="container">
+
+  <!-- =========================
+       KELOLA BLOK
+  ========================== -->
+
+  <div class="card">
+
+    <h2>Kelola Blok Materi</h2>
+
+    <p class="category-info">
+      Tambahkan blok baru untuk mengelompokkan materi di halaman Materi.
+    </p>
+
+    <label class="field-label" for="categoryName">
+      Nama Blok
+    </label>
+
+    <input
+      type="text"
+      id="categoryName"
+      placeholder="Contoh: Cardiovascular System"
+    >
+
+    <label class="field-label" for="categoryDescription">
+      Deskripsi Blok
+    </label>
+
+    <textarea
+      id="categoryDescription"
+      placeholder="Deskripsi singkat tentang blok ini"
+    ></textarea>
+
+    <button
+      class="add-category-btn"
+      onclick="addCategory()">
+      + Tambah Blok
+    </button>
+
+    <div id="categoryMessage"></div>
+
+    <hr style="margin: 22px 0; border: none; border-top: 1px solid #eee;">
+
+    <h3>Blok yang tersedia</h3>
+
+    <div id="categoryList">
+      Memuat blok...
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       TAMBAH / EDIT MATERI
+  ========================== -->
 
   <div class="card">
 
@@ -165,20 +240,14 @@
       placeholder="Topik"
     >
 
-    <!-- =========================
-         BLOK / KATEGORI
-    ========================== -->
-
     <label class="field-label" for="category">
       Blok / Kategori
     </label>
 
     <select id="category">
-
       <option value="">
         Pilih blok materi
       </option>
-
     </select>
 
     <div class="category-info">
@@ -195,7 +264,9 @@
       placeholder="Isi materi"
     ></textarea>
 
-    <button class="save-btn" onclick="saveMaterial()">
+    <button
+      class="save-btn"
+      onclick="saveMaterial()">
       Simpan Materi
     </button>
 
@@ -203,6 +274,10 @@
 
   </div>
 
+
+  <!-- =========================
+       DAFTAR MATERI
+  ========================== -->
 
   <div class="card">
 
@@ -247,27 +322,20 @@ async function checkAdmin() {
 
   if (!user) {
 
-    window.location.href =
-      "login.html";
+    window.location.href = "login.html";
 
     return;
   }
-
 
   const {
     data: profile,
     error
   } =
     await supabaseClient
-
       .from("profiles")
-
       .select("role")
-
       .eq("id", user.id)
-
       .single();
-
 
   if (
     error ||
@@ -275,22 +343,20 @@ async function checkAdmin() {
     profile.role !== "admin"
   ) {
 
-    alert(
-      "Akses ditolak. Kamu bukan admin."
-    );
+    alert("Akses ditolak. Kamu bukan admin.");
 
     await supabaseClient.auth.signOut();
 
-    window.location.href =
-      "login.html";
+    window.location.href = "login.html";
 
     return;
   }
 
-
   await loadCategories();
 
   loadMaterials();
+
+  loadCategoryList();
 
 }
 
@@ -304,21 +370,16 @@ async function loadCategories() {
   const select =
     document.getElementById("category");
 
-
   const {
     data,
     error
   } =
     await supabaseClient
-
       .from("categories")
-
       .select("id, name")
-
       .order("id", {
         ascending: true
       });
-
 
   if (error) {
 
@@ -336,13 +397,11 @@ async function loadCategories() {
     return;
   }
 
-
   select.innerHTML = `
     <option value="">
       Pilih blok materi
     </option>
   `;
-
 
   data.forEach(category => {
 
@@ -358,6 +417,240 @@ async function loadCategories() {
     select.appendChild(option);
 
   });
+
+}
+
+
+/* =========================
+   DAFTAR BLOK
+========================= */
+
+async function loadCategoryList() {
+
+  const container =
+    document.getElementById("categoryList");
+
+  container.innerHTML =
+    "Memuat blok...";
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("categories")
+      .select("*")
+      .order("id", {
+        ascending: true
+      });
+
+  if (error) {
+
+    container.innerHTML =
+      "Gagal memuat blok: " +
+      error.message;
+
+    return;
+  }
+
+  if (!data || data.length === 0) {
+
+    container.innerHTML =
+      "Belum ada blok.";
+
+    return;
+  }
+
+  container.innerHTML = "";
+
+  data.forEach(category => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "category-item";
+
+    div.innerHTML = `
+
+      <h3>
+        ${escapeHtml(category.name)}
+      </h3>
+
+      <p>
+        ${escapeHtml(
+          category.description || "Tidak ada deskripsi."
+        )}
+      </p>
+
+      <button
+        class="delete-btn"
+        onclick="deleteCategory(${category.id})">
+        Hapus Blok
+      </button>
+
+    `;
+
+    container.appendChild(div);
+
+  });
+
+}
+
+
+/* =========================
+   TAMBAH BLOK
+========================= */
+
+async function addCategory() {
+
+  const name =
+    document
+      .getElementById("categoryName")
+      .value
+      .trim();
+
+  const description =
+    document
+      .getElementById("categoryDescription")
+      .value
+      .trim();
+
+  const message =
+    document.getElementById(
+      "categoryMessage"
+    );
+
+
+  if (!name) {
+
+    message.textContent =
+      "Nama blok wajib diisi.";
+
+    return;
+  }
+
+
+  message.textContent =
+    "Menyimpan blok...";
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("categories")
+      .insert({
+        name: name,
+        description: description
+      });
+
+
+  if (error) {
+
+    message.textContent =
+      "Gagal menambahkan blok: " +
+      error.message;
+
+    console.error(error);
+
+    return;
+  }
+
+
+  message.textContent =
+    "Blok berhasil ditambahkan.";
+
+  document
+    .getElementById("categoryName")
+    .value = "";
+
+  document
+    .getElementById("categoryDescription")
+    .value = "";
+
+
+  await loadCategories();
+
+  await loadCategoryList();
+
+}
+
+
+/* =========================
+   HAPUS BLOK
+========================= */
+
+async function deleteCategory(id) {
+
+  const {
+    count,
+    error: countError
+  } =
+    await supabaseClient
+      .from("materials")
+      .select("id", {
+        count: "exact",
+        head: true
+      })
+      .eq("category_id", id);
+
+
+  if (countError) {
+
+    alert(
+      "Gagal memeriksa materi: " +
+      countError.message
+    );
+
+    return;
+  }
+
+
+  if (count > 0) {
+
+    alert(
+      "Blok ini tidak bisa dihapus karena masih memiliki " +
+      count +
+      " materi."
+    );
+
+    return;
+  }
+
+
+  const yakin =
+    confirm(
+      "Yakin ingin menghapus blok ini?"
+    );
+
+
+  if (!yakin) return;
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("categories")
+      .delete()
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Gagal menghapus blok: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadCategories();
+
+  await loadCategoryList();
 
 }
 
@@ -380,16 +673,13 @@ async function loadMaterials() {
     error
   } =
     await supabaseClient
-
       .from("materials")
-
       .select(`
         *,
         categories (
           name
         )
       `)
-
       .order("created_at", {
         ascending: false
       });
@@ -496,13 +786,11 @@ async function saveMaterial() {
       .value
       .trim();
 
-
   const subject =
     document
       .getElementById("subject")
       .value
       .trim();
-
 
   const semester =
     document
@@ -510,13 +798,11 @@ async function saveMaterial() {
       .value
       .trim();
 
-
   const topic =
     document
       .getElementById("topic")
       .value
       .trim();
-
 
   const description =
     document
@@ -524,25 +810,20 @@ async function saveMaterial() {
       .value
       .trim();
 
-
   const content =
     document
       .getElementById("content")
       .value
       .trim();
 
-
   const category =
     document
       .getElementById("category")
       .value;
 
-
   const message =
     document.getElementById("message");
 
-
-  /* VALIDASI */
 
   if (!title) {
 
@@ -565,8 +846,6 @@ async function saveMaterial() {
   message.textContent =
     "Menyimpan...";
 
-
-  /* DATA MATERIAL */
 
   const materialData = {
 
@@ -594,17 +873,12 @@ async function saveMaterial() {
   let result;
 
 
-  /* UPDATE */
-
   if (editingId) {
 
     result =
       await supabaseClient
-
         .from("materials")
-
         .update(materialData)
-
         .eq(
           "id",
           editingId
@@ -612,15 +886,11 @@ async function saveMaterial() {
 
   }
 
-  /* INSERT */
-
   else {
 
     result =
       await supabaseClient
-
         .from("materials")
-
         .insert(
           materialData
         );
@@ -666,7 +936,7 @@ async function saveMaterial() {
 
 
 /* =========================
-   EDIT
+   EDIT MATERIAL
 ========================= */
 
 async function editMaterial(id) {
@@ -676,13 +946,9 @@ async function editMaterial(id) {
     error
   } =
     await supabaseClient
-
       .from("materials")
-
       .select("*")
-
       .eq("id", id)
-
       .single();
 
 
@@ -711,36 +977,30 @@ async function editMaterial(id) {
     .value =
       data.title || "";
 
-
   document
     .getElementById("subject")
     .value =
       data.subject || "";
-
 
   document
     .getElementById("semester")
     .value =
       data.semester || "";
 
-
   document
     .getElementById("topic")
     .value =
       data.topic || "";
-
 
   document
     .getElementById("description")
     .value =
       data.description || "";
 
-
   document
     .getElementById("content")
     .value =
       data.content || "";
-
 
   document
     .getElementById("category")
@@ -760,7 +1020,7 @@ async function editMaterial(id) {
 
 
 /* =========================
-   HAPUS
+   HAPUS MATERIAL
 ========================= */
 
 async function deleteMaterial(id) {
@@ -778,11 +1038,8 @@ async function deleteMaterial(id) {
     error
   } =
     await supabaseClient
-
       .from("materials")
-
       .delete()
-
       .eq(
         "id",
         id
@@ -815,31 +1072,25 @@ function clearForm() {
     .getElementById("title")
     .value = "";
 
-
   document
     .getElementById("subject")
     .value = "";
-
 
   document
     .getElementById("semester")
     .value = "";
 
-
   document
     .getElementById("topic")
     .value = "";
-
 
   document
     .getElementById("description")
     .value = "";
 
-
   document
     .getElementById("content")
     .value = "";
-
 
   document
     .getElementById("category")
