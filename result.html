@@ -1,0 +1,376 @@
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Hasil CBT | Medical Learning Hub</title>  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    nav {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 6%;
+    }
+
+    .logo {
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 800px;
+      margin: 50px auto;
+    }
+
+    .result-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 35px;
+      text-align: center;
+    }
+
+    .result-icon {
+      font-size: 50px;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .quiz-title {
+      color: #6b7280;
+      margin-bottom: 25px;
+    }
+
+    .participant {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 25px;
+    }
+
+    .score {
+      font-size: 56px;
+      font-weight: bold;
+      color: #2563eb;
+      margin: 20px 0 30px;
+    }
+
+    .score-label {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .stat {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 18px 10px;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .correct {
+      color: #16a34a;
+    }
+
+    .wrong {
+      color: #dc2626;
+    }
+
+    .total {
+      color: #2563eb;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    a {
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 10px;
+      padding: 12px 20px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .error {
+      color: #dc2626;
+      background: #fee2e2;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    @media (max-width: 600px) {
+
+      .container {
+        width: 94%;
+        margin: 30px auto;
+      }
+
+      .result-card {
+        padding: 25px 18px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .score {
+        font-size: 46px;
+      }
+
+    }
+  </style></head><body>  <nav>
+    <a href="quiz.html" class="logo">
+      Medical Learning Hub
+    </a>
+  </nav>  <main class="container"><div id="resultContainer" class="result-card">
+
+  <div class="result-icon">
+    🎉
+  </div>
+
+  <h1>
+    CBT Selesai
+  </h1>
+
+  <p
+    id="quizTitle"
+    class="quiz-title"
+  ></p>
+
+  <div
+    id="participant"
+    class="participant"
+  ></div>
+
+  <div class="score-label">
+    NILAI
+  </div>
+
+  <div
+    id="score"
+    class="score"
+  >
+    -
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <div
+        id="totalQuestions"
+        class="stat-number total"
+      >
+        -
+      </div>
+
+      <div class="stat-label">
+        Total Soal
+      </div>
+    </div>
+
+    <div class="stat">
+      <div
+        id="correctAnswers"
+        class="stat-number correct"
+      >
+        -
+      </div>
+
+      <div class="stat-label">
+        Jawaban Benar
+      </div>
+    </div>
+
+    <div class="stat">
+      <div
+        id="wrongAnswers"
+        class="stat-number wrong"
+      >
+        -
+      </div>
+
+      <div class="stat-label">
+        Jawaban Salah
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+
+    <a
+      href="quiz.html"
+      class="btn-primary"
+    >
+      ← Kembali ke Daftar CBT
+    </a>
+
+    <button
+      class="btn-secondary"
+      onclick="window.print()"
+    >
+      🖨️ Cetak Hasil
+    </button>
+
+  </div>
+
+</div>
+
+  </main>  <script>
+
+    const resultContainer =
+      document.getElementById(
+        "resultContainer"
+      );
+
+
+    // Ambil hasil dari sessionStorage
+    const rawResult =
+      sessionStorage.getItem(
+        "cbt_result"
+      );
+
+
+    if (!rawResult) {
+
+      resultContainer.innerHTML = `
+        <div class="error">
+          <h2>Hasil CBT tidak ditemukan</h2>
+          <p style="margin-top:10px;">
+            Silakan kembali ke daftar CBT.
+          </p>
+          <a
+            href="quiz.html"
+            class="btn-primary"
+            style="display:inline-block; margin-top:20px;"
+          >
+            Kembali ke CBT
+          </a>
+        </div>
+      `;
+
+    } else {
+
+      try {
+
+        const result =
+          JSON.parse(
+            rawResult
+          );
+
+
+        document.getElementById(
+          "quizTitle"
+        ).textContent =
+          result.quiz_title ||
+          "CBT";
+
+
+        document.getElementById(
+          "participant"
+        ).textContent =
+          `Peserta: ${result.participant_name || "-"}`;
+
+
+        document.getElementById(
+          "score"
+        ).textContent =
+          Number(
+            result.score || 0
+          ).toFixed(2);
+
+
+        document.getElementById(
+          "totalQuestions"
+        ).textContent =
+          result.total_questions ||
+          0;
+
+
+        document.getElementById(
+          "correctAnswers"
+        ).textContent =
+          result.correct_answers ||
+          0;
+
+
+        document.getElementById(
+          "wrongAnswers"
+        ).textContent =
+          result.wrong_answers ||
+          0;
+
+      } catch (error) {
+
+        console.error(error);
+
+        resultContainer.innerHTML = `
+          <div class="error">
+            <h2>Data hasil tidak dapat dibaca.</h2>
+            <p style="margin-top:10px;">
+              Silakan kembali ke daftar CBT.
+            </p>
+            <a
+              href="quiz.html"
+              class="btn-primary"
+              style="display:inline-block; margin-top:20px;"
+            >
+              Kembali ke CBT
+            </a>
+          </div>
+        `;
+
+      }
+
+    }
+
+  </script></body>
+</html>
