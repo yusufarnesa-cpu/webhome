@@ -331,6 +331,7 @@
     }
 
     @media (max-width: 700px) {
+
       .navbar {
         padding: 14px 5%;
       }
@@ -383,6 +384,7 @@
 <body>
 
   <nav class="navbar">
+
     <a href="index.html" class="logo">
       Medical Learning Hub
     </a>
@@ -393,17 +395,23 @@
       <a href="quiz.html">CBT</a>
       <a href="banksoal.html">Bank Soal</a>
     </div>
+
   </nav>
 
 
   <section class="hero">
+
     <div class="hero-inner">
+
       <h1>Mode Latihan</h1>
+
       <p>
         Kerjakan soal satu per satu dan dapatkan pembahasan langsung
         setelah memilih jawaban.
       </p>
+
     </div>
+
   </section>
 
 
@@ -425,6 +433,7 @@
         <div class="progress-wrapper">
 
           <div class="progress-text">
+
             <span id="progressText">
               Soal 1 dari 1
             </span>
@@ -432,13 +441,16 @@
             <span id="scoreText">
               Benar: 0
             </span>
+
           </div>
 
           <div class="progress-bar">
+
             <div
               id="progressFill"
-              class="progress-fill"
-            ></div>
+              class="progress-fill">
+            </div>
+
           </div>
 
         </div>
@@ -450,36 +462,34 @@
 
         <div
           id="questionNumber"
-          class="question-number"
-        >
+          class="question-number">
           Soal 1
         </div>
 
         <div
           id="questionText"
-          class="question-text"
-        >
+          class="question-text">
           Pertanyaan...
         </div>
 
         <div
           id="options"
-          class="options"
-        ></div>
+          class="options">
+        </div>
 
 
         <div
           id="feedback"
-          class="feedback"
-        >
-          <div
-            id="feedbackTitle"
-            class="feedback-title"
-          ></div>
+          class="feedback">
 
           <div
-            id="feedbackExplanation"
-          ></div>
+            id="feedbackTitle"
+            class="feedback-title">
+          </div>
+
+          <div id="feedbackExplanation">
+          </div>
+
         </div>
 
 
@@ -488,24 +498,21 @@
           <button
             id="backButton"
             class="btn-back"
-            onclick="goBack()"
-          >
+            onclick="goBack()">
             ← Kembali
           </button>
 
           <button
             id="checkButton"
             class="btn-check"
-            onclick="checkAnswer()"
-          >
+            onclick="checkAnswer()">
             Cek Jawaban
           </button>
 
           <button
             id="nextButton"
             class="btn-next"
-            onclick="nextQuestion()"
-          >
+            onclick="nextQuestion()">
             Soal Berikutnya →
           </button>
 
@@ -516,28 +523,25 @@
 
       <div
         id="finishCard"
-        class="finish-card"
-      >
+        class="finish-card">
 
         <h2>🎉 Latihan Selesai!</h2>
 
         <div
           id="finishScore"
-          class="finish-score"
-        >
+          class="finish-score">
           0%
         </div>
 
         <p
           id="finishText"
-          class="finish-text"
-        ></p>
+          class="finish-text">
+        </p>
 
         <a
           id="retryButton"
           href="#"
-          class="btn-retry"
-        >
+          class="btn-retry">
           Ulangi Latihan
         </a>
 
@@ -562,8 +566,15 @@
     const SUPABASE_URL =
       "https://hqzishiazabguknallei.supabase.co";
 
+    /*
+      PENTING:
+      Ganti nilai di bawah dengan
+      publishable key yang SAMA dengan
+      yang sudah kamu gunakan di banksoal.html.
+    */
+
     const SUPABASE_KEY =
-      "PASTE_PUBLISHABLE_KEY_KAMU_DI_SINI";
+      "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
 
     const supabaseClient =
       window.supabase.createClient(
@@ -573,7 +584,7 @@
 
 
     /* ============================
-       STATE
+       READ QUIZ ID
     ============================ */
 
     const params =
@@ -581,11 +592,36 @@
         window.location.search
       );
 
-    const quizId =
+    const quizIdRaw =
       params.get("id");
 
+    const quizId =
+      Number(quizIdRaw);
+
+
+    /*
+      Pastikan ID benar-benar angka.
+    */
+
+    if (
+      !quizIdRaw ||
+      !Number.isInteger(quizId) ||
+      quizId <= 0
+    ) {
+
+      showError(
+        "ID bank soal tidak valid atau tidak ditemukan."
+      );
+
+    }
+
+
+    /* ============================
+       STATE
+    ============================ */
 
     let quiz = null;
+
     let questions = [];
 
     let currentIndex = 0;
@@ -718,14 +754,30 @@
 
     async function loadQuiz() {
 
-      if (!quizId) {
+      /*
+        Jangan lanjut jika ID tidak valid.
+      */
 
-        showError(
-          "ID bank soal tidak ditemukan."
-        );
+      if (
+        !quizIdRaw ||
+        !Number.isInteger(quizId) ||
+        quizId <= 0
+      ) {
 
         return;
       }
+
+
+      /*
+        DEBUG:
+        Menampilkan ID yang diterima
+        di console browser.
+      */
+
+      console.log(
+        "Quiz ID yang diterima:",
+        quizId
+      );
 
 
       const {
@@ -747,7 +799,10 @@
 
       if (quizError) {
 
-        console.error(quizError);
+        console.error(
+          "Quiz error:",
+          quizError
+        );
 
         showError(
           "Bank soal tidak ditemukan atau belum dipublikasikan."
@@ -757,7 +812,23 @@
       }
 
 
+      if (!quizData) {
+
+        showError(
+          "Bank soal tidak ditemukan."
+        );
+
+        return;
+      }
+
+
       quiz = quizData;
+
+
+      console.log(
+        "Quiz ditemukan:",
+        quiz
+      );
 
 
       const {
@@ -780,7 +851,10 @@
 
       if (questionError) {
 
-        console.error(questionError);
+        console.error(
+          "Question error:",
+          questionError
+        );
 
         showError(
           "Gagal memuat pertanyaan."
@@ -790,7 +864,10 @@
       }
 
 
-      if (!questionData || questionData.length === 0) {
+      if (
+        !questionData ||
+        questionData.length === 0
+      ) {
 
         showError(
           "Bank soal ini belum memiliki pertanyaan."
@@ -801,8 +878,8 @@
 
 
       /*
-        Ambil pilihan jawaban melalui view aman.
-        is_correct TIDAK dikirim ke browser.
+        Ambil pilihan jawaban melalui
+        view aman.
       */
 
       const questionIds =
@@ -830,7 +907,10 @@
 
       if (optionError) {
 
-        console.error(optionError);
+        console.error(
+          "Option error:",
+          optionError
+        );
 
         showError(
           "Gagal memuat pilihan jawaban."
@@ -841,27 +921,29 @@
 
 
       questions =
-        questionData.map(question => {
+        questionData.map(
+          question => {
 
-          const options =
-            (optionData || [])
-              .filter(
-                option =>
-                  option.question_id ===
-                  question.id
-              )
-              .sort(
-                (a, b) =>
-                  a.id - b.id
-              );
+            const options =
+              (optionData || [])
+                .filter(
+                  option =>
+                    option.question_id ===
+                    question.id
+                )
+                .sort(
+                  (a, b) =>
+                    a.id - b.id
+                );
 
 
-          return {
-            ...question,
-            options
-          };
+            return {
+              ...question,
+              options
+            };
 
-        });
+          }
+        );
 
 
       quizTitle.textContent =
@@ -954,7 +1036,9 @@
                 </div>
 
                 <div class="option-text">
-                  ${escapeHtml(option.option_text)}
+                  ${escapeHtml(
+                    option.option_text
+                  )}
                 </div>
 
               </div>
@@ -981,9 +1065,7 @@
         "none";
 
       backButton.style.display =
-        currentIndex > 0
-          ? "block"
-          : "block";
+        "block";
     }
 
 
@@ -1050,12 +1132,6 @@
         questions[currentIndex];
 
 
-      /*
-        Karena is_correct sengaja tidak
-        dikirim ke browser, pengecekan
-        jawaban dilakukan melalui RPC.
-      */
-
       const {
         data,
         error
@@ -1074,12 +1150,10 @@
 
       if (error) {
 
-        console.error(error);
-
-        /*
-          Jika RPC belum tersedia,
-          jangan mengarang hasil jawaban.
-        */
+        console.error(
+          "RPC error:",
+          error
+        );
 
         alert(
           "Fitur pengecekan jawaban belum tersedia di database."
@@ -1155,7 +1229,6 @@
           .explanation ||
         "Tidak ada pembahasan untuk soal ini.";
 
-
       markOptions();
     }
 
@@ -1176,7 +1249,6 @@
         questions[currentIndex]
           .explanation ||
         "Tidak ada pembahasan untuk soal ini.";
-
 
       markOptions();
     }
@@ -1269,22 +1341,7 @@
       if (currentIndex === 0) {
 
         window.location.href =
-          `banksoal.html`;
-
-        return;
-      }
-
-
-      if (answered) {
-
-        currentIndex--;
-
-        renderQuestion();
-
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
+          "banksoal.html";
 
         return;
       }
@@ -1293,6 +1350,11 @@
       currentIndex--;
 
       renderQuestion();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     }
 
 
@@ -1306,7 +1368,8 @@
         .getElementById(
           "questionCard"
         )
-        .style.display = "none";
+        .style.display =
+        "none";
 
 
       finishCard.style.display =
@@ -1353,4 +1416,4 @@
   </script>
 
 </body>
-  </html>
+</html>
