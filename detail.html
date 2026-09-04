@@ -1,7 +1,15 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Detail Materi - Learning Hub</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Detail Materi - Learning Hub</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
     * {
       box-sizing: border-box;
     }
@@ -53,7 +61,7 @@
       background: white;
       padding: 30px;
       border-radius: 16px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
     }
 
     .material-title {
@@ -95,6 +103,75 @@
       margin-bottom: 15px;
     }
 
+    /* REFERENSI */
+
+    .references {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #e4e7ec;
+    }
+
+    .references-title {
+      margin: 0 0 18px;
+      font-size: 24px;
+    }
+
+    .reference-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .reference-item {
+      background: #f8fafc;
+      border: 1px solid #e4e7ec;
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .reference-item h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .reference-type {
+      display: inline-block;
+      background: #eef2f7;
+      color: #344054;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .reference-description {
+      margin: 5px 0 14px;
+      color: #667085;
+      font-size: 14px;
+    }
+
+    .reference-link {
+      display: inline-block;
+      text-decoration: none;
+      background: #172033;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .reference-link:hover {
+      opacity: 0.9;
+    }
+
+    .no-reference {
+      color: #667085;
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
     .loading {
       text-align: center;
       padding: 40px 20px;
@@ -118,6 +195,7 @@
     }
 
     @media (max-width: 600px) {
+
       .container {
         width: 94%;
       }
@@ -129,18 +207,43 @@
       .material-title {
         font-size: 26px;
       }
+
+      .references-title {
+        font-size: 21px;
+      }
     }
-  </style></head><body><header>
+  </style>
+
+</head>
+
+<body>
+
+<header>
   <div class="header-inner">
     <h1>Learning Hub</h1>
   </div>
-</header><main class="container">  <a href="materi/" class="back-link">
+</header>
+
+
+<main class="container">
+
+  <a href="materi/" class="back-link">
     ← Kembali ke Materi
-  </a>  <div id="detail" class="card">
+  </a>
+
+
+  <div id="detail" class="card">
+
     <div class="loading">
       Memuat materi...
     </div>
-  </div></main><script>
+
+  </div>
+
+</main>
+
+
+<script>
 
 const SUPABASE_URL =
   "https://hqzishiazabguknallei.supabase.co";
@@ -176,9 +279,15 @@ if (!materialId) {
 
   detail.innerHTML = `
     <div class="error">
+
       <h2>ID Materi Tidak Ada</h2>
+
       <p>URL harus memiliki format:</p>
-      <p><strong>detail.html?id=1</strong></p>
+
+      <p>
+        <strong>detail.html?id=1</strong>
+      </p>
+
     </div>
   `;
 
@@ -188,6 +297,10 @@ if (!materialId) {
 
 }
 
+
+/* =========================
+   LOAD MATERIAL
+========================= */
 
 async function loadMaterial() {
 
@@ -231,14 +344,157 @@ async function loadMaterial() {
 
       detail.innerHTML = `
         <div class="error">
+
           <h2>Materi Tidak Ditemukan</h2>
-          <p>Data materi dengan ID tersebut tidak tersedia.</p>
+
+          <p>
+            Data materi dengan ID tersebut tidak tersedia.
+          </p>
+
         </div>
       `;
 
       return;
     }
 
+
+    /*
+      Ambil referensi berdasarkan material_id
+    */
+
+    const {
+      data: resources,
+      error: resourceError
+    } = await supabaseClient
+      .from("resources")
+      .select("*")
+      .eq("material_id", materialId)
+      .order("created_at", {
+        ascending: false
+      });
+
+
+    console.log(
+      "Referensi materi:",
+      resources
+    );
+
+    console.log(
+      "Error referensi:",
+      resourceError
+    );
+
+
+    /*
+      Jika referensi gagal dimuat,
+      materi tetap ditampilkan.
+    */
+
+    if (resourceError) {
+
+      console.error(
+        "Gagal mengambil referensi:",
+        resourceError
+      );
+
+    }
+
+
+    let referenceHTML = "";
+
+
+    if (
+      resources &&
+      resources.length > 0
+    ) {
+
+      referenceHTML = `
+
+        <section class="references">
+
+          <h2 class="references-title">
+            📚 Referensi Materi
+          </h2>
+
+          <div class="reference-list">
+
+            ${resources.map(resource => `
+
+              <div class="reference-item">
+
+                <h3>
+                  ${escapeHtml(resource.title)}
+                </h3>
+
+                ${
+                  resource.type
+                    ? `
+                      <span class="reference-type">
+                        ${escapeHtml(resource.type)}
+                      </span>
+                    `
+                    : ""
+                }
+
+                ${
+                  resource.description
+                    ? `
+                      <p class="reference-description">
+                        ${escapeHtml(resource.description)}
+                      </p>
+                    `
+                    : ""
+                }
+
+                ${
+                  resource.url
+                    ? `
+                      <a
+                        href="${escapeAttribute(resource.url)}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="reference-link"
+                      >
+                        Buka Referensi →
+                      </a>
+                    `
+                    : ""
+                }
+
+              </div>
+
+            `).join("")}
+
+          </div>
+
+        </section>
+
+      `;
+
+    } else {
+
+      referenceHTML = `
+
+        <section class="references">
+
+          <h2 class="references-title">
+            📚 Referensi Materi
+          </h2>
+
+          <div class="no-reference">
+            Belum ada referensi untuk materi ini.
+          </div>
+
+        </section>
+
+      `;
+
+    }
+
+
+    /*
+      Tampilkan materi + referensi
+    */
 
     detail.innerHTML = `
 
@@ -289,7 +545,9 @@ async function loadMaterial() {
           ? `
             <div class="description">
 
-              <strong>Deskripsi</strong>
+              <strong>
+                Deskripsi
+              </strong>
 
               <br>
 
@@ -315,16 +573,27 @@ async function loadMaterial() {
 
       </div>
 
+
+      ${referenceHTML}
+
     `;
+
 
   } catch (err) {
 
-    console.error("Error:", err);
+    console.error(
+      "Error:",
+      err
+    );
+
 
     detail.innerHTML = `
+
       <div class="error">
 
-        <h2>Terjadi Kesalahan</h2>
+        <h2>
+          Terjadi Kesalahan
+        </h2>
 
         <p>
           Tidak dapat memuat materi.
@@ -335,12 +604,17 @@ async function loadMaterial() {
         </div>
 
       </div>
+
     `;
 
   }
 
 }
 
+
+/* =========================
+   SECURITY HELPERS
+========================= */
 
 function escapeHtml(text) {
 
@@ -353,5 +627,18 @@ function escapeHtml(text) {
 
 }
 
-</script></body>
+
+function escapeAttribute(text) {
+
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+}
+
+</script>
+
+</body>
 </html>
