@@ -1,306 +1,318 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Materi | Medical Learning Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-    * {
-        box-sizing: border-box;
-    }
+    <title>Materi Kuliah | Medical Learning Hub</title>
 
-    html {
-        scroll-behavior: smooth;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f5f7fb;
-        color: #172033;
-    }
+        html {
+            scroll-behavior: smooth;
+        }
 
-    /* NAVBAR */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
 
-    .navbar {
-        background: white;
-        border-bottom: 1px solid #e8edf5;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
+        /* NAVBAR */
 
-    .nav-container {
-        width: 92%;
-        max-width: 1150px;
-        min-height: 70px;
-        margin: auto;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
-    }
-
-    .logo {
-        font-size: 20px;
-        font-weight: 700;
-    }
-
-    .nav-links {
-        display: flex;
-        gap: 25px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .nav-links a {
-        color: #172033;
-        text-decoration: none;
-        font-size: 15px;
-        font-weight: 600;
-    }
-
-    .nav-links a:hover {
-        color: #2563eb;
-    }
-
-    /* HEADER */
-
-    .page-header {
-        padding: 75px 20px;
-        text-align: center;
-
-        background:
-            radial-gradient(
-                circle at top right,
-                rgba(37, 99, 235, 0.12),
-                transparent 35%
-            ),
-            #f5f7fb;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 8px 14px;
-        border-radius: 30px;
-
-        background: #e8f0ff;
-        color: #2563eb;
-
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 1px;
-    }
-
-    .page-header h1 {
-        margin: 20px 0 12px;
-        font-size: clamp(35px, 6vw, 55px);
-    }
-
-    .page-header p {
-        max-width: 650px;
-        margin: auto;
-
-        color: #667085;
-        font-size: 17px;
-        line-height: 1.7;
-    }
-
-    /* CONTAINER */
-
-    .container {
-        width: 92%;
-        max-width: 1150px;
-        margin: auto;
-        padding: 60px 0 90px;
-    }
-
-    .section-heading {
-        margin-bottom: 30px;
-    }
-
-    .section-heading h2 {
-        margin: 0 0 8px;
-        font-size: 30px;
-    }
-
-    .section-heading p {
-        margin: 0;
-        color: #667085;
-    }
-
-    /* MATERIAL GRID */
-
-    .materials-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 22px;
-    }
-
-    .material-card {
-        background: white;
-        border: 1px solid #e8edf5;
-        border-radius: 18px;
-        padding: 25px;
-
-        transition: 0.2s;
-
-        box-shadow: 0 5px 20px rgba(20, 30, 60, 0.04);
-    }
-
-    .material-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(20, 30, 60, 0.09);
-    }
-
-    .material-icon {
-        width: 50px;
-        height: 50px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        background: #eef4ff;
-        border-radius: 14px;
-
-        font-size: 24px;
-
-        margin-bottom: 18px;
-    }
-
-    .material-card h3 {
-        margin: 0 0 12px;
-        font-size: 21px;
-        line-height: 1.35;
-    }
-
-    .material-card p {
-        color: #667085;
-        line-height: 1.6;
-        margin: 0 0 18px;
-    }
-
-    .material-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-        margin-bottom: 20px;
-    }
-
-    .material-tag {
-        background: #eef4ff;
-        color: #2563eb;
-
-        padding: 5px 9px;
-        border-radius: 6px;
-
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    .material-author {
-        color: #667085;
-        font-size: 13px;
-        margin-bottom: 18px;
-    }
-
-    .open-button {
-        display: inline-block;
-
-        background: #2563eb;
-        color: white;
-
-        padding: 11px 16px;
-        border-radius: 9px;
-
-        text-decoration: none;
-        font-weight: 700;
-        font-size: 14px;
-    }
-
-    .open-button:hover {
-        background: #1d4ed8;
-    }
-
-    /* EMPTY / LOADING */
-
-    .loading,
-    .empty {
-        grid-column: 1 / -1;
-
-        background: white;
-        border: 1px solid #e8edf5;
-        border-radius: 18px;
-
-        padding: 45px 20px;
-
-        text-align: center;
-        color: #667085;
-    }
-
-    /* FOOTER */
-
-    footer {
-        background: white;
-        border-top: 1px solid #e8edf5;
-
-        text-align: center;
-        padding: 45px 20px;
-    }
-
-    footer h3 {
-        margin: 0 0 8px;
-    }
-
-    footer p {
-        color: #667085;
-    }
-
-    .copyright {
-        margin-top: 25px;
-        font-size: 13px;
-    }
-
-    /* MOBILE */
-
-    @media (max-width: 800px) {
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e8edf5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
         .nav-container {
-            flex-direction: column;
-            padding: 18px 0;
+            width: 92%;
+            max-width: 1150px;
+            min-height: 70px;
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
         }
 
         .nav-links {
-            gap: 15px;
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
+
+        .nav-links a {
+            color: #172033;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        /* HEADER */
 
         .page-header {
-            padding: 60px 20px;
+            padding: 75px 20px;
+            text-align: center;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(37, 99, 235, 0.12),
+                    transparent 35%
+                ),
+                #f5f7fb;
         }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 30px;
+            background: #e8f0ff;
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .page-header h1 {
+            margin: 20px 0 12px;
+            font-size: clamp(35px, 6vw, 55px);
+        }
+
+        .page-header p {
+            max-width: 650px;
+            margin: auto;
+            color: #667085;
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        /* CONTENT */
 
         .container {
-            padding-top: 45px;
+            width: 92%;
+            max-width: 1150px;
+            margin: auto;
+            padding: 60px 0 90px;
         }
+
+        .blok {
+            margin-bottom: 55px;
+        }
+
+        .blok-header {
+            margin-bottom: 20px;
+        }
+
+        .blok-number {
+            display: inline-block;
+            margin-bottom: 8px;
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .blok-header h2 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        .blok-header p {
+            margin: 0;
+            color: #667085;
+        }
+
+        /* MATERIAL GRID */
 
         .materials-grid {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
 
-        .section-heading h2 {
-            font-size: 26px;
+        .material-card {
+            background: white;
+            border: 1px solid #e8edf5;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 5px 20px rgba(20, 30, 60, 0.04);
+            transition: 0.2s;
         }
-    }
 
-    @media (min-width: 801px) and (max-width: 1050px) {
-
-        .materials-grid {
-            grid-template-columns: repeat(2, 1fr);
+        .material-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(20, 30, 60, 0.09);
         }
-    }
-</style>
 
-</head><body><!-- NAVBAR -->
+        .material-icon {
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #eef4ff;
+            border-radius: 13px;
+
+            font-size: 23px;
+            margin-bottom: 17px;
+        }
+
+        .material-card h3 {
+            margin: 0 0 12px;
+            font-size: 20px;
+            line-height: 1.4;
+        }
+
+        .material-card p {
+            margin: 0 0 16px;
+            color: #667085;
+            line-height: 1.6;
+        }
+
+        .material-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 18px;
+        }
+
+        .material-tag {
+            background: #eef4ff;
+            color: #2563eb;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .material-author {
+            margin-bottom: 18px;
+            color: #667085;
+            font-size: 13px;
+        }
+
+        .open-button {
+            display: inline-block;
+            padding: 10px 15px;
+
+            background: #2563eb;
+            color: white;
+
+            border-radius: 9px;
+            text-decoration: none;
+
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .open-button:hover {
+            background: #1d4ed8;
+        }
+
+        /* STATUS */
+
+        .loading,
+        .empty {
+            background: white;
+            border: 1px solid #e8edf5;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            color: #667085;
+        }
+
+        .loading {
+            grid-column: 1 / -1;
+        }
+
+        /* FOOTER */
+
+        footer {
+            background: white;
+            border-top: 1px solid #e8edf5;
+            text-align: center;
+            padding: 45px 20px;
+        }
+
+        footer h3 {
+            margin: 0 0 8px;
+        }
+
+        footer p {
+            color: #667085;
+        }
+
+        .copyright {
+            margin-top: 25px;
+            font-size: 13px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            .nav-container {
+                flex-direction: column;
+                padding: 18px 0;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .page-header {
+                padding: 60px 20px;
+            }
+
+            .container {
+                padding-top: 45px;
+            }
+
+            .materials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .blok-header h2 {
+                font-size: 25px;
+            }
+        }
+
+        @media (min-width: 801px) and (max-width: 1050px) {
+
+            .materials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
 
 <nav class="navbar">
 
@@ -312,21 +324,13 @@
 
         <div class="nav-links">
 
-            <a href="../index.html">
-                Home
-            </a>
+            <a href="../index.html">Home</a>
 
-            <a href="index.html">
-                Materi
-            </a>
+            <a href="index.html">Materi</a>
 
-            <a href="#">
-                Quiz
-            </a>
+            <a href="#">Quiz</a>
 
-            <a href="#">
-                Referensi
-            </a>
+            <a href="#">Referensi</a>
 
         </div>
 
@@ -348,41 +352,19 @@
     </h1>
 
     <p>
-        Kumpulan materi pembelajaran kedokteran yang
-        disusun secara terstruktur dan dapat diakses
-        kapan saja.
+        Kumpulan materi pembelajaran kedokteran
+        yang tersusun berdasarkan blok perkuliahan.
     </p>
 
 </header>
 
 
-<!-- MATERIALS -->
+<!-- BLOK AKAN DIBUAT OTOMATIS -->
 
-<main class="container">
+<main class="container" id="blok-container">
 
-    <div class="section-heading">
-
-        <h2>
-            Semua Materi
-        </h2>
-
-        <p>
-            Materi terbaru akan otomatis muncul setelah
-            ditambahkan melalui Admin Dashboard.
-        </p>
-
-    </div>
-
-
-    <div
-        id="materials-container"
-        class="materials-grid"
-    >
-
-        <div class="loading">
-            Memuat materi...
-        </div>
-
+    <div class="loading">
+        Memuat blok materi...
     </div>
 
 </main>
@@ -413,236 +395,428 @@
 
 <script>
 
-    const SUPABASE_URL =
-        "https://hqzishiazabguknallei.supabase.co";
+const SUPABASE_URL =
+    "https://hqzishiazabguknallei.supabase.co";
 
-    const SUPABASE_ANON_KEY =
-        "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+const SUPABASE_ANON_KEY =
+    "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
 
-    const supabaseClient =
-        window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_ANON_KEY
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHtml(text) {
+
+    return String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================
+   LOAD BLOK + MATERI
+========================= */
+
+async function loadMaterialsPage() {
+
+    const container =
+        document.getElementById("blok-container");
+
+
+    /* =========================
+       AMBIL KATEGORI
+    ========================= */
+
+    const {
+        data: categories,
+        error: categoryError
+    } = await supabaseClient
+
+        .from("categories")
+
+        .select("*")
+
+        .order("id", {
+            ascending: true
+        });
+
+
+    if (categoryError) {
+
+        console.error(
+            "Gagal mengambil kategori:",
+            categoryError
         );
 
+        container.innerHTML = `
+            <div class="empty">
+                Gagal memuat blok materi.
+            </div>
+        `;
 
-    // =========================
-    // LOAD SEMUA MATERI
-    // =========================
+        return;
+    }
 
-    async function loadMaterials() {
 
-        const container =
-            document.getElementById(
-                "materials-container"
+    if (!categories || categories.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+                Belum ada blok materi.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /* =========================
+       AMBIL MATERI
+    ========================= */
+
+    const {
+        data: materials,
+        error: materialError
+    } = await supabaseClient
+
+        .from("materials")
+
+        .select("*")
+
+        .eq("status", "published")
+
+        .order("created_at", {
+            ascending: false
+        });
+
+
+    if (materialError) {
+
+        console.error(
+            "Gagal mengambil materi:",
+            materialError
+        );
+
+        container.innerHTML = `
+            <div class="empty">
+                Gagal memuat materi.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /* =========================
+       BUAT BLOK OTOMATIS
+    ========================= */
+
+    container.innerHTML = "";
+
+
+    categories.forEach((category, index) => {
+
+        const section =
+            document.createElement("section");
+
+        section.className =
+            "blok";
+
+
+        /* HEADER BLOK */
+
+        const header =
+            document.createElement("div");
+
+        header.className =
+            "blok-header";
+
+
+        const number =
+            document.createElement("span");
+
+        number.className =
+            "blok-number";
+
+        number.textContent =
+            "BLOK " +
+            String(index + 1).padStart(2, "0");
+
+
+        const title =
+            document.createElement("h2");
+
+        title.textContent =
+            category.name;
+
+
+        const description =
+            document.createElement("p");
+
+        description.textContent =
+            category.description ||
+            "Materi pembelajaran kedokteran.";
+
+
+        header.appendChild(number);
+
+        header.appendChild(title);
+
+        header.appendChild(description);
+
+
+        /* GRID */
+
+        const grid =
+            document.createElement("div");
+
+        grid.className =
+            "materials-grid";
+
+
+        /* CARI MATERI UNTUK BLOK */
+
+        const categoryMaterials =
+            materials.filter(
+                material =>
+                    material.category_id === category.id
             );
 
 
-        const { data, error } =
-            await supabaseClient
+        /* JIKA KOSONG */
 
-                .from("materials")
+        if (categoryMaterials.length === 0) {
 
-                .select("*")
-
-                .eq("status", "published")
-
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (error) {
-
-            console.error(
-                "Gagal mengambil materi:",
-                error
-            );
-
-            container.innerHTML = `
+            grid.innerHTML = `
                 <div class="empty">
-                    <strong>Gagal memuat materi.</strong>
-                    <br>
-                    Silakan coba refresh halaman.
+                    Belum ada materi pada blok ini.
                 </div>
             `;
 
-            return;
         }
 
 
-        if (!data || data.length === 0) {
+        /* =========================
+           BUAT CARD MATERI
+        ========================= */
 
-            container.innerHTML = `
-                <div class="empty">
-                    Belum ada materi yang tersedia.
-                </div>
-            `;
+        categoryMaterials.forEach(material => {
 
-            return;
-        }
+            const card =
+                document.createElement("article");
 
-
-        container.innerHTML =
-            data.map(material => {
-
-                return `
-
-                    <article class="material-card">
-
-                        <div class="material-icon">
-                            📚
-                        </div>
-
-                        <h3>
-                            ${escapeHtml(
-                                material.title
-                            )}
-                        </h3>
+            card.className =
+                "material-card";
 
 
-                        <div class="material-meta">
+            /* ICON */
 
-                            ${
-                                material.subject
-                                ? `
-                                    <span class="material-tag">
-                                        ${escapeHtml(
-                                            material.subject
-                                        )}
-                                    </span>
-                                  `
-                                : ""
-                            }
+            const icon =
+                document.createElement("div");
+
+            icon.className =
+                "material-icon";
+
+            icon.textContent =
+                "📚";
 
 
-                            ${
-                                material.semester
-                                ? `
-                                    <span class="material-tag">
-                                        ${escapeHtml(
-                                            material.semester
-                                        )}
-                                    </span>
-                                  `
-                                : ""
-                            }
+            /* TITLE */
+
+            const title =
+                document.createElement("h3");
+
+            title.textContent =
+                material.title ||
+                "Materi Kuliah";
 
 
-                            ${
-                                material.topic
-                                ? `
-                                    <span class="material-tag">
-                                        ${escapeHtml(
-                                            material.topic
-                                        )}
-                                    </span>
-                                  `
-                                : ""
-                            }
+            /* META */
 
-                        </div>
+            const meta =
+                document.createElement("div");
+
+            meta.className =
+                "material-meta";
 
 
-                        <p>
+            if (material.subject) {
 
-                            ${escapeHtml(
-                                material.description ||
-                                "Belum ada deskripsi materi."
-                            )}
+                const tag =
+                    document.createElement("span");
 
-                        </p>
+                tag.className =
+                    "material-tag";
 
+                tag.textContent =
+                    material.subject;
 
-                        ${
-                            material.author
-                            ? `
-                                <div class="material-author">
-                                    Oleh: ${escapeHtml(
-                                        material.author
-                                    )}
-                                </div>
-                              `
-                            : ""
-                        }
+                meta.appendChild(tag);
+
+            }
 
 
-                        <a
-                            href="#"
-                            class="open-button"
-                            onclick="openMaterial(${material.id}); return false;"
-                        >
-                            Buka Materi →
-                        </a>
+            if (material.semester) {
 
-                    </article>
+                const tag =
+                    document.createElement("span");
 
-                `;
+                tag.className =
+                    "material-tag";
 
-            }).join("");
+                tag.textContent =
+                    material.semester;
 
-    }
+                meta.appendChild(tag);
+
+            }
 
 
-    // =========================
-    // ESCAPE HTML
-    // =========================
+            if (material.topic) {
 
-    function escapeHtml(text) {
+                const tag =
+                    document.createElement("span");
 
-        return String(text)
+                tag.className =
+                    "material-tag";
 
-            .replace(
-                /&/g,
-                "&amp;"
-            )
+                tag.textContent =
+                    material.topic;
 
-            .replace(
-                /</g,
-                "&lt;"
-            )
+                meta.appendChild(tag);
 
-            .replace(
-                />/g,
-                "&gt;"
-            )
+            }
 
-            .replace(
-                /"/g,
-                "&quot;"
-            )
 
-            .replace(
-                /'/g,
-                "&#039;"
+            /* DESCRIPTION */
+
+            const materialDescription =
+                document.createElement("p");
+
+            materialDescription.textContent =
+                material.description ||
+                "Belum ada deskripsi materi.";
+
+
+            /* AUTHOR */
+
+            if (material.author) {
+
+                const author =
+                    document.createElement("div");
+
+                author.className =
+                    "material-author";
+
+                author.textContent =
+                    "Oleh: " +
+                    material.author;
+
+                card.appendChild(author);
+
+            }
+
+
+            /* BUTTON */
+
+            const button =
+                document.createElement("a");
+
+            button.className =
+                "open-button";
+
+            button.textContent =
+                "Buka Materi →";
+
+            button.href =
+                "#";
+
+            button.addEventListener(
+                "click",
+                function(event) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Halaman detail materi akan kita buat selanjutnya."
+                    );
+
+                }
             );
 
-    }
+
+            /* SUSUN CARD */
+
+            card.innerHTML = "";
+
+            card.appendChild(icon);
+
+            card.appendChild(title);
 
 
-    // =========================
-    // BUKA MATERI
-    // =========================
+            if (meta.children.length > 0) {
 
-    function openMaterial(id) {
+                card.appendChild(meta);
 
-        alert(
-            "Detail materi akan kita buat pada tahap berikutnya."
-        );
-
-    }
+            }
 
 
-    // =========================
-    // JALANKAN
-    // =========================
+            card.appendChild(materialDescription);
 
-    loadMaterials();
+
+            if (material.author) {
+
+                const author =
+                    document.createElement("div");
+
+                author.className =
+                    "material-author";
+
+                author.textContent =
+                    "Oleh: " +
+                    material.author;
+
+                card.appendChild(author);
+
+            }
+
+
+            card.appendChild(button);
+
+
+            grid.appendChild(card);
+
+        });
+
+
+        section.appendChild(header);
+
+        section.appendChild(grid);
+
+        container.appendChild(section);
+
+    });
+
+}
+
+
+/* JALANKAN */
+
+loadMaterialsPage();
 
 </script>
 
 </body>
+
 </html>
