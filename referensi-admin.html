@@ -76,7 +76,7 @@
             </h1>
 
             <p>
-                Tambahkan dan kelola sumber pembelajaran
+                Tambahkan, edit, dan kelola sumber pembelajaran
                 medis untuk pengguna Medical Learning Hub.
             </p>
 
@@ -96,7 +96,7 @@
             "
         >
 
-            <h2>
+            <h2 id="form-title">
                 ➕ Tambah Referensi
             </h2>
 
@@ -291,8 +291,8 @@
                         "
                     >
 
-                    <small>
-                        File akan disimpan di Supabase Storage.
+                    <small id="file-help">
+                        Pilih file yang akan disimpan di Supabase Storage.
                     </small>
 
                 </div>
@@ -331,15 +331,33 @@
 
                 <!-- BUTTON -->
 
-                <button
-                    type="submit"
-                    class="button primary"
-                    id="submit-button"
+                <div
+                    style="
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                    "
                 >
 
-                    ➕ Tambahkan Referensi
+                    <button
+                        type="submit"
+                        class="button primary"
+                        id="submit-button"
+                    >
+                        ➕ Tambahkan Referensi
+                    </button>
 
-                </button>
+
+                    <button
+                        type="button"
+                        class="button secondary"
+                        id="cancel-button"
+                        style="display:none;"
+                    >
+                        ✖️ Batal Edit
+                    </button>
+
+                </div>
 
 
             </form>
@@ -417,9 +435,10 @@
 
     <script>
 
+
         /* =========================
            SUPABASE
-        ========================= */
+        ========================== */
 
         const SUPABASE_URL =
             "https://hqzishiazabguknallei.supabase.co";
@@ -438,7 +457,7 @@
 
         /* =========================
            ELEMENT
-        ========================= */
+        ========================== */
 
         const form =
             document.getElementById(
@@ -470,6 +489,21 @@
                 "submit-button"
             );
 
+        const cancelButton =
+            document.getElementById(
+                "cancel-button"
+            );
+
+        const formTitle =
+            document.getElementById(
+                "form-title"
+            );
+
+        const fileHelp =
+            document.getElementById(
+                "file-help"
+            );
+
         const message =
             document.getElementById(
                 "message"
@@ -479,6 +513,16 @@
             document.getElementById(
                 "references-container"
             );
+
+
+
+        /* =========================
+           STATE EDIT
+        ========================== */
+
+        let editingId = null;
+
+        let editingResource = null;
 
 
 
@@ -495,40 +539,44 @@
 
                     radio.addEventListener(
                         "change",
-                        () => {
-
-                            const selected =
-                                document.querySelector(
-                                    'input[name="source"]:checked'
-                                ).value;
-
-
-                            if (
-                                selected ===
-                                "upload"
-                            ) {
-
-                                fileSection.style.display =
-                                    "block";
-
-                                urlSection.style.display =
-                                    "none";
-
-                            } else {
-
-                                fileSection.style.display =
-                                    "none";
-
-                                urlSection.style.display =
-                                    "block";
-
-                            }
-
-                        }
+                        updateSourceDisplay
                     );
 
                 }
             );
+
+
+
+        function updateSourceDisplay() {
+
+            const selected =
+                document.querySelector(
+                    'input[name="source"]:checked'
+                ).value;
+
+
+            if (
+                selected ===
+                "upload"
+            ) {
+
+                fileSection.style.display =
+                    "block";
+
+                urlSection.style.display =
+                    "none";
+
+            } else {
+
+                fileSection.style.display =
+                    "none";
+
+                urlSection.style.display =
+                    "block";
+
+            }
+
+        }
 
 
 
@@ -552,6 +600,16 @@
 
             message.style.borderRadius =
                 "8px";
+
+            message.style.background =
+                success
+                    ? "#e8f7ee"
+                    : "#fdecec";
+
+            message.style.color =
+                success
+                    ? "#176b3a"
+                    : "#a52828";
 
         }
 
@@ -644,6 +702,10 @@
             const filePath =
                 Date.now() +
                 "_" +
+                Math.random()
+                    .toString(36)
+                    .substring(2, 8) +
+                "_" +
                 safeName;
 
 
@@ -691,7 +753,177 @@
 
 
         /* =========================
-           ADD REFERENCE
+           RESET FORM
+        ========================== */
+
+        function resetForm() {
+
+            form.reset();
+
+            editingId =
+                null;
+
+            editingResource =
+                null;
+
+
+            formTitle.textContent =
+                "➕ Tambah Referensi";
+
+
+            submitButton.textContent =
+                "➕ Tambahkan Referensi";
+
+
+            cancelButton.style.display =
+                "none";
+
+
+            fileHelp.textContent =
+                "Pilih file yang akan disimpan di Supabase Storage.";
+
+
+            document
+                .querySelector(
+                    'input[name="source"][value="upload"]'
+                )
+                .checked =
+                true;
+
+
+            updateSourceDisplay();
+
+        }
+
+
+
+        /* =========================
+           EDIT MODE
+        ========================== */
+
+        function startEdit(
+            resource
+        ) {
+
+            editingId =
+                resource.id;
+
+            editingResource =
+                resource;
+
+
+            document.getElementById(
+                "title"
+            ).value =
+                resource.title ||
+                "";
+
+
+            document.getElementById(
+                "description"
+            ).value =
+                resource.description ||
+                "";
+
+
+            document.getElementById(
+                "type"
+            ).value =
+                resource.type ||
+                "";
+
+
+            urlInput.value =
+                resource.url ||
+                "";
+
+
+            fileInput.value =
+                "";
+
+
+            formTitle.textContent =
+                "✏️ Edit Referensi";
+
+
+            submitButton.textContent =
+                "💾 Simpan Perubahan";
+
+
+            cancelButton.style.display =
+                "inline-block";
+
+
+            /*
+             * Jika resource mempunyai
+             * file_path, otomatis pilih upload.
+             *
+             * Jika tidak, pilih URL.
+             */
+
+            if (
+                resource.file_path
+            ) {
+
+                document
+                    .querySelector(
+                        'input[name="source"][value="upload"]'
+                    )
+                    .checked =
+                    true;
+
+
+                fileHelp.textContent =
+                    "File saat ini sudah tersimpan. Pilih file baru hanya jika ingin menggantinya.";
+
+            } else {
+
+                document
+                    .querySelector(
+                        'input[name="source"][value="url"]'
+                    )
+                    .checked =
+                    true;
+
+
+                fileHelp.textContent =
+                    "Pilih Upload File jika ingin mengganti URL dengan file.";
+
+            }
+
+
+            updateSourceDisplay();
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+
+        /* =========================
+           CANCEL EDIT
+        ========================== */
+
+        cancelButton.addEventListener(
+            "click",
+            () => {
+
+                resetForm();
+
+                message.style.display =
+                    "none";
+
+            }
+        );
+
+
+
+        /* =========================
+           FORM SUBMIT
         ========================== */
 
         form.addEventListener(
@@ -704,8 +936,18 @@
                 submitButton.disabled =
                     true;
 
+                cancelButton.disabled =
+                    true;
+
+
                 submitButton.textContent =
-                    "Menyimpan...";
+                    editingId
+                        ? "Menyimpan..."
+                        : "Menyimpan...";
+
+
+                let newlyUploadedPath =
+                    null;
 
 
                 try {
@@ -744,12 +986,40 @@
                             .value;
 
 
-                    let url = null;
-                    let filePath = null;
+                    if (!title) {
+
+                        throw new Error(
+                            "Judul referensi wajib diisi."
+                        );
+
+                    }
+
+
+                    if (!type) {
+
+                        throw new Error(
+                            "Silakan pilih jenis referensi."
+                        );
+
+                    }
 
 
 
-                    /* UPLOAD */
+                    let url =
+                        editingResource
+                            ? editingResource.url
+                            : null;
+
+                    let filePath =
+                        editingResource
+                            ? editingResource.file_path
+                            : null;
+
+
+
+                    /* =====================
+                       UPLOAD
+                    ====================== */
 
                     if (
                         source ===
@@ -760,7 +1030,19 @@
                             fileInput.files[0];
 
 
-                        if (!file) {
+                        /*
+                         * Saat tambah:
+                         * file wajib dipilih.
+                         *
+                         * Saat edit:
+                         * file hanya perlu dipilih
+                         * jika ingin mengganti file.
+                         */
+
+                        if (
+                            !file &&
+                            !editingId
+                        ) {
 
                             throw new Error(
                                 "Silakan pilih file terlebih dahulu."
@@ -769,23 +1051,33 @@
                         }
 
 
-                        const uploaded =
-                            await uploadFile(
-                                file
-                            );
+                        if (file) {
+
+                            const uploaded =
+                                await uploadFile(
+                                    file
+                                );
 
 
-                        url =
-                            uploaded.url;
+                            newlyUploadedPath =
+                                uploaded.path;
 
-                        filePath =
-                            uploaded.path;
+
+                            url =
+                                uploaded.url;
+
+                            filePath =
+                                uploaded.path;
+
+                        }
 
                     }
 
 
 
-                    /* URL */
+                    /* =====================
+                       URL
+                    ====================== */
 
                     else {
 
@@ -802,64 +1094,199 @@
 
                         }
 
-                    }
 
+                        /*
+                         * Jika sebelumnya merupakan
+                         * file Storage dan sekarang
+                         * diubah menjadi URL,
+                         * file lama akan dihapus
+                         * setelah database berhasil
+                         * diperbarui.
+                         */
 
-
-                    /* DATABASE */
-
-                    const {
-                        error
-                    } =
-                        await supabaseClient
-                            .from("resources")
-                            .insert({
-
-                                title:
-                                    title,
-
-                                description:
-                                    description,
-
-                                type:
-                                    type,
-
-                                url:
-                                    url,
-
-                                file_path:
-                                    filePath,
-
-                                material_id:
-                                    null
-
-                            });
-
-
-                    if (error) {
-
-                        throw error;
+                        filePath =
+                            null;
 
                     }
 
 
-                    showMessage(
-                        "Referensi berhasil ditambahkan."
-                    );
+
+                    /* =====================
+                       ADD
+                    ====================== */
+
+                    if (!editingId) {
+
+                        const {
+                            error
+                        } =
+                            await supabaseClient
+                                .from("resources")
+                                .insert({
+
+                                    title:
+                                        title,
+
+                                    description:
+                                        description,
+
+                                    type:
+                                        type,
+
+                                    url:
+                                        url,
+
+                                    file_path:
+                                        filePath,
+
+                                    material_id:
+                                        null
+
+                                });
 
 
-                    form.reset();
+                        if (error) {
+
+                            throw error;
+
+                        }
 
 
-                    fileSection.style.display =
-                        "block";
-
-                    urlSection.style.display =
-                        "none";
+                        showMessage(
+                            "Referensi berhasil ditambahkan."
+                        );
 
 
-                    await loadReferences();
+                        resetForm();
 
+
+                        await loadReferences();
+
+                    }
+
+
+
+                    /* =====================
+                       EDIT
+                    ====================== */
+
+                    else {
+
+                        const oldFilePath =
+                            editingResource
+                                ? editingResource.file_path
+                                : null;
+
+
+                        const {
+                            error
+                        } =
+                            await supabaseClient
+                                .from("resources")
+                                .update({
+
+                                    title:
+                                        title,
+
+                                    description:
+                                        description,
+
+                                    type:
+                                        type,
+
+                                    url:
+                                        url,
+
+                                    file_path:
+                                        filePath
+
+                                })
+                                .eq(
+                                    "id",
+                                    editingId
+                                );
+
+
+                        if (error) {
+
+                            /*
+                             * Jika file baru sudah
+                             * ter-upload tetapi update
+                             * database gagal, hapus file
+                             * baru agar tidak menjadi
+                             * file yatim di Storage.
+                             */
+
+                            if (
+                                newlyUploadedPath
+                            ) {
+
+                                await supabaseClient
+                                    .storage
+                                    .from("references")
+                                    .remove([
+                                        newlyUploadedPath
+                                    ]);
+
+                            }
+
+
+                            throw error;
+
+                        }
+
+
+
+                        /*
+                         * Hapus file lama jika:
+                         *
+                         * 1. File diganti dengan file baru
+                         * atau
+                         * 2. File diganti menjadi URL
+                         */
+
+                        if (
+                            oldFilePath &&
+                            oldFilePath !== filePath
+                        ) {
+
+                            const {
+                                error:
+                                    storageDeleteError
+                            } =
+                                await supabaseClient
+                                    .storage
+                                    .from("references")
+                                    .remove([
+                                        oldFilePath
+                                    ]);
+
+
+                            if (
+                                storageDeleteError
+                            ) {
+
+                                console.warn(
+                                    "Database berhasil diperbarui, tetapi file lama gagal dihapus:",
+                                    storageDeleteError
+                                );
+
+                            }
+
+                        }
+
+
+                        showMessage(
+                            "Referensi berhasil diperbarui."
+                        );
+
+
+                        resetForm();
+
+
+                        await loadReferences();
+
+                    }
 
                 } catch (error) {
 
@@ -867,8 +1294,9 @@
                         error
                     );
 
+
                     showMessage(
-                        "Gagal menambahkan referensi: " +
+                        "Gagal menyimpan referensi: " +
                         error.message,
                         false
                     );
@@ -878,8 +1306,21 @@
                     submitButton.disabled =
                         false;
 
-                    submitButton.textContent =
-                        "➕ Tambahkan Referensi";
+                    cancelButton.disabled =
+                        false;
+
+
+                    if (!editingId) {
+
+                        submitButton.textContent =
+                            "➕ Tambahkan Referensi";
+
+                    } else {
+
+                        submitButton.textContent =
+                            "💾 Simpan Perubahan";
+
+                    }
 
                 }
 
@@ -968,6 +1409,140 @@
 
 
         /* =========================
+           TYPE ICON
+        ========================== */
+
+        function getTypeIcon(
+            type
+        ) {
+
+            const value =
+                String(
+                    type ||
+                    ""
+                ).toLowerCase();
+
+
+            if (
+                value.includes(
+                    "gambar"
+                ) ||
+                value.includes(
+                    "image"
+                )
+            ) {
+
+                return "🖼️";
+
+            }
+
+
+            if (
+                value.includes(
+                    "pdf"
+                )
+            ) {
+
+                return "📄";
+
+            }
+
+
+            if (
+                value.includes(
+                    "word"
+                )
+            ) {
+
+                return "📝";
+
+            }
+
+
+            if (
+                value.includes(
+                    "powerpoint"
+                )
+            ) {
+
+                return "📊";
+
+            }
+
+
+            if (
+                value.includes(
+                    "excel"
+                )
+            ) {
+
+                return "📈";
+
+            }
+
+
+            if (
+                value.includes(
+                    "youtube"
+                )
+            ) {
+
+                return "▶️";
+
+            }
+
+
+            if (
+                value.includes(
+                    "video"
+                )
+            ) {
+
+                return "🎬";
+
+            }
+
+
+            if (
+                value.includes(
+                    "website"
+                )
+            ) {
+
+                return "🌐";
+
+            }
+
+
+            if (
+                value.includes(
+                    "jurnal"
+                )
+            ) {
+
+                return "📚";
+
+            }
+
+
+            if (
+                value.includes(
+                    "buku"
+                )
+            ) {
+
+                return "📖";
+
+            }
+
+
+            return "📎";
+
+        }
+
+
+
+        /* =========================
            ADMIN CARD
         ========================== */
 
@@ -996,12 +1571,18 @@
                 );
 
 
+            const icon =
+                getTypeIcon(
+                    resource.type
+                );
+
+
             return `
 
                 <div class="feature-card">
 
                     <div class="feature-icon">
-                        📖
+                        ${icon}
                     </div>
 
                     <span
@@ -1027,6 +1608,23 @@
 
                     <div
                         style="
+                            margin-top:12px;
+                            font-size:0.85rem;
+                            opacity:0.7;
+                            word-break:break-word;
+                        "
+                    >
+                        ${
+                            resource.file_path
+                                ? "📁 File tersimpan di Supabase Storage"
+                                : resource.url
+                                    ? "🔗 Referensi menggunakan URL"
+                                    : "📎 Tidak ada sumber"
+                        }
+                    </div>
+
+                    <div
+                        style="
                             display:flex;
                             gap:10px;
                             margin-top:20px;
@@ -1044,12 +1642,21 @@
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                Buka →
+                                🔗 Buka
                             </a>
                             `
                             :
                             ""
                         }
+
+
+                        <button
+                            class="button secondary"
+                            onclick="startEditById(${resource.id})"
+                        >
+                            ✏️ Edit
+                        </button>
+
 
                         <button
                             class="button secondary"
@@ -1069,6 +1676,69 @@
 
 
         /* =========================
+           FIND RESOURCE FOR EDIT
+        ========================== */
+
+        async function startEditById(
+            id
+        ) {
+
+            try {
+
+                const {
+                    data: resource,
+                    error
+                } =
+                    await supabaseClient
+                        .from("resources")
+                        .select("*")
+                        .eq(
+                            "id",
+                            id
+                        )
+                        .single();
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                if (!resource) {
+
+                    throw new Error(
+                        "Referensi tidak ditemukan."
+                    );
+
+                }
+
+
+                startEdit(
+                    resource
+                );
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+
+                showMessage(
+                    "Gagal membuka referensi: " +
+                    error.message,
+                    false
+                );
+
+            }
+
+        }
+
+
+
+        /* =========================
            DELETE
         ========================== */
 
@@ -1078,7 +1748,7 @@
 
             const confirmDelete =
                 confirm(
-                    "Hapus referensi ini?"
+                    "Hapus referensi ini?\n\nFile yang tersimpan di Storage juga akan dihapus."
                 );
 
 
@@ -1144,12 +1814,37 @@
                     resource.file_path
                 ) {
 
-                    await supabaseClient
-                        .storage
-                        .from("references")
-                        .remove([
-                            resource.file_path
-                        ]);
+                    const {
+                        error:
+                            storageError
+                    } =
+                        await supabaseClient
+                            .storage
+                            .from("references")
+                            .remove([
+                                resource.file_path
+                            ]);
+
+
+                    if (
+                        storageError
+                    ) {
+
+                        console.warn(
+                            "Referensi terhapus dari database, tetapi file Storage gagal dihapus:",
+                            storageError
+                        );
+
+                    }
+
+                }
+
+
+                if (
+                    editingId === id
+                ) {
+
+                    resetForm();
 
                 }
 
@@ -1167,6 +1862,7 @@
                 console.error(
                     error
                 );
+
 
                 showMessage(
                     "Gagal menghapus referensi: " +
@@ -1266,4 +1962,4 @@
 
 </body>
 
-  </html>
+</html>
