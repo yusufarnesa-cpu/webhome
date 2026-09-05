@@ -21,6 +21,10 @@
       color: #1f2937;
     }
 
+    /* ============================
+       NAVBAR
+    ============================ */
+
     .navbar {
       background: white;
       border-bottom: 1px solid #e5e7eb;
@@ -56,6 +60,10 @@
       color: #2563eb;
     }
 
+    /* ============================
+       HERO
+    ============================ */
+
     .hero {
       background: linear-gradient(135deg, #2563eb, #4f46e5);
       color: white;
@@ -77,11 +85,19 @@
       line-height: 1.6;
     }
 
+    /* ============================
+       CONTAINER
+    ============================ */
+
     .container {
       width: 90%;
       max-width: 900px;
       margin: 35px auto 60px;
     }
+
+    /* ============================
+       TOP INFO
+    ============================ */
 
     .top-info {
       background: white;
@@ -122,6 +138,109 @@
       transition: width 0.3s ease;
     }
 
+    /* ============================
+       QUESTION NAVIGATOR
+    ============================ */
+
+    .navigator-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 20px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .navigator-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 12px;
+    }
+
+    .question-navigator {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+    }
+
+    .nav-number {
+      height: 38px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    .nav-number:hover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    /* SOAL AKTIF */
+    .nav-number.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    /* SOAL SUDAH DIJAWAB */
+    .nav-number.answered {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #86efac;
+    }
+
+    /* SOAL SUDAH DIJAWAB + AKTIF */
+    .nav-number.active.answered {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .navigator-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 14px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-box {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+    }
+
+    .legend-current {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+
+    .legend-answered {
+      background: #dcfce7;
+      border-color: #86efac;
+    }
+
+    .legend-unanswered {
+      background: white;
+    }
+
+    /* ============================
+       QUESTION CARD
+    ============================ */
+
     .question-card {
       background: white;
       border-radius: 16px;
@@ -142,6 +261,10 @@
       font-weight: 600;
       margin-bottom: 24px;
     }
+
+    /* ============================
+       OPTIONS
+    ============================ */
 
     .options {
       display: flex;
@@ -203,6 +326,10 @@
       padding-top: 4px;
     }
 
+    /* ============================
+       FEEDBACK
+    ============================ */
+
     .feedback {
       display: none;
       margin-top: 22px;
@@ -229,6 +356,10 @@
       font-weight: 700;
       margin-bottom: 7px;
     }
+
+    /* ============================
+       ACTIONS
+    ============================ */
 
     .actions {
       display: flex;
@@ -272,6 +403,10 @@
       color: #374151;
     }
 
+    /* ============================
+       STATES
+    ============================ */
+
     .state {
       background: white;
       border: 1px solid #e5e7eb;
@@ -285,6 +420,10 @@
     .state.error {
       color: #dc2626;
     }
+
+    /* ============================
+       FINISH
+    ============================ */
 
     .finish-card {
       display: none;
@@ -322,6 +461,10 @@
       font-weight: 700;
     }
 
+    /* ============================
+       FOOTER
+    ============================ */
+
     footer {
       background: #111827;
       color: #9ca3af;
@@ -329,6 +472,10 @@
       padding: 25px;
       font-size: 13px;
     }
+
+    /* ============================
+       RESPONSIVE
+    ============================ */
 
     @media (max-width: 700px) {
 
@@ -368,6 +515,29 @@
         font-size: 17px;
       }
 
+      /*
+        Navigator dibuat 5 kolom
+        agar nyaman di HP.
+      */
+
+      .question-navigator {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 7px;
+      }
+
+      .nav-number {
+        height: 36px;
+        font-size: 12px;
+      }
+
+      .navigator-card {
+        padding: 15px;
+      }
+
+      .navigator-legend {
+        gap: 10px;
+      }
+
       .actions {
         flex-direction: column;
       }
@@ -382,6 +552,10 @@
 </head>
 
 <body>
+
+  <!-- ============================
+       NAVBAR
+  ============================ -->
 
   <nav class="navbar">
 
@@ -399,6 +573,10 @@
   </nav>
 
 
+  <!-- ============================
+       HERO
+  ============================ -->
+
   <section class="hero">
 
     <div class="hero-inner">
@@ -415,6 +593,10 @@
   </section>
 
 
+  <!-- ============================
+       MAIN
+  ============================ -->
+
   <main class="container">
 
     <div id="loadingState" class="state">
@@ -423,6 +605,10 @@
 
 
     <div id="mainContent" style="display:none;">
+
+      <!-- ============================
+           TOP INFO
+      ============================ -->
 
       <div class="top-info">
 
@@ -458,6 +644,56 @@
       </div>
 
 
+      <!-- ============================
+           QUESTION NAVIGATOR
+      ============================ -->
+
+      <div class="navigator-card">
+
+        <div class="navigator-title">
+          Navigasi Soal
+        </div>
+
+        <div
+          id="questionNavigator"
+          class="question-navigator">
+        </div>
+
+        <div class="navigator-legend">
+
+          <div class="legend-item">
+
+            <div class="legend-box legend-current"></div>
+
+            <span>Soal aktif</span>
+
+          </div>
+
+          <div class="legend-item">
+
+            <div class="legend-box legend-answered"></div>
+
+            <span>Sudah dijawab</span>
+
+          </div>
+
+          <div class="legend-item">
+
+            <div class="legend-box legend-unanswered"></div>
+
+            <span>Belum dijawab</span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ============================
+           QUESTION CARD
+      ============================ -->
+
       <div id="questionCard" class="question-card">
 
         <div
@@ -478,6 +714,8 @@
         </div>
 
 
+        <!-- FEEDBACK -->
+
         <div
           id="feedback"
           class="feedback">
@@ -492,6 +730,8 @@
 
         </div>
 
+
+        <!-- ACTIONS -->
 
         <div class="actions">
 
@@ -520,6 +760,10 @@
 
       </div>
 
+
+      <!-- ============================
+           FINISH
+      ============================ -->
 
       <div
         id="finishCard"
@@ -551,6 +795,10 @@
 
   </main>
 
+
+  <!-- ============================
+       FOOTER
+  ============================ -->
 
   <footer>
     © 2026 Medical Learning Hub
@@ -729,6 +977,11 @@
     const retryButton =
       document.getElementById(
         "retryButton"
+      );
+
+    const questionNavigator =
+      document.getElementById(
+        "questionNavigator"
       );
 
 
@@ -957,7 +1210,120 @@
         "block";
 
 
+      /*
+        Buat navigator setelah
+        soal berhasil dimuat.
+      */
+
+      renderNavigator();
+
       renderQuestion();
+    }
+
+
+    /* ============================
+       RENDER NAVIGATOR
+    ============================ */
+
+    function renderNavigator() {
+
+      if (
+        !questionNavigator ||
+        !questions.length
+      ) {
+
+        return;
+      }
+
+
+      questionNavigator.innerHTML =
+        questions.map(
+          (question, index) => {
+
+            const state =
+              questionStates[index];
+
+
+            let classes =
+              "nav-number";
+
+
+            /*
+              Tandai soal aktif.
+            */
+
+            if (
+              index === currentIndex
+            ) {
+
+              classes += " active";
+
+            }
+
+
+            /*
+              Tandai soal yang sudah
+              dijawab.
+            */
+
+            if (
+              state &&
+              state.answered
+            ) {
+
+              classes += " answered";
+
+            }
+
+
+            return `
+              <button
+                type="button"
+                class="${classes}"
+                onclick="goToQuestion(${index})"
+                aria-label="Pergi ke soal ${index + 1}"
+              >
+                ${index + 1}
+              </button>
+            `;
+
+          }
+        ).join("");
+    }
+
+
+    /* ============================
+       GO TO QUESTION
+    ============================ */
+
+    function goToQuestion(index) {
+
+      /*
+        Pastikan nomor soal valid.
+      */
+
+      if (
+        index < 0 ||
+        index >= questions.length
+      ) {
+
+        return;
+      }
+
+
+      currentIndex =
+        index;
+
+
+      renderNavigator();
+
+      renderQuestion();
+
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     }
 
 
@@ -1025,6 +1391,14 @@
 
       progressFill.style.width =
         `${progress}%`;
+
+
+      /*
+        Pastikan navigator selalu
+        mengikuti soal aktif.
+      */
+
+      renderNavigator();
 
 
       /*
@@ -1346,6 +1720,15 @@
 
 
       /*
+        Update navigator supaya
+        soal langsung berubah menjadi
+        status sudah dijawab.
+      */
+
+      renderNavigator();
+
+
+      /*
         Tampilkan hasil.
       */
 
@@ -1500,6 +1883,8 @@
       currentIndex++;
 
 
+      renderNavigator();
+
       renderQuestion();
 
 
@@ -1539,6 +1924,8 @@
         renderQuestion().
       */
 
+      renderNavigator();
+
       renderQuestion();
 
 
@@ -1558,6 +1945,19 @@
       document
         .getElementById(
           "questionCard"
+        )
+        .style.display =
+        "none";
+
+
+      /*
+        Navigator juga disembunyikan
+        ketika hasil akhir ditampilkan.
+      */
+
+      document
+        .querySelector(
+          ".navigator-card"
         )
         .style.display =
         "none";
