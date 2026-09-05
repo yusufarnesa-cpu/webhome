@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Referensi | Medical Learning Hub</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=2"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+            <div class="logo">
+                🩺 Medical Learning Hub
+            </div>
+
+
+            <div class="nav-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="materi/index.html">
+                    Materi
+                </a>
+
+                <a href="quiz.html">
+                    Quiz
+                </a>
+
+                <a href="banksoal.html">
+                    Bank Soal
+                </a>
+
+                <a href="osce.html">
+                    OSCE
+                </a>
+
+                <a href="referensi.html">
+                    Referensi
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =========================
+         HERO
+    ========================== -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                MEDICAL REFERENCES
+            </span>
+
+
+            <h1>
+
+                Referensi<br>
+
+                <span>
+                    Kedokteran
+                </span>
+
+            </h1>
+
+
+            <p>
+
+                Kumpulan sumber pembelajaran dan
+                referensi medis untuk membantu
+                memperdalam pemahaman.
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         REFERENSI
+    ========================== -->
+
+    <section class="latest-section">
+
+        <div class="section-heading">
+
+            <span>
+                LEARNING RESOURCES
+            </span>
+
+
+            <h2>
+                Daftar Referensi
+            </h2>
+
+
+            <p>
+                Pilih sumber yang ingin kamu buka.
+            </p>
+
+        </div>
+
+
+        <div
+            id="references-container"
+            class="materials-grid"
+        >
+
+            <div class="loading">
+                Memuat referensi...
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         EMPTY STATE
+    ========================== -->
+
+    <section
+        id="empty-state"
+        style="
+            display:none;
+            text-align:center;
+            padding:40px 20px;
+        "
+    >
+
+        <h3>
+            Belum ada referensi
+        </h3>
+
+
+        <p>
+            Referensi yang ditambahkan oleh admin
+            akan muncul di halaman ini.
+        </p>
+
+    </section>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        <h3>
+            🩺 Medical Learning Hub
+        </h3>
+
+
+        <p>
+            Platform pembelajaran medis.
+        </p>
+
+
+        <p class="copyright">
+
+            © 2026 Medical Learning Hub
+
+        </p>
+
+    </footer>
+
+
+
+    <!-- =========================
+         SCRIPT
+    ========================== -->
+
+    <script>
+
+        /* =========================
+           SUPABASE
+        ========================== */
+
+        const SUPABASE_URL =
+            "https://hqzishiazabguknallei.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+
+        /* =========================
+           ELEMENT
+        ========================== */
+
+        const container =
+            document.getElementById(
+                "references-container"
+            );
+
+        const emptyState =
+            document.getElementById(
+                "empty-state"
+            );
+
+
+
+        /* =========================
+           LOAD REFERENCES
+        ========================== */
+
+        async function loadReferences() {
+
+            container.innerHTML = `
+                <div class="loading">
+                    Memuat referensi...
+                </div>
+            `;
+
+
+            try {
+
+                const { data, error } =
+                    await supabaseClient
+                        .from("resources")
+                        .select("*")
+                        .is("material_id", null)
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
+                            }
+                        );
+
+
+                if (error) {
+
+                    console.error(
+                        "Supabase error:",
+                        error
+                    );
+
+                    container.innerHTML = `
+                        <div class="loading">
+                            Gagal memuat referensi.
+                        </div>
+                    `;
+
+                    return;
+                }
+
+
+                if (!data || data.length === 0) {
+
+                    container.innerHTML = "";
+
+                    emptyState.style.display =
+                        "block";
+
+                    return;
+                }
+
+
+                emptyState.style.display =
+                    "none";
+
+
+                container.innerHTML =
+                    data
+                        .map(
+                            resource =>
+                                createReferenceCard(
+                                    resource
+                                )
+                        )
+                        .join("");
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                container.innerHTML = `
+                    <div class="loading">
+                        Terjadi kesalahan saat
+                        memuat referensi.
+                    </div>
+                `;
+
+            }
+
+        }
+
+
+
+        /* =========================
+           CREATE CARD
+        ========================== */
+
+        function createReferenceCard(resource) {
+
+            const title =
+                escapeHTML(
+                    resource.title ||
+                    "Referensi Tanpa Judul"
+                );
+
+
+            const description =
+                escapeHTML(
+                    resource.description ||
+                    "Tidak ada deskripsi."
+                );
+
+
+            const type =
+                escapeHTML(
+                    resource.type ||
+                    "Referensi"
+                );
+
+
+            let link = "";
+
+
+            if (resource.url) {
+
+                link = resource.url;
+
+            }
+
+
+            if (!link && resource.file_path) {
+
+                link = resource.file_path;
+
+            }
+
+
+            let button = "";
+
+
+            if (link) {
+
+                button = `
+                    <a
+                        class="button primary"
+                        href="${escapeAttribute(link)}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Buka Referensi →
+                    </a>
+                `;
+
+            } else {
+
+                button = `
+                    <span
+                        style="
+                            display:inline-block;
+                            opacity:0.6;
+                        "
+                    >
+                        Link belum tersedia
+                    </span>
+                `;
+
+            }
+
+
+            return `
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        📖
+                    </div>
+
+
+                    <span
+                        style="
+                            display:inline-block;
+                            margin-bottom:10px;
+                            font-size:0.8rem;
+                            font-weight:600;
+                            opacity:0.7;
+                            text-transform:uppercase;
+                        "
+                    >
+                        ${type}
+                    </span>
+
+
+                    <h3>
+                        ${title}
+                    </h3>
+
+
+                    <p>
+                        ${description}
+                    </p>
+
+
+                    <div
+                        style="
+                            margin-top:20px;
+                        "
+                    >
+                        ${button}
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+
+        /* =========================
+           SECURITY
+        ========================== */
+
+        function escapeHTML(value) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+
+        function escapeAttribute(value) {
+
+            return String(value)
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                );
+
+        }
+
+
+
+        /* =========================
+           START
+        ========================== */
+
+        loadReferences();
+
+    </script>
+
+
+</body>
+
+</html>
