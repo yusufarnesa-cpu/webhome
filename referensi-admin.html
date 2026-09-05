@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Kelola Referensi | Medical Learning Hub</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css?v=2"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+            <div class="logo">
+                🩺 Medical Learning Hub
+            </div>
+
+            <div class="nav-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="referensi.html">
+                    Referensi
+                </a>
+
+                <a href="admin.html">
+                    Admin
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <section class="latest-section">
+
+        <div class="section-heading">
+
+            <span>
+                ADMIN PANEL
+            </span>
+
+            <h1>
+                Kelola Referensi
+            </h1>
+
+            <p>
+                Tambahkan dan kelola sumber pembelajaran
+                medis untuk pengguna Medical Learning Hub.
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================
+             FORM
+        ========================== -->
+
+        <div
+            class="feature-card"
+            style="
+                max-width:800px;
+                margin:0 auto 40px;
+            "
+        >
+
+            <h2>
+                ➕ Tambah Referensi
+            </h2>
+
+
+            <form id="reference-form">
+
+
+                <!-- JUDUL -->
+
+                <div style="margin-bottom:20px;">
+
+                    <label>
+                        Judul Referensi
+                    </label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        required
+                        placeholder="Contoh: Atlas Anatomi Kepala dan Leher"
+                        style="
+                            width:100%;
+                            padding:12px;
+                            margin-top:8px;
+                            box-sizing:border-box;
+                        "
+                    >
+
+                </div>
+
+
+
+                <!-- DESKRIPSI -->
+
+                <div style="margin-bottom:20px;">
+
+                    <label>
+                        Deskripsi
+                    </label>
+
+                    <textarea
+                        id="description"
+                        rows="4"
+                        placeholder="Deskripsi singkat referensi..."
+                        style="
+                            width:100%;
+                            padding:12px;
+                            margin-top:8px;
+                            box-sizing:border-box;
+                        "
+                    ></textarea>
+
+                </div>
+
+
+
+                <!-- TYPE -->
+
+                <div style="margin-bottom:20px;">
+
+                    <label>
+                        Jenis Referensi
+                    </label>
+
+                    <select
+                        id="type"
+                        required
+                        style="
+                            width:100%;
+                            padding:12px;
+                            margin-top:8px;
+                        "
+                    >
+
+                        <option value="">
+                            Pilih jenis referensi
+                        </option>
+
+                        <option value="Gambar">
+                            🖼️ Gambar
+                        </option>
+
+                        <option value="PDF">
+                            📄 PDF
+                        </option>
+
+                        <option value="Word">
+                            📝 Microsoft Word
+                        </option>
+
+                        <option value="PowerPoint">
+                            📊 Microsoft PowerPoint
+                        </option>
+
+                        <option value="Excel">
+                            📈 Microsoft Excel
+                        </option>
+
+                        <option value="Video">
+                            🎬 Video
+                        </option>
+
+                        <option value="YouTube">
+                            ▶️ YouTube
+                        </option>
+
+                        <option value="Website">
+                            🌐 Website
+                        </option>
+
+                        <option value="Jurnal">
+                            📚 Jurnal
+                        </option>
+
+                        <option value="Buku">
+                            📖 Buku
+                        </option>
+
+                        <option value="Lainnya">
+                            📎 Lainnya
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- SOURCE TYPE -->
+
+                <div style="margin-bottom:20px;">
+
+                    <label>
+                        Sumber Referensi
+                    </label>
+
+
+                    <div style="margin-top:10px;">
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="source"
+                                value="upload"
+                                checked
+                            >
+
+                            📁 Upload File
+
+                        </label>
+
+
+                        <br>
+
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="source"
+                                value="url"
+                            >
+
+                            🔗 Masukkan URL
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- FILE -->
+
+                <div
+                    id="file-section"
+                    style="margin-bottom:20px;"
+                >
+
+                    <label>
+                        Pilih File
+                    </label>
+
+                    <input
+                        type="file"
+                        id="file"
+                        style="
+                            display:block;
+                            margin-top:10px;
+                        "
+                    >
+
+                    <small>
+                        File akan disimpan di Supabase Storage.
+                    </small>
+
+                </div>
+
+
+
+                <!-- URL -->
+
+                <div
+                    id="url-section"
+                    style="
+                        display:none;
+                        margin-bottom:20px;
+                    "
+                >
+
+                    <label>
+                        URL Referensi
+                    </label>
+
+                    <input
+                        type="url"
+                        id="url"
+                        placeholder="https://..."
+                        style="
+                            width:100%;
+                            padding:12px;
+                            margin-top:8px;
+                            box-sizing:border-box;
+                        "
+                    >
+
+                </div>
+
+
+
+                <!-- BUTTON -->
+
+                <button
+                    type="submit"
+                    class="button primary"
+                    id="submit-button"
+                >
+
+                    ➕ Tambahkan Referensi
+
+                </button>
+
+
+            </form>
+
+
+            <div
+                id="message"
+                style="
+                    margin-top:20px;
+                    display:none;
+                "
+            ></div>
+
+        </div>
+
+
+
+        <!-- =========================
+             LIST
+        ========================== -->
+
+        <div class="section-heading">
+
+            <span>
+                DATABASE
+            </span>
+
+            <h2>
+                Referensi Tersimpan
+            </h2>
+
+        </div>
+
+
+        <div
+            id="references-container"
+            class="materials-grid"
+        >
+
+            <div class="loading">
+                Memuat referensi...
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        <h3>
+            🩺 Medical Learning Hub
+        </h3>
+
+        <p>
+            Platform pembelajaran medis.
+        </p>
+
+        <p class="copyright">
+            © 2026 Medical Learning Hub
+        </p>
+
+    </footer>
+
+
+
+    <!-- =========================
+         SCRIPT
+    ========================== -->
+
+    <script>
+
+        /* =========================
+           SUPABASE
+        ========================= */
+
+        const SUPABASE_URL =
+            "https://hqzishiazabguknallei.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+
+        /* =========================
+           ELEMENT
+        ========================= */
+
+        const form =
+            document.getElementById(
+                "reference-form"
+            );
+
+        const fileInput =
+            document.getElementById(
+                "file"
+            );
+
+        const urlInput =
+            document.getElementById(
+                "url"
+            );
+
+        const fileSection =
+            document.getElementById(
+                "file-section"
+            );
+
+        const urlSection =
+            document.getElementById(
+                "url-section"
+            );
+
+        const submitButton =
+            document.getElementById(
+                "submit-button"
+            );
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+        const container =
+            document.getElementById(
+                "references-container"
+            );
+
+
+
+        /* =========================
+           SOURCE SWITCH
+        ========================== */
+
+        document
+            .querySelectorAll(
+                'input[name="source"]'
+            )
+            .forEach(
+                radio => {
+
+                    radio.addEventListener(
+                        "change",
+                        () => {
+
+                            const selected =
+                                document.querySelector(
+                                    'input[name="source"]:checked'
+                                ).value;
+
+
+                            if (
+                                selected ===
+                                "upload"
+                            ) {
+
+                                fileSection.style.display =
+                                    "block";
+
+                                urlSection.style.display =
+                                    "none";
+
+                            } else {
+
+                                fileSection.style.display =
+                                    "none";
+
+                                urlSection.style.display =
+                                    "block";
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+
+        /* =========================
+           MESSAGE
+        ========================== */
+
+        function showMessage(
+            text,
+            success = true
+        ) {
+
+            message.style.display =
+                "block";
+
+            message.textContent =
+                text;
+
+            message.style.padding =
+                "12px";
+
+            message.style.borderRadius =
+                "8px";
+
+        }
+
+
+
+        /* =========================
+           CHECK ADMIN
+        ========================== */
+
+        async function checkAdmin() {
+
+            const {
+                data: {
+                    user
+                }
+            } =
+                await supabaseClient
+                    .auth
+                    .getUser();
+
+
+            if (!user) {
+
+                alert(
+                    "Silakan login sebagai admin terlebih dahulu."
+                );
+
+                window.location.href =
+                    "login.html";
+
+                return false;
+
+            }
+
+
+            const {
+                data: profile,
+                error
+            } =
+                await supabaseClient
+                    .from("profiles")
+                    .select("role")
+                    .eq(
+                        "id",
+                        user.id
+                    )
+                    .single();
+
+
+            if (
+                error ||
+                !profile ||
+                profile.role !== "admin"
+            ) {
+
+                alert(
+                    "Akses hanya untuk admin."
+                );
+
+                window.location.href =
+                    "index.html";
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
+
+
+
+        /* =========================
+           UPLOAD FILE
+        ========================== */
+
+        async function uploadFile(
+            file
+        ) {
+
+            const safeName =
+                file.name
+                    .replace(
+                        /[^a-zA-Z0-9._-]/g,
+                        "_"
+                    );
+
+
+            const filePath =
+                Date.now() +
+                "_" +
+                safeName;
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .storage
+                    .from("references")
+                    .upload(
+                        filePath,
+                        file,
+                        {
+                            upsert: false
+                        }
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            const {
+                data: publicData
+            } =
+                supabaseClient
+                    .storage
+                    .from("references")
+                    .getPublicUrl(
+                        data.path
+                    );
+
+
+            return {
+                path: data.path,
+                url: publicData.publicUrl
+            };
+
+        }
+
+
+
+        /* =========================
+           ADD REFERENCE
+        ========================== */
+
+        form.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                submitButton.disabled =
+                    true;
+
+                submitButton.textContent =
+                    "Menyimpan...";
+
+
+                try {
+
+                    const title =
+                        document
+                            .getElementById(
+                                "title"
+                            )
+                            .value
+                            .trim();
+
+
+                    const description =
+                        document
+                            .getElementById(
+                                "description"
+                            )
+                            .value
+                            .trim();
+
+
+                    const type =
+                        document
+                            .getElementById(
+                                "type"
+                            )
+                            .value;
+
+
+                    const source =
+                        document
+                            .querySelector(
+                                'input[name="source"]:checked'
+                            )
+                            .value;
+
+
+                    let url = null;
+                    let filePath = null;
+
+
+
+                    /* UPLOAD */
+
+                    if (
+                        source ===
+                        "upload"
+                    ) {
+
+                        const file =
+                            fileInput.files[0];
+
+
+                        if (!file) {
+
+                            throw new Error(
+                                "Silakan pilih file terlebih dahulu."
+                            );
+
+                        }
+
+
+                        const uploaded =
+                            await uploadFile(
+                                file
+                            );
+
+
+                        url =
+                            uploaded.url;
+
+                        filePath =
+                            uploaded.path;
+
+                    }
+
+
+
+                    /* URL */
+
+                    else {
+
+                        url =
+                            urlInput.value
+                                .trim();
+
+
+                        if (!url) {
+
+                            throw new Error(
+                                "Silakan masukkan URL referensi."
+                            );
+
+                        }
+
+                    }
+
+
+
+                    /* DATABASE */
+
+                    const {
+                        error
+                    } =
+                        await supabaseClient
+                            .from("resources")
+                            .insert({
+
+                                title:
+                                    title,
+
+                                description:
+                                    description,
+
+                                type:
+                                    type,
+
+                                url:
+                                    url,
+
+                                file_path:
+                                    filePath,
+
+                                material_id:
+                                    null
+
+                            });
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    showMessage(
+                        "Referensi berhasil ditambahkan."
+                    );
+
+
+                    form.reset();
+
+
+                    fileSection.style.display =
+                        "block";
+
+                    urlSection.style.display =
+                        "none";
+
+
+                    await loadReferences();
+
+
+                } catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+                    showMessage(
+                        "Gagal menambahkan referensi: " +
+                        error.message,
+                        false
+                    );
+
+                } finally {
+
+                    submitButton.disabled =
+                        false;
+
+                    submitButton.textContent =
+                        "➕ Tambahkan Referensi";
+
+                }
+
+            }
+        );
+
+
+
+        /* =========================
+           LOAD REFERENCES
+        ========================== */
+
+        async function loadReferences() {
+
+            container.innerHTML = `
+                <div class="loading">
+                    Memuat referensi...
+                </div>
+            `;
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("resources")
+                    .select("*")
+                    .is(
+                        "material_id",
+                        null
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+
+                container.innerHTML = `
+                    <div class="loading">
+                        Gagal memuat referensi.
+                    </div>
+                `;
+
+                console.error(
+                    error
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                container.innerHTML = `
+                    <div class="loading">
+                        Belum ada referensi.
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            container.innerHTML =
+                data
+                    .map(
+                        resource =>
+                            createAdminCard(
+                                resource
+                            )
+                    )
+                    .join("");
+
+        }
+
+
+
+        /* =========================
+           ADMIN CARD
+        ========================== */
+
+        function createAdminCard(
+            resource
+        ) {
+
+            const title =
+                escapeHTML(
+                    resource.title ||
+                    "Tanpa Judul"
+                );
+
+
+            const description =
+                escapeHTML(
+                    resource.description ||
+                    "Tidak ada deskripsi."
+                );
+
+
+            const type =
+                escapeHTML(
+                    resource.type ||
+                    "Referensi"
+                );
+
+
+            return `
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        📖
+                    </div>
+
+                    <span
+                        style="
+                            display:inline-block;
+                            margin-bottom:10px;
+                            font-size:0.8rem;
+                            font-weight:600;
+                            opacity:0.7;
+                            text-transform:uppercase;
+                        "
+                    >
+                        ${type}
+                    </span>
+
+                    <h3>
+                        ${title}
+                    </h3>
+
+                    <p>
+                        ${description}
+                    </p>
+
+                    <div
+                        style="
+                            display:flex;
+                            gap:10px;
+                            margin-top:20px;
+                            flex-wrap:wrap;
+                        "
+                    >
+
+                        ${
+                            resource.url
+                            ?
+                            `
+                            <a
+                                class="button primary"
+                                href="${escapeAttribute(resource.url)}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Buka →
+                            </a>
+                            `
+                            :
+                            ""
+                        }
+
+                        <button
+                            class="button secondary"
+                            onclick="deleteReference(${resource.id})"
+                        >
+                            🗑️ Hapus
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+
+        /* =========================
+           DELETE
+        ========================== */
+
+        async function deleteReference(
+            id
+        ) {
+
+            const confirmDelete =
+                confirm(
+                    "Hapus referensi ini?"
+                );
+
+
+            if (!confirmDelete) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const {
+                    data: resource,
+                    error: fetchError
+                } =
+                    await supabaseClient
+                        .from("resources")
+                        .select(
+                            "file_path"
+                        )
+                        .eq(
+                            "id",
+                            id
+                        )
+                        .single();
+
+
+                if (fetchError) {
+
+                    throw fetchError;
+
+                }
+
+
+
+                /* DELETE DATABASE */
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("resources")
+                        .delete()
+                        .eq(
+                            "id",
+                            id
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+
+                /* DELETE STORAGE */
+
+                if (
+                    resource &&
+                    resource.file_path
+                ) {
+
+                    await supabaseClient
+                        .storage
+                        .from("references")
+                        .remove([
+                            resource.file_path
+                        ]);
+
+                }
+
+
+                await loadReferences();
+
+
+                showMessage(
+                    "Referensi berhasil dihapus."
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+                showMessage(
+                    "Gagal menghapus referensi: " +
+                    error.message,
+                    false
+                );
+
+            }
+
+        }
+
+
+
+        /* =========================
+           SECURITY
+        ========================== */
+
+        function escapeHTML(
+            value
+        ) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+
+        function escapeAttribute(
+            value
+        ) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                );
+
+        }
+
+
+
+        /* =========================
+           START
+        ========================== */
+
+        (async function () {
+
+            const allowed =
+                await checkAdmin();
+
+
+            if (!allowed) {
+
+                return;
+
+            }
+
+
+            await loadReferences();
+
+        })();
+
+    </script>
+
+
+</body>
+
+  </html>
