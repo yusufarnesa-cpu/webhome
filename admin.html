@@ -3,515 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Admin Dashboard - Medical Learning Hub</title>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #1f2937;
-    }
-
-    header {
-      background: #0f172a;
-      color: white;
-      padding: 18px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    header p {
-      margin: 5px 0 0;
-      color: #cbd5e1;
-      font-size: 14px;
-    }
-
-    button {
-      border: none;
-      border-radius: 8px;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .logout-btn {
-      background: #ef4444;
-      color: white;
-    }
-
-    .container {
-      width: min(1100px, 92%);
-      margin: 30px auto;
-    }
-
-    .card {
-      background: white;
-      border-radius: 14px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.06);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      color: #0f172a;
-    }
-
-    .card h3 {
-      margin-top: 24px;
-      color: #334155;
-    }
-
-    .description {
-      color: #64748b;
-      font-size: 14px;
-      margin-top: -8px;
-      margin-bottom: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 7px;
-    }
-
-    input,
-    textarea,
-    select {
-      width: 100%;
-      padding: 11px 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: inherit;
-      background: white;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    .content-area {
-      min-height: 220px;
-    }
-
-    .json-area {
-      min-height: 350px;
-      font-family: monospace;
-      line-height: 1.5;
-    }
-
-    .batch-area {
-      min-height: 260px;
-      font-family: monospace;
-      line-height: 1.5;
-    }
-
-    .btn-primary {
-      background: #2563eb;
-      color: white;
-    }
-
-    .btn-success {
-      background: #16a34a;
-      color: white;
-    }
-
-    .btn-danger {
-      background: #dc2626;
-      color: white;
-    }
-
-    .btn-secondary {
-      background: #64748b;
-      color: white;
-    }
-
-    .btn-warning {
-      background: #d97706;
-      color: white;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .message {
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      display: none;
-      font-size: 14px;
-    }
-
-    .message.success {
-      display: block;
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .message.error {
-      display: block;
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .message.info {
-      display: block;
-      background: #dbeafe;
-      color: #1e40af;
-    }
-
-    .item {
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 12px;
-      background: #f8fafc;
-    }
-
-    .item-title {
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .item-meta {
-      color: #64748b;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .item-description {
-      color: #475569;
-      font-size: 14px;
-      margin-bottom: 12px;
-      white-space: pre-wrap;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      background: #e2e8f0;
-      color: #334155;
-    }
-
-    .badge-published {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .badge-draft {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .badge-closed {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .empty {
-      color: #64748b;
-      padding: 15px 0;
-      text-align: center;
-    }
-
-    .json-example {
-      background: #0f172a;
-      color: #e2e8f0;
-      padding: 16px;
-      border-radius: 10px;
-      overflow-x: auto;
-      font-size: 13px;
-      line-height: 1.5;
-      white-space: pre;
-      margin-top: 12px;
-    }
-
-    .warning-box {
-      background: #fff7ed;
-      border: 1px solid #fed7aa;
-      color: #9a3412;
-      padding: 14px;
-      border-radius: 10px;
-      margin-bottom: 18px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .info-box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      color: #1e40af;
-      padding: 14px;
-      border-radius: 10px;
-      margin-bottom: 18px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .success-box {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      color: #166534;
-      padding: 14px;
-      border-radius: 10px;
-      margin-bottom: 18px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .two-column {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .four-column {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .batch-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 15px;
-      background: #f8fafc;
-    }
-
-    .batch-card h4 {
-      margin: 0 0 8px;
-      color: #0f172a;
-    }
-
-    .batch-status {
-      font-size: 13px;
-      color: #64748b;
-      margin-top: 8px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .stat {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-    }
-
-    .stat-number {
-      font-size: 24px;
-      font-weight: 700;
-      color: #2563eb;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 4px;
-    }
-
-    /* ============================================================
-       OSCE
-    ============================================================ */
-
-    .osce-checklist {
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 12px;
-      background: #f8fafc;
-    }
-
-    .osce-checklist-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .osce-step {
-      font-weight: 700;
-      color: #2563eb;
-    }
-
-    .osce-checklist-grid {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      align-items: end;
-    }
-
-    /* ============================================================
-       OSCE SCORE 0-3 HORIZONTAL
-    ============================================================ */
-
-    .osce-score-group {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      flex-wrap: wrap;
-    }
-
-    .osce-score-label {
-      font-weight: 600;
-      margin-right: 4px;
-      margin-bottom: 0;
-    }
-
-    .osce-score-option {
-      position: relative;
-      display: inline-block;
-      margin: 0;
-      cursor: pointer;
-    }
-
-    .osce-score-option input {
-      position: absolute;
-      opacity: 0;
-      width: 1px;
-      height: 1px;
-      pointer-events: none;
-    }
-
-    .osce-score-option span {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 42px;
-      height: 40px;
-      padding: 0 12px;
-      border: 2px solid #cbd5e1;
-      border-radius: 8px;
-      background: white;
-      color: #334155;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .osce-score-option span:hover {
-      border-color: #2563eb;
-      color: #2563eb;
-    }
-
-    .osce-score-option input:checked + span {
-      background: #2563eb;
-      border-color: #2563eb;
-      color: white;
-    }
-
-    .osce-score-option input:focus-visible + span {
-      outline: 2px solid #93c5fd;
-      outline-offset: 2px;
-    }
-
-    .osce-station {
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      background: #f8fafc;
-    }
-
-    .osce-station-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 8px;
-    }
-
-    .osce-station-meta {
-      color: #64748b;
-      font-size: 13px;
-      margin-bottom: 10px;
-    }
-
-    .osce-station-section {
-      margin-top: 10px;
-    }
-
-    .osce-station-section strong {
-      color: #334155;
-    }
-
-    @media (max-width: 900px) {
-      .four-column {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f5f7fb; color: #1f2937; }
+    header { background: #0f172a; color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    header h1 { margin: 0; font-size: 22px; }
+    header p { margin: 5px 0 0; color: #cbd5e1; font-size: 14px; }
+    button { border: none; border-radius: 8px; padding: 10px 15px; cursor: pointer; font-weight: 600; }
+    .logout-btn { background: #ef4444; color: white; }
+    .container { width: min(1100px, 92%); margin: 30px auto; }
+    .card { background: white; border-radius: 14px; padding: 24px; margin-bottom: 24px; box-shadow: 0 5px 20px rgba(0,0,0,0.06); }
+    .card h2 { margin-top: 0; color: #0f172a; }
+    .card h3 { margin-top: 24px; color: #334155; }
+    .description { color: #64748b; font-size: 14px; margin-top: -8px; margin-bottom: 20px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 7px; }
+    input, textarea, select { width: 100%; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-family: inherit; background: white; }
+    textarea { min-height: 120px; resize: vertical; }
+    .content-area { min-height: 220px; }
+    .json-area { min-height: 350px; font-family: monospace; line-height: 1.5; }
+    .batch-area { min-height: 260px; font-family: monospace; line-height: 1.5; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-success { background: #16a34a; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-secondary { background: #64748b; color: white; }
+    .btn-warning { background: #d97706; color: white; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .message { margin-top: 12px; padding: 10px 12px; border-radius: 8px; display: none; font-size: 14px; }
+    .message.success { display: block; background: #dcfce7; color: #166534; }
+    .message.error { display: block; background: #fee2e2; color: #991b1b; }
+    .message.info { display: block; background: #dbeafe; color: #1e40af; }
+    .item { border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin-bottom: 12px; background: #f8fafc; }
+    .item-title { font-weight: 700; margin-bottom: 6px; }
+    .item-meta { color: #64748b; font-size: 13px; margin-bottom: 8px; }
+    .item-description { color: #475569; font-size: 14px; margin-bottom: 12px; white-space: pre-wrap; }
+    .badge { display: inline-block; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #e2e8f0; color: #334155; }
+    .badge-published { background: #dcfce7; color: #166534; }
+    .badge-draft { background: #fef3c7; color: #92400e; }
+    .badge-closed { background: #fee2e2; color: #991b1b; }
+    .empty { color: #64748b; padding: 15px 0; text-align: center; }
+    .json-example { background: #0f172a; color: #e2e8f0; padding: 16px; border-radius: 10px; overflow-x: auto; font-size: 13px; line-height: 1.5; white-space: pre; margin-top: 12px; }
+    .warning-box { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; padding: 14px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; line-height: 1.5; }
+    .info-box { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 14px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; line-height: 1.5; }
+    .success-box { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 14px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; line-height: 1.5; }
+    .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .four-column { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .batch-card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; background: #f8fafc; }
+    .batch-card h4 { margin: 0 0 8px; color: #0f172a; }
+    .batch-status { font-size: 13px; color: #64748b; margin-top: 8px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; text-align: center; }
+    .stat-number { font-size: 24px; font-weight: 700; color: #2563eb; }
+    .stat-label { font-size: 12px; color: #64748b; margin-top: 4px; }
+    .osce-checklist { border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 12px; background: #f8fafc; }
+    .osce-checklist-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .osce-step { font-weight: 700; color: #2563eb; }
+    .osce-checklist-grid { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; }
+    .osce-score-group { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .osce-score-label { font-weight: 600; margin-right: 4px; margin-bottom: 0; }
+    .osce-score-option { position: relative; display: inline-block; margin: 0; cursor: pointer; }
+    .osce-score-option input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+    .osce-score-option span { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; height: 40px; padding: 0 12px; border: 2px solid #cbd5e1; border-radius: 8px; background: white; color: #334155; font-weight: 700; cursor: pointer; transition: all 0.15s ease; }
+    .osce-score-option span:hover { border-color: #2563eb; color: #2563eb; }
+    .osce-score-option input:checked + span { background: #2563eb; border-color: #2563eb; color: white; }
+    .osce-score-option input:focus-visible + span { outline: 2px solid #93c5fd; outline-offset: 2px; }
+    .osce-station { border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 12px; background: #f8fafc; }
+    .osce-station-title { font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+    .osce-station-meta { color: #64748b; font-size: 13px; margin-bottom: 10px; }
+    .osce-station-section { margin-top: 10px; }
+    .osce-station-section strong { color: #334155; }
+    .file-preview { margin-top: 10px; padding: 10px; background: #f1f5f9; border-radius: 8px; display: none; }
+    .file-preview.show { display: block; }
+    .file-preview a { color: #2563eb; text-decoration: none; }
+    .file-preview a:hover { text-decoration: underline; }
+    .attachment-item { display: inline-block; margin: 4px 8px 4px 0; padding: 6px 12px; background: #e2e8f0; border-radius: 6px; font-size: 13px; }
+    .attachment-item .remove-attachment { color: #dc2626; cursor: pointer; margin-left: 8px; font-weight: 700; }
+    @media (max-width: 900px) { .four-column { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 700px) {
-      header {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .two-column {
-        grid-template-columns: 1fr;
-      }
-
-      .four-column {
-        grid-template-columns: 1fr;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .card {
-        padding: 18px;
-      }
-
-      .osce-checklist-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .osce-checklist-header {
-        align-items: flex-start;
-      }
-
-      .osce-score-group {
-        justify-content: flex-start;
-      }
+      header { align-items: flex-start; flex-direction: column; }
+      .two-column { grid-template-columns: 1fr; }
+      .four-column { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+      .card { padding: 18px; }
+      .osce-checklist-grid { grid-template-columns: 1fr; }
+      .osce-checklist-header { align-items: flex-start; }
+      .osce-score-group { justify-content: flex-start; }
     }
   </style>
 </head>
-
 <body>
 
 <header>
@@ -519,471 +100,226 @@
     <h1>Admin Dashboard</h1>
     <p>Medical Learning Hub</p>
   </div>
-
-  <button class="logout-btn" onclick="logout()">
-    Logout
-  </button>
+  <button class="logout-btn" onclick="logout()">Logout</button>
 </header>
 
 <div class="container">
 
-  <!-- =========================================================
-       KELOLA BLOK MATERI
-  ========================================================== -->
-
+  <!-- KELOLA BLOK MATERI -->
   <div class="card">
-
     <h2>📚 Kelola Blok Materi</h2>
-
-    <p class="description">
-      Tambahkan kategori atau blok pembelajaran yang akan digunakan
-      untuk mengelompokkan materi.
-    </p>
-
+    <p class="description">Tambahkan kategori atau blok pembelajaran yang akan digunakan untuk mengelompokkan materi.</p>
     <div class="form-group">
       <label for="categoryName">Nama Blok</label>
-
-      <input
-        type="text"
-        id="categoryName"
-        placeholder="Contoh: Cardiovascular System"
-      >
+      <input type="text" id="categoryName" placeholder="Contoh: Cardiovascular System">
     </div>
-
     <div class="form-group">
       <label for="categoryDescription">Deskripsi</label>
-
-      <textarea
-        id="categoryDescription"
-        placeholder="Deskripsi singkat blok..."
-      ></textarea>
+      <textarea id="categoryDescription" placeholder="Deskripsi singkat blok..."></textarea>
     </div>
-
     <div class="button-row">
-      <button
-        class="btn-primary"
-        onclick="addCategory()"
-      >
-        Tambah Blok
-      </button>
+      <button class="btn-primary" onclick="addCategory()">Tambah Blok</button>
     </div>
-
     <div id="categoryMessage" class="message"></div>
-
     <h3>Daftar Blok</h3>
-
-    <div id="categoryList">
-      <div class="empty">Memuat kategori...</div>
-    </div>
-
+    <div id="categoryList"><div class="empty">Memuat kategori...</div></div>
   </div>
 
-
-  <!-- =========================================================
-       TAMBAH / EDIT MATERI
-  ========================================================== -->
-
+  <!-- TAMBAH / EDIT MATERI DENGAN FITUR UPLOAD -->
   <div class="card">
-
     <h2>📝 Tambah / Edit Materi</h2>
-
-    <p class="description">
-      Kelola materi pembelajaran yang akan ditampilkan pada halaman
-      Materi Pembelajaran.
-    </p>
-
+    <p class="description">Kelola materi pembelajaran dengan lampiran file (PDF, Word, Excel, Video, Gambar, YouTube).</p>
+    
     <div class="form-group">
       <label for="title">Judul Materi</label>
-
-      <input
-        type="text"
-        id="title"
-        placeholder="Contoh: Anatomi Telinga"
-      >
+      <input type="text" id="title" placeholder="Contoh: Anatomi Telinga">
     </div>
-
+    
     <div class="two-column">
-
       <div class="form-group">
         <label for="subject">Mata Kuliah</label>
-
-        <input
-          type="text"
-          id="subject"
-          placeholder="Contoh: Anatomi"
-        >
+        <input type="text" id="subject" placeholder="Contoh: Anatomi">
       </div>
-
       <div class="form-group">
         <label for="semester">Semester</label>
-
-        <input
-          type="text"
-          id="semester"
-          placeholder="Contoh: Semester 3"
-        >
+        <input type="text" id="semester" placeholder="Contoh: Semester 3">
       </div>
-
     </div>
 
     <div class="form-group">
       <label for="topic">Topik</label>
-
-      <input
-        type="text"
-        id="topic"
-        placeholder="Contoh: Telinga Tengah"
-      >
+      <input type="text" id="topic" placeholder="Contoh: Telinga Tengah">
     </div>
 
     <div class="form-group">
       <label for="category">Blok / Kategori</label>
-
-      <select id="category">
-        <option value="">Pilih kategori</option>
-      </select>
+      <select id="category"><option value="">Pilih kategori</option></select>
     </div>
 
     <div class="form-group">
       <label for="description">Deskripsi</label>
-
-      <textarea
-        id="description"
-        placeholder="Deskripsi singkat materi..."
-      ></textarea>
+      <textarea id="description" placeholder="Deskripsi singkat materi..."></textarea>
     </div>
 
     <div class="form-group">
       <label for="content">Isi Materi</label>
-
-      <textarea
-        id="content"
-        class="content-area"
-        placeholder="Masukkan isi materi..."
-      ></textarea>
+      <textarea id="content" class="content-area" placeholder="Masukkan isi materi..."></textarea>
     </div>
 
-    <div class="button-row">
+    <!-- FITUR UPLOAD FILE -->
+    <div class="form-group" style="border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 20px;">
+      <h3 style="margin-top: 0;">📎 Lampiran File</h3>
+      <p class="description">Tambahkan file pendukung seperti PDF, Word, Excel, Video, Gambar, atau tautan YouTube.</p>
+      
+      <div class="form-group">
+        <label for="materialFileType">Jenis Lampiran</label>
+        <select id="materialFileType">
+          <option value="">Pilih jenis</option>
+          <option value="Gambar">🖼️ Gambar</option>
+          <option value="PDF">📄 PDF</option>
+          <option value="Word">📝 Microsoft Word</option>
+          <option value="PowerPoint">📊 Microsoft PowerPoint</option>
+          <option value="Excel">📈 Microsoft Excel</option>
+          <option value="Video">🎬 Video</option>
+          <option value="YouTube">▶️ YouTube</option>
+          <option value="Website">🌐 Website</option>
+          <option value="Jurnal">📚 Jurnal</option>
+          <option value="Buku">📖 Buku</option>
+          <option value="Lainnya">📎 Lainnya</option>
+        </select>
+      </div>
 
-      <button
-        class="btn-primary"
-        onclick="saveMaterial()"
-      >
-        Simpan Materi
-      </button>
+      <div class="form-group">
+        <label>Sumber Lampiran</label>
+        <label style="font-weight:normal; display: inline-block; margin-right: 20px;">
+          <input type="radio" name="materialFileSource" value="upload" checked onchange="updateMaterialFileSource()"> 📁 Upload File
+        </label>
+        <label style="font-weight:normal; display: inline-block;">
+          <input type="radio" name="materialFileSource" value="url" onchange="updateMaterialFileSource()"> 🔗 Masukkan URL
+        </label>
+      </div>
 
-      <button
-        class="btn-secondary"
-        onclick="clearForm()"
-      >
-        Bersihkan Form
-      </button>
+      <div id="materialFileSection" class="form-group">
+        <label for="materialFile">Pilih File</label>
+        <input type="file" id="materialFile">
+        <small>File akan disimpan di Supabase Storage bucket <strong>materials</strong>.</small>
+      </div>
 
+      <div id="materialUrlSection" class="form-group" style="display:none;">
+        <label for="materialFileUrl">URL</label>
+        <input type="url" id="materialFileUrl" placeholder="https://...">
+      </div>
+
+      <div class="button-row">
+        <button type="button" class="btn-secondary" onclick="addMaterialAttachment()">➕ Tambahkan Lampiran</button>
+        <button type="button" class="btn-secondary" onclick="clearMaterialAttachmentForm()">Bersihkan</button>
+      </div>
+
+      <div id="materialAttachmentList" style="margin-top: 12px;">
+        <!-- Daftar lampiran akan muncul di sini -->
+      </div>
+    </div>
+
+    <div class="button-row" style="margin-top: 20px;">
+      <button class="btn-primary" onclick="saveMaterial()">💾 Simpan Materi</button>
+      <button class="btn-secondary" onclick="clearForm()">Bersihkan Form</button>
     </div>
 
     <div id="message" class="message"></div>
-
   </div>
 
-
-  <!-- =========================================================
-       TAMBAH REFERENSI
-  ========================================================== -->
-
+  <!-- TAMBAH REFERENSI -->
   <div class="card">
-
-  <h2>🔗 Tambah Referensi Materi</h2>
-
-  <p class="description">
-    Tambahkan referensi yang terhubung langsung dengan materi.
-    Referensi dapat berupa file atau URL.
-  </p>
-
-  <div class="form-group">
-    <label for="resourceMaterial">Materi</label>
-
-    <select id="resourceMaterial">
-      <option value="">Pilih materi</option>
-    </select>
+    <h2>🔗 Tambah Referensi Materi</h2>
+    <p class="description">Tambahkan referensi yang terhubung langsung dengan materi.</p>
+    <div class="form-group">
+      <label for="resourceMaterial">Materi</label>
+      <select id="resourceMaterial"><option value="">Pilih materi</option></select>
+    </div>
+    <div class="form-group">
+      <label for="resourceTitle">Judul Referensi</label>
+      <input type="text" id="resourceTitle" placeholder="Contoh: Anatomi Telinga - Video Pembelajaran">
+    </div>
+    <div class="form-group">
+      <label for="resourceType">Jenis Referensi</label>
+      <select id="resourceType">
+        <option value="">Pilih jenis referensi</option>
+        <option value="Gambar">🖼️ Gambar</option>
+        <option value="PDF">📄 PDF</option>
+        <option value="Word">📝 Microsoft Word</option>
+        <option value="PowerPoint">📊 Microsoft PowerPoint</option>
+        <option value="Excel">📈 Microsoft Excel</option>
+        <option value="Video">🎬 Video</option>
+        <option value="YouTube">▶️ YouTube</option>
+        <option value="Website">🌐 Website</option>
+        <option value="Jurnal">📚 Jurnal</option>
+        <option value="Buku">📖 Buku</option>
+        <option value="Lainnya">📎 Lainnya</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Sumber Referensi</label>
+      <label style="font-weight:normal; display: inline-block; margin-right: 20px;">
+        <input type="radio" name="resourceSource" value="upload" checked onchange="updateResourceSource()"> 📁 Upload File
+      </label>
+      <label style="font-weight:normal; display: inline-block;">
+        <input type="radio" name="resourceSource" value="url" onchange="updateResourceSource()"> 🔗 Masukkan URL
+      </label>
+    </div>
+    <div id="resourceFileSection" class="form-group">
+      <label for="resourceFile">Pilih File</label>
+      <input type="file" id="resourceFile">
+      <small>File akan disimpan di Supabase Storage bucket <strong>references</strong>.</small>
+    </div>
+    <div id="resourceUrlSection" class="form-group" style="display:none;">
+      <label for="resourceUrl">URL Referensi</label>
+      <input type="url" id="resourceUrl" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label for="resourceDescription">Deskripsi</label>
+      <textarea id="resourceDescription" placeholder="Deskripsi singkat referensi..."></textarea>
+    </div>
+    <div class="button-row">
+      <button class="btn-primary" type="button" onclick="addResource()" id="resourceSubmitButton">➕ Tambahkan Referensi</button>
+      <button class="btn-secondary" type="button" onclick="clearResourceForm()">Bersihkan</button>
+    </div>
+    <div id="resourceMessage" class="message"></div>
   </div>
 
-  <div class="form-group">
-    <label for="resourceTitle">Judul Referensi</label>
-
-    <input
-      type="text"
-      id="resourceTitle"
-      placeholder="Contoh: Anatomi Telinga - Video Pembelajaran"
-    >
-  </div>
-
-  <div class="form-group">
-    <label for="resourceType">Jenis Referensi</label>
-
-    <select id="resourceType">
-
-      <option value="">
-        Pilih jenis referensi
-      </option>
-
-      <option value="Gambar">
-        🖼️ Gambar
-      </option>
-
-      <option value="PDF">
-        📄 PDF
-      </option>
-
-      <option value="Word">
-        📝 Microsoft Word
-      </option>
-
-      <option value="PowerPoint">
-        📊 Microsoft PowerPoint
-      </option>
-
-      <option value="Excel">
-        📈 Microsoft Excel
-      </option>
-
-      <option value="Video">
-        🎬 Video
-      </option>
-
-      <option value="YouTube">
-        ▶️ YouTube
-      </option>
-
-      <option value="Website">
-        🌐 Website
-      </option>
-
-      <option value="Jurnal">
-        📚 Jurnal
-      </option>
-
-      <option value="Buku">
-        📖 Buku
-      </option>
-
-      <option value="Lainnya">
-        📎 Lainnya
-      </option>
-
-    </select>
-  </div>
-
-  <div class="form-group">
-
-    <label>
-      Sumber Referensi
-    </label>
-
-    <label style="font-weight:normal;">
-      <input
-        type="radio"
-        name="resourceSource"
-        value="upload"
-        checked
-        onchange="updateResourceSource()"
-      >
-      📁 Upload File
-    </label>
-
-    <label style="font-weight:normal;">
-      <input
-        type="radio"
-        name="resourceSource"
-        value="url"
-        onchange="updateResourceSource()"
-      >
-      🔗 Masukkan URL
-    </label>
-
-  </div>
-
-  <div
-    id="resourceFileSection"
-    class="form-group"
-  >
-
-    <label for="resourceFile">
-      Pilih File
-    </label>
-
-    <input
-      type="file"
-      id="resourceFile"
-    >
-
-    <small>
-      File akan disimpan di Supabase Storage bucket
-      <strong>references</strong>.
-    </small>
-
-  </div>
-
-  <div
-    id="resourceUrlSection"
-    class="form-group"
-    style="display:none;"
-  >
-
-    <label for="resourceUrl">
-      URL Referensi
-    </label>
-
-    <input
-      type="url"
-      id="resourceUrl"
-      placeholder="https://..."
-    >
-
-  </div>
-
-  <div class="form-group">
-
-    <label for="resourceDescription">
-      Deskripsi
-    </label>
-
-    <textarea
-      id="resourceDescription"
-      placeholder="Deskripsi singkat referensi..."
-    ></textarea>
-
-  </div>
-
-  <div class="button-row">
-
-    <button
-      class="btn-primary"
-      type="button"
-      onclick="addResource()"
-      id="resourceSubmitButton"
-    >
-      ➕ Tambahkan Referensi
-    </button>
-
-    <button
-      class="btn-secondary"
-      type="button"
-      onclick="clearResourceForm()"
-    >
-      Bersihkan
-    </button>
-
-  </div>
-
-  <div
-    id="resourceMessage"
-    class="message"
-  ></div>
-
-  </div>
-
-
-
-  <!-- =========================================================
-       KELOLA CBT
-  ========================================================== -->
-
+  <!-- KELOLA CBT -->
   <div class="card">
-
     <h2>🧠 Kelola CBT</h2>
-
-    <p class="description">
-      Buat CBT dengan memasukkan soal dari AI dalam format JSON.
-      Untuk CBT besar, gunakan sistem 4 batch agar tidak terbentur
-      batas panjang output AI.
-    </p>
-
+    <p class="description">Buat CBT dengan memasukkan soal dari AI dalam format JSON.</p>
     <div class="success-box">
-
       <strong>🚀 Sistem CBT 4 Batch</strong><br><br>
-
-      Buat soal menggunakan AI dengan pembagian:<br>
-
       • Batch 1 → Soal 1–25<br>
       • Batch 2 → Soal 26–50<br>
       • Batch 3 → Soal 51–75<br>
       • Batch 4 → Soal 76–100<br><br>
-
-      Setelah keempat JSON ditempel, sistem akan otomatis
-      menggabungkannya menjadi <strong>1 CBT dengan 100 soal</strong>.
-
+      Setelah keempat JSON ditempel, sistem akan otomatis menggabungkannya menjadi <strong>1 CBT dengan 100 soal</strong>.
     </div>
-
     <h3>Informasi CBT</h3>
-
     <div class="form-group">
-
-      <label for="batchTitle">
-        Judul CBT
-      </label>
-
-      <input
-        type="text"
-        id="batchTitle"
-        placeholder="Contoh: CBT Anatomi THT"
-      >
-
+      <label for="batchTitle">Judul CBT</label>
+      <input type="text" id="batchTitle" placeholder="Contoh: CBT Anatomi THT">
     </div>
-
     <div class="form-group">
-
-      <label for="batchDescription">
-        Deskripsi CBT
-      </label>
-
-      <textarea
-        id="batchDescription"
-        placeholder="Contoh: CBT Anatomi THT untuk mahasiswa kedokteran."
-      ></textarea>
-
+      <label for="batchDescription">Deskripsi CBT</label>
+      <textarea id="batchDescription" placeholder="Contoh: CBT Anatomi THT untuk mahasiswa kedokteran."></textarea>
     </div>
-
     <div class="two-column">
-
       <div class="form-group">
-
-        <label for="batchCategory">
-          Kategori
-        </label>
-
-        <select id="batchCategory">
-
-          <option value="">
-            Pilih kategori
-          </option>
-
-        </select>
-
+        <label for="batchCategory">Kategori</label>
+        <select id="batchCategory"><option value="">Pilih kategori</option></select>
       </div>
-
       <div class="form-group">
-
-        <label for="batchDuration">
-          Durasi (menit)
-        </label>
-
-        <input
-          type="number"
-          id="batchDuration"
-          min="1"
-          value="100"
-        >
-
+        <label for="batchDuration">Durasi (menit)</label>
+        <input type="number" id="batchDuration" min="1" value="100">
       </div>
-
     </div>
-
     <h3>Paste JSON Batch</h3>
-
     <div class="info-box">
-
       <strong>Format setiap batch harus seperti ini:</strong>
-
       <div class="json-example">{
   "batch": 1,
   "start_question": 1,
@@ -991,220 +327,58 @@
   "questions": [
     {
       "question": "Pertanyaan...",
-      "options": [
-        "Pilihan A",
-        "Pilihan B",
-        "Pilihan C",
-        "Pilihan D",
-        "Pilihan E"
-      ],
+      "options": ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D", "Pilihan E"],
       "answer": 2,
       "explanation": "Penjelasan..."
     }
   ]
 }</div>
-
     </div>
-
     <div class="four-column">
-
       <div class="batch-card">
-
         <h4>🟦 Batch 1</h4>
-
-        <div class="batch-status">
-          Soal 1–25
-        </div>
-
-        <textarea
-          id="batch1Json"
-          class="batch-area"
-          placeholder="Paste JSON Batch 1 di sini..."
-        ></textarea>
-
-        <div
-          id="batch1Status"
-          class="batch-status"
-        >
-          Belum diperiksa
-        </div>
-
+        <div class="batch-status">Soal 1–25</div>
+        <textarea id="batch1Json" class="batch-area" placeholder="Paste JSON Batch 1 di sini..."></textarea>
+        <div id="batch1Status" class="batch-status">Belum diperiksa</div>
       </div>
-
       <div class="batch-card">
-
         <h4>🟩 Batch 2</h4>
-
-        <div class="batch-status">
-          Soal 26–50
-        </div>
-
-        <textarea
-          id="batch2Json"
-          class="batch-area"
-          placeholder="Paste JSON Batch 2 di sini..."
-        ></textarea>
-
-        <div
-          id="batch2Status"
-          class="batch-status"
-        >
-          Belum diperiksa
-        </div>
-
+        <div class="batch-status">Soal 26–50</div>
+        <textarea id="batch2Json" class="batch-area" placeholder="Paste JSON Batch 2 di sini..."></textarea>
+        <div id="batch2Status" class="batch-status">Belum diperiksa</div>
       </div>
-
       <div class="batch-card">
-
         <h4>🟨 Batch 3</h4>
-
-        <div class="batch-status">
-          Soal 51–75
-        </div>
-
-        <textarea
-          id="batch3Json"
-          class="batch-area"
-          placeholder="Paste JSON Batch 3 di sini..."
-        ></textarea>
-
-        <div
-          id="batch3Status"
-          class="batch-status"
-        >
-          Belum diperiksa
-        </div>
-
+        <div class="batch-status">Soal 51–75</div>
+        <textarea id="batch3Json" class="batch-area" placeholder="Paste JSON Batch 3 di sini..."></textarea>
+        <div id="batch3Status" class="batch-status">Belum diperiksa</div>
       </div>
-
       <div class="batch-card">
-
         <h4>🟥 Batch 4</h4>
-
-        <div class="batch-status">
-          Soal 76–100
-        </div>
-
-        <textarea
-          id="batch4Json"
-          class="batch-area"
-          placeholder="Paste JSON Batch 4 di sini..."
-        ></textarea>
-
-        <div
-          id="batch4Status"
-          class="batch-status"
-        >
-          Belum diperiksa
-        </div>
-
+        <div class="batch-status">Soal 76–100</div>
+        <textarea id="batch4Json" class="batch-area" placeholder="Paste JSON Batch 4 di sini..."></textarea>
+        <div id="batch4Status" class="batch-status">Belum diperiksa</div>
       </div>
-
     </div>
-
     <div class="stats">
-
-      <div class="stat">
-
-        <div
-          id="batchCount"
-          class="stat-number"
-        >
-          0/4
-        </div>
-
-        <div class="stat-label">
-          Batch valid
-        </div>
-
-      </div>
-
-      <div class="stat">
-
-        <div
-          id="questionCount"
-          class="stat-number"
-        >
-          0/100
-        </div>
-
-        <div class="stat-label">
-          Total soal
-        </div>
-
-      </div>
-
-      <div class="stat">
-
-        <div
-          id="duplicateCount"
-          class="stat-number"
-        >
-          0
-        </div>
-
-        <div class="stat-label">
-          Duplikasi
-        </div>
-
-      </div>
-
+      <div class="stat"><div id="batchCount" class="stat-number">0/4</div><div class="stat-label">Batch valid</div></div>
+      <div class="stat"><div id="questionCount" class="stat-number">0/100</div><div class="stat-label">Total soal</div></div>
+      <div class="stat"><div id="duplicateCount" class="stat-number">0</div><div class="stat-label">Duplikasi</div></div>
     </div>
-
     <div class="button-row">
-
-      <button
-        class="btn-primary"
-        onclick="validateAllBatches()"
-      >
-        🔍 Validasi Semua Batch
-      </button>
-
-      <button
-        class="btn-success"
-        onclick="importBatchCBT()"
-      >
-        🚀 Gabungkan & Import 100 Soal
-      </button>
-
-      <button
-        class="btn-secondary"
-        onclick="clearBatchForm()"
-      >
-        Bersihkan Batch
-      </button>
-
+      <button class="btn-primary" onclick="validateAllBatches()">🔍 Validasi Semua Batch</button>
+      <button class="btn-success" onclick="importBatchCBT()">🚀 Gabungkan & Import 100 Soal</button>
+      <button class="btn-secondary" onclick="clearBatchForm()">Bersihkan Batch</button>
     </div>
-
-    <div
-      id="batchMessage"
-      class="message"
-    ></div>
-
-
-    <!-- =======================================================
-         IMPORT CBT LAMA
-    ======================================================== -->
+    <div id="batchMessage" class="message"></div>
 
     <h3>Import CBT Tunggal</h3>
-
-    <p class="description">
-      Fitur ini tetap dipertahankan untuk CBT yang dibuat dalam
-      satu JSON.
-    </p>
-
+    <p class="description">Fitur ini tetap dipertahankan untuk CBT yang dibuat dalam satu JSON.</p>
     <div class="warning-box">
-
       <strong>⚠️ Penting:</strong><br>
-
-      Nomor <strong>answer</strong> menggunakan sistem 1-based.
-      Artinya <strong>1 = pilihan pertama</strong>,
-      <strong>2 = pilihan kedua</strong>, dan seterusnya.
-
+      Nomor <strong>answer</strong> menggunakan sistem 1-based. Artinya <strong>1 = pilihan pertama</strong>, <strong>2 = pilihan kedua</strong>, dan seterusnya.
     </div>
-
     <h3>Format JSON CBT Tunggal</h3>
-
     <div class="json-example">{
   "title": "Ujian Anatomi THT",
   "description": "Ujian CBT Anatomi THT",
@@ -1213,4435 +387,1264 @@
   "questions": [
     {
       "question": "Apa fungsi utama tuba Eustachius?",
-      "options": [
-        "Mengatur tekanan telinga tengah",
-        "Menghasilkan serumen",
-        "Mengatur keseimbangan tubuh",
-        "Menghasilkan endolimfa"
-      ],
+      "options": ["Mengatur tekanan telinga tengah", "Menghasilkan serumen", "Mengatur keseimbangan tubuh", "Menghasilkan endolimfa"],
       "answer": 1,
       "explanation": "Tuba Eustachius membantu menyamakan tekanan telinga tengah dengan nasofaring."
     }
   ]
 }</div>
-
     <div class="form-group">
-
-      <label for="cbtJson">
-        Paste JSON CBT
-      </label>
-
-      <textarea
-        id="cbtJson"
-        class="json-area"
-        placeholder="Paste JSON CBT di sini..."
-      ></textarea>
-
+      <label for="cbtJson">Paste JSON CBT</label>
+      <textarea id="cbtJson" class="json-area" placeholder="Paste JSON CBT di sini..."></textarea>
     </div>
-
     <div class="button-row">
-
-      <button
-        class="btn-success"
-        onclick="importCBT()"
-      >
-        🚀 Import CBT
-      </button>
-
-      <button
-        class="btn-secondary"
-        onclick="clearCBTForm()"
-      >
-        Bersihkan
-      </button>
-
+      <button class="btn-success" onclick="importCBT()">🚀 Import CBT</button>
+      <button class="btn-secondary" onclick="clearCBTForm()">Bersihkan</button>
     </div>
-
-    <div
-      id="cbtMessage"
-      class="message"
-    ></div>
-
+    <div id="cbtMessage" class="message"></div>
     <h3>Daftar CBT</h3>
-
-    <div id="cbtList">
-
-      <div class="empty">
-        Memuat CBT...
-      </div>
-
-    </div>
-
+    <div id="cbtList"><div class="empty">Memuat CBT...</div></div>
   </div>
 
-
-  <!-- =========================================================
-       KELOLA OSCE
-  ========================================================== -->
-
+  <!-- KELOLA OSCE -->
   <div class="card">
-
     <h2>🎯 Kelola OSCE</h2>
-
-    <p class="description">
-      Buat dan kelola station OSCE beserta checklist penilaiannya.
-      OSCE tidak menggunakan blok atau kategori.
-    </p>
-
+    <p class="description">Buat dan kelola station OSCE beserta checklist penilaiannya.</p>
     <div class="form-group">
-
-      <label for="osceTitle">
-        Judul Station
-      </label>
-
-      <input
-        type="text"
-        id="osceTitle"
-        placeholder="Contoh: Pemeriksaan Telinga"
-      >
-
+      <label for="osceTitle">Judul Station</label>
+      <input type="text" id="osceTitle" placeholder="Contoh: Pemeriksaan Telinga">
     </div>
-
     <div class="form-group">
-
-      <label for="osceDescription">
-        Deskripsi
-      </label>
-
-      <textarea
-        id="osceDescription"
-        placeholder="Deskripsi singkat station..."
-      ></textarea>
-
+      <label for="osceDescription">Deskripsi</label>
+      <textarea id="osceDescription" placeholder="Deskripsi singkat station..."></textarea>
     </div>
-
     <div class="form-group">
-
-      <label for="osceObjective">
-        Tujuan / Objective
-      </label>
-
-      <textarea
-        id="osceObjective"
-        placeholder="Contoh: Mahasiswa mampu melakukan pemeriksaan otoskopi dengan benar."
-      ></textarea>
-
+      <label for="osceObjective">Tujuan / Objective</label>
+      <textarea id="osceObjective" placeholder="Contoh: Mahasiswa mampu melakukan pemeriksaan otoskopi dengan benar."></textarea>
     </div>
-
     <div class="form-group">
-
-      <label for="osceInstructions">
-        Instruksi
-      </label>
-
-      <textarea
-        id="osceInstructions"
-        placeholder="Instruksi yang harus dilakukan peserta..."
-      ></textarea>
-
+      <label for="osceInstructions">Instruksi</label>
+      <textarea id="osceInstructions" placeholder="Instruksi yang harus dilakukan peserta..."></textarea>
     </div>
-
     <h3>Checklist Penilaian</h3>
-
     <div class="info-box">
-
-      Tambahkan langkah pemeriksaan yang harus dilakukan peserta.
-      Setiap langkah dapat diberikan poin penilaian 0–3.
-
-      <br><br>
-
-      <strong>
-        0 = Tidak dilakukan/salah
-      </strong><br>
-
-      <strong>
-        1 = Banyak kekurangan
-      </strong><br>
-
-      <strong>
-        2 = Cukup benar, masih ada kekurangan
-      </strong><br>
-
-      <strong>
-        3 = Benar dan lengkap
-      </strong>
-
+      Tambahkan langkah pemeriksaan yang harus dilakukan peserta. Setiap langkah dapat diberikan poin penilaian 0–3.<br><br>
+      <strong>0 = Tidak dilakukan/salah</strong><br>
+      <strong>1 = Banyak kekurangan</strong><br>
+      <strong>2 = Cukup benar, masih ada kekurangan</strong><br>
+      <strong>3 = Benar dan lengkap</strong>
     </div>
-
     <div id="osceChecklistContainer"></div>
-
     <div class="button-row">
-
-      <button
-        type="button"
-        class="btn-secondary"
-        onclick="addChecklistRow()"
-      >
-        ➕ Tambah Checklist
-      </button>
-
-      <button
-        type="button"
-        class="btn-primary"
-        onclick="saveOSCEStation()"
-      >
-        💾 Simpan Station
-      </button>
-
-      <button
-        type="button"
-        class="btn-warning"
-        onclick="clearOSCEForm()"
-      >
-        Bersihkan
-      </button>
-
+      <button type="button" class="btn-secondary" onclick="addChecklistRow()">➕ Tambah Checklist</button>
+      <button type="button" class="btn-primary" onclick="saveOSCEStation()">💾 Simpan Station</button>
+      <button type="button" class="btn-warning" onclick="clearOSCEForm()">Bersihkan</button>
     </div>
-
-    <div
-      id="osceMessage"
-      class="message"
-    ></div>
-
+    <div id="osceMessage" class="message"></div>
     <h3>Daftar Station OSCE</h3>
-
-    <div id="osceStationList">
-
-      <div class="empty">
-        Memuat station OSCE...
-      </div>
-
-    </div>
-
+    <div id="osceStationList"><div class="empty">Memuat station OSCE...</div></div>
   </div>
 
-
-  <!-- =========================================================
-       DAFTAR REFERENSI
-  ========================================================== -->
-
+  <!-- DAFTAR REFERENSI -->
   <div class="card">
-
     <h2>📖 Daftar Referensi</h2>
-
-    <div id="resources">
-
-      <div class="empty">
-        Memuat referensi...
-      </div>
-
-    </div>
-
+    <div id="resources"><div class="empty">Memuat referensi...</div></div>
   </div>
 
-
-  <!-- =========================================================
-       DAFTAR MATERI
-  ========================================================== -->
-
+  <!-- DAFTAR MATERI -->
   <div class="card">
-
     <h2>📚 Daftar Materi</h2>
-
-    <div id="materials">
-
-      <div class="empty">
-        Memuat materi...
-      </div>
-
-    </div>
-
+    <div id="materials"><div class="empty">Memuat materi...</div></div>
   </div>
 
 </div>
 
-
 <script>
-
-  /* ============================================================
-     SUPABASE
-  ============================================================ */
-
-  const SUPABASE_URL =
-    "https://hqzishiazabguknallei.supabase.co";
-
-  const SUPABASE_ANON_KEY =
-    "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
-
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
-
+  // ============================================================
+  // SUPABASE CONFIG
+  // ============================================================
+  const SUPABASE_URL = "https://hqzishiazabguknallei.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let editingId = null;
+  let editingStationId = null;
+  let materialAttachments = []; // Array untuk menyimpan lampiran sementara
 
-
-  /* ============================================================
-     UTILITY
-  ============================================================ */
-
+  // ============================================================
+  // UTILITY
+  // ============================================================
   function escapeHtml(value) {
-
-    if (
-      value === null ||
-      value === undefined
-    ) {
-      return "";
-    }
-
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-
+    if (value === null || value === undefined) return "";
+    return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
-
 
   function escapeAttribute(value) {
-
     return escapeHtml(value);
-
   }
 
-
-  function showMessage(
-    elementId,
-    message,
-    type = "success"
-  ) {
-
-    const element =
-      document.getElementById(
-        elementId
-      );
-
+  function showMessage(elementId, message, type = "success") {
+    const element = document.getElementById(elementId);
     if (!element) return;
-
-    element.textContent =
-      message;
-
-    element.className =
-      "message " + type;
-
+    element.textContent = message;
+    element.className = "message " + type;
   }
 
-
-  /* ============================================================
-     CHECK ADMIN
-  ============================================================ */
-
+  // ============================================================
+  // CHECK ADMIN
+  // ============================================================
   async function checkAdmin() {
-
-    const {
-      data: {
-        user
-      },
-      error
-    } = await supabaseClient.auth.getUser();
-
-
-    if (
-      error ||
-      !user
-    ) {
-
-      alert(
-        "Anda belum login sebagai admin."
-      );
-
-      window.location.href =
-        "login.html";
-
+    const { data: { user }, error } = await supabaseClient.auth.getUser();
+    if (error || !user) {
+      alert("Anda belum login sebagai admin.");
+      window.location.href = "login.html";
       return false;
-
     }
-
-
-    const {
-      data: profile,
-      error: profileError
-    } = await supabaseClient
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-
-    if (
-      profileError ||
-      !profile ||
-      profile.role !== "admin"
-    ) {
-
-      alert(
-        "Akses ditolak. Halaman ini hanya untuk admin."
-      );
-
-      window.location.href =
-        "index.html";
-
+    const { data: profile, error: profileError } = await supabaseClient.from("profiles").select("role").eq("id", user.id).single();
+    if (profileError || !profile || profile.role !== "admin") {
+      alert("Akses ditolak. Halaman ini hanya untuk admin.");
+      window.location.href = "index.html";
       return false;
-
     }
-
-
     return true;
-
   }
 
-
-  /* ============================================================
-     CATEGORY
-  ============================================================ */
-
+  // ============================================================
+  // CATEGORY
+  // ============================================================
   async function loadCategories() {
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("categories")
-      .select("*")
-      .order("id", {
-        ascending: true
-      });
-
-
+    const { data, error } = await supabaseClient.from("categories").select("*").order("id", { ascending: true });
     if (error) {
-
       console.error(error);
-
-      document.getElementById(
-        "categoryList"
-      ).innerHTML =
-        '<div class="empty">Gagal memuat kategori.</div>';
-
+      document.getElementById("categoryList").innerHTML = '<div class="empty">Gagal memuat kategori.</div>';
       return;
-
     }
-
-
-    const categoryList =
-      document.getElementById(
-        "categoryList"
-      );
-
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      categoryList.innerHTML =
-        '<div class="empty">Belum ada kategori.</div>';
-
+    const categoryList = document.getElementById("categoryList");
+    if (!data || data.length === 0) {
+      categoryList.innerHTML = '<div class="empty">Belum ada kategori.</div>';
     } else {
-
-      categoryList.innerHTML =
-        data.map(category => `
-
-          <div class="item">
-
-            <div class="item-title">
-              ${escapeHtml(category.name)}
-            </div>
-
-            <div class="item-description">
-              ${escapeHtml(
-                category.description ||
-                "Tidak ada deskripsi."
-              )}
-            </div>
-
-            <button
-              class="btn-danger"
-              onclick="deleteCategory(${category.id})"
-            >
-              Hapus
-            </button>
-
-          </div>
-
-        `).join("");
-
+      categoryList.innerHTML = data.map(category => `
+        <div class="item">
+          <div class="item-title">${escapeHtml(category.name)}</div>
+          <div class="item-description">${escapeHtml(category.description || "Tidak ada deskripsi.")}</div>
+          <button class="btn-danger" onclick="deleteCategory(${category.id})">Hapus</button>
+        </div>
+      `).join("");
     }
-
-
-    populateCategorySelect(
-      data
-    );
-
-    populateBatchCategorySelect(
-      data
-    );
-
+    populateCategorySelect(data);
+    populateBatchCategorySelect(data);
   }
 
-
-  function populateCategorySelect(
-    categories
-  ) {
-
-    const select =
-      document.getElementById(
-        "category"
-      );
-
-
-    select.innerHTML =
-      '<option value="">Pilih kategori</option>';
-
-
-    categories.forEach(
-      category => {
-
-        const option =
-          document.createElement(
-            "option"
-          );
-
-        option.value =
-          category.id;
-
-        option.textContent =
-          category.name;
-
-        select.appendChild(
-          option
-        );
-
-      }
-    );
-
+  function populateCategorySelect(categories) {
+    const select = document.getElementById("category");
+    select.innerHTML = '<option value="">Pilih kategori</option>';
+    categories.forEach(category => {
+      const option = document.createElement("option");
+      option.value = category.id;
+      option.textContent = category.name;
+      select.appendChild(option);
+    });
   }
 
-
-  function populateBatchCategorySelect(
-    categories
-  ) {
-
-    const select =
-      document.getElementById(
-        "batchCategory"
-      );
-
-
-    select.innerHTML =
-      '<option value="">Pilih kategori</option>';
-
-
-    categories.forEach(
-      category => {
-
-        const option =
-          document.createElement(
-            "option"
-          );
-
-        option.value =
-          category.id;
-
-        option.textContent =
-          category.name;
-
-        select.appendChild(
-          option
-        );
-
-      }
-    );
-
+  function populateBatchCategorySelect(categories) {
+    const select = document.getElementById("batchCategory");
+    select.innerHTML = '<option value="">Pilih kategori</option>';
+    categories.forEach(category => {
+      const option = document.createElement("option");
+      option.value = category.id;
+      option.textContent = category.name;
+      select.appendChild(option);
+    });
   }
-
 
   async function addCategory() {
-
-    const name =
-      document.getElementById(
-        "categoryName"
-      ).value.trim();
-
-
-    const description =
-      document.getElementById(
-        "categoryDescription"
-      ).value.trim();
-
-
+    const name = document.getElementById("categoryName").value.trim();
+    const description = document.getElementById("categoryDescription").value.trim();
     if (!name) {
-
-      showMessage(
-        "categoryMessage",
-        "Nama blok wajib diisi.",
-        "error"
-      );
-
+      showMessage("categoryMessage", "Nama blok wajib diisi.", "error");
       return;
-
     }
-
-
-    const {
-      error
-    } = await supabaseClient
-      .from("categories")
-      .insert({
-        name,
-        description
-      });
-
-
+    const { error } = await supabaseClient.from("categories").insert({ name, description });
     if (error) {
-
       console.error(error);
-
-      showMessage(
-        "categoryMessage",
-        "Gagal menambahkan kategori: " +
-        error.message,
-        "error"
-      );
-
+      showMessage("categoryMessage", "Gagal menambahkan kategori: " + error.message, "error");
       return;
-
     }
-
-
-    document.getElementById(
-      "categoryName"
-    ).value = "";
-
-
-    document.getElementById(
-      "categoryDescription"
-    ).value = "";
-
-
-    showMessage(
-      "categoryMessage",
-      "Kategori berhasil ditambahkan.",
-      "success"
-    );
-
-
+    document.getElementById("categoryName").value = "";
+    document.getElementById("categoryDescription").value = "";
+    showMessage("categoryMessage", "Kategori berhasil ditambahkan.", "success");
     loadCategories();
-
   }
-
 
   async function deleteCategory(id) {
-
-    const confirmed =
-      confirm(
-        "Hapus kategori ini?"
-      );
-
-
-    if (!confirmed) return;
-
-
-    const {
-      error
-    } = await supabaseClient
-      .from("categories")
-      .delete()
-      .eq("id", id);
-
-
+    if (!confirm("Hapus kategori ini?")) return;
+    const { error } = await supabaseClient.from("categories").delete().eq("id", id);
     if (error) {
-
-      alert(
-        "Gagal menghapus kategori: " +
-        error.message
-      );
-
+      alert("Gagal menghapus kategori: " + error.message);
       return;
-
     }
-
-
     loadCategories();
-
   }
 
+  // ============================================================
+  // MATERIAL ATTACHMENTS (LAMPIRAN FILE)
+  // ============================================================
+  function updateMaterialFileSource() {
+    const source = document.querySelector('input[name="materialFileSource"]:checked').value;
+    const fileSection = document.getElementById("materialFileSection");
+    const urlSection = document.getElementById("materialUrlSection");
+    
+    if (source === "upload") {
+      fileSection.style.display = "block";
+      urlSection.style.display = "none";
+    } else {
+      fileSection.style.display = "none";
+      urlSection.style.display = "block";
+    }
+  }
 
-  /* ============================================================
-     MATERIAL
-  ============================================================ */
+  function clearMaterialAttachmentForm() {
+    document.getElementById("materialFileType").value = "";
+    document.getElementById("materialFile").value = "";
+    document.getElementById("materialFileUrl").value = "";
+    document.querySelector('input[name="materialFileSource"][value="upload"]').checked = true;
+    updateMaterialFileSource();
+  }
 
-  async function loadMaterials() {
+  async function uploadMaterialFile(file) {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const filePath = "materials/" + Date.now() + "_" + Math.random().toString(36).substring(2, 8) + "_" + safeName;
+    
+    const { data, error } = await supabaseClient.storage.from("materials").upload(filePath, file, { upsert: false });
+    if (error) throw error;
+    
+    const { data: publicData } = supabaseClient.storage.from("materials").getPublicUrl(data.path);
+    return { path: data.path, url: publicData.publicUrl };
+  }
 
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("materials")
-      .select(`
-        *,
-        categories (
-          name
-        )
-      `)
-      .order("created_at", {
-        ascending: false
-      });
+  async function addMaterialAttachment() {
+    const type = document.getElementById("materialFileType").value;
+    const source = document.querySelector('input[name="materialFileSource"]:checked').value;
+    const fileInput = document.getElementById("materialFile");
+    const urlInput = document.getElementById("materialFileUrl");
 
+    if (!type) {
+      alert("Pilih jenis lampiran terlebih dahulu.");
+      return;
+    }
 
-    if (error) {
+    let url = "";
+    let filePath = "";
 
+    try {
+      if (source === "upload") {
+        const file = fileInput.files[0];
+        if (!file) {
+          alert("Silakan pilih file terlebih dahulu.");
+          return;
+        }
+        const uploaded = await uploadMaterialFile(file);
+        url = uploaded.url;
+        filePath = uploaded.path;
+      } else {
+        url = urlInput.value.trim();
+        if (!url) {
+          alert("Silakan masukkan URL.");
+          return;
+        }
+      }
+
+      // Simpan ke array attachments
+      materialAttachments.push({ type, url, file_path: filePath });
+      renderMaterialAttachments();
+      clearMaterialAttachmentForm();
+      
+      showMessage("message", "Lampiran berhasil ditambahkan. Jangan lupa simpan materi!", "info");
+    } catch (error) {
       console.error(error);
-
-      document.getElementById(
-        "materials"
-      ).innerHTML =
-        '<div class="empty">Gagal memuat materi.</div>';
-
-      return;
-
+      alert("Gagal menambahkan lampiran: " + error.message);
     }
-
-
-    const container =
-      document.getElementById(
-        "materials"
-      );
-
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      container.innerHTML =
-        '<div class="empty">Belum ada materi.</div>';
-
-      return;
-
-    }
-
-
-    container.innerHTML =
-      data.map(material => `
-
-        <div class="item">
-
-          <div class="item-title">
-            ${escapeHtml(
-              material.title
-            )}
-          </div>
-
-          <div class="item-meta">
-
-            ${escapeHtml(
-              material.subject || "-"
-            )}
-
-            •
-
-            ${escapeHtml(
-              material.semester || "-"
-            )}
-
-            •
-
-            ${escapeHtml(
-              material.categories?.name ||
-              "Tanpa kategori"
-            )}
-
-          </div>
-
-          <div class="item-description">
-
-            ${escapeHtml(
-              material.description || ""
-            )}
-
-          </div>
-
-          <div class="button-row">
-
-            <button
-              class="btn-warning"
-              onclick="editMaterial(${material.id})"
-            >
-              Edit
-            </button>
-
-            <button
-              class="btn-danger"
-              onclick="deleteMaterial(${material.id})"
-            >
-              Hapus
-            </button>
-
-          </div>
-
-        </div>
-
-      `).join("");
-
   }
 
+  function removeMaterialAttachment(index) {
+    materialAttachments.splice(index, 1);
+    renderMaterialAttachments();
+  }
+
+  function renderMaterialAttachments() {
+    const container = document.getElementById("materialAttachmentList");
+    if (materialAttachments.length === 0) {
+      container.innerHTML = '<div class="empty">Belum ada lampiran.</div>';
+      return;
+    }
+
+    container.innerHTML = materialAttachments.map((att, index) => `
+      <span class="attachment-item">
+        ${escapeHtml(att.type)}: 
+        <a href="${escapeAttribute(att.url)}" target="_blank">${escapeHtml(att.url.substring(0, 40))}${att.url.length > 40 ? '...' : ''}</a>
+        <span class="remove-attachment" onclick="removeMaterialAttachment(${index})">✕</span>
+      </span>
+    `).join("");
+  }
+
+  // ============================================================
+  // MATERIAL
+  // ============================================================
+  async function loadMaterials() {
+    const { data, error } = await supabaseClient.from("materials").select(`*, categories (name)`).order("created_at", { ascending: false });
+    if (error) {
+      console.error(error);
+      document.getElementById("materials").innerHTML = '<div class="empty">Gagal memuat materi.</div>';
+      return;
+    }
+    const container = document.getElementById("materials");
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="empty">Belum ada materi.</div>';
+      return;
+    }
+    container.innerHTML = data.map(material => `
+      <div class="item">
+        <div class="item-title">${escapeHtml(material.title)}</div>
+        <div class="item-meta">${escapeHtml(material.subject || "-")} • ${escapeHtml(material.semester || "-")} • ${escapeHtml(material.categories?.name || "Tanpa kategori")}</div>
+        <div class="item-description">${escapeHtml(material.description || "")}</div>
+        ${material.attachments ? `<div style="margin: 8px 0;">📎 ${escapeHtml(material.attachments)}</div>` : ''}
+        <div class="button-row">
+          <button class="btn-warning" onclick="editMaterial(${material.id})">Edit</button>
+          <button class="btn-danger" onclick="deleteMaterial(${material.id})">Hapus</button>
+        </div>
+      </div>
+    `).join("");
+  }
 
   async function saveMaterial() {
-
-    const title =
-      document.getElementById(
-        "title"
-      ).value.trim();
-
-
-    const subject =
-      document.getElementById(
-        "subject"
-      ).value.trim();
-
-
-    const semester =
-      document.getElementById(
-        "semester"
-      ).value.trim();
-
-
-    const topic =
-      document.getElementById(
-        "topic"
-      ).value.trim();
-
-
-    const categoryId =
-      document.getElementById(
-        "category"
-      ).value || null;
-
-
-    const description =
-      document.getElementById(
-        "description"
-      ).value.trim();
-
-
-    const content =
-      document.getElementById(
-        "content"
-      ).value.trim();
-
+    const title = document.getElementById("title").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const semester = document.getElementById("semester").value.trim();
+    const topic = document.getElementById("topic").value.trim();
+    const categoryId = document.getElementById("category").value || null;
+    const description = document.getElementById("description").value.trim();
+    const content = document.getElementById("content").value.trim();
 
     if (!title) {
-
-      showMessage(
-        "message",
-        "Judul materi wajib diisi.",
-        "error"
-      );
-
+      showMessage("message", "Judul materi wajib diisi.", "error");
       return;
-
     }
 
+    // Siapkan data attachments dalam format string untuk disimpan
+    const attachmentsStr = materialAttachments.map(a => `${a.type}: ${a.url}`).join(' | ');
 
-    const materialData = {
-
-      title,
-      subject,
-      semester,
-      topic,
-
-      category_id:
-        categoryId
-          ? Number(categoryId)
-          : null,
-
-      description,
-      content,
-
-      status:
-        "published"
-
+    const materialData = { 
+      title, 
+      subject, 
+      semester, 
+      topic, 
+      category_id: categoryId ? Number(categoryId) : null, 
+      description, 
+      content, 
+      status: "published",
+      attachments: attachmentsStr || null
     };
-
 
     let error;
 
-
     if (editingId) {
-
-      ({
-        error
-      } = await supabaseClient
-        .from("materials")
-        .update(materialData)
-        .eq(
-          "id",
-          editingId
-        ));
-
+      ({ error } = await supabaseClient.from("materials").update(materialData).eq("id", editingId));
     } else {
-
-      ({
-        error
-      } = await supabaseClient
-        .from("materials")
-        .insert(
-          materialData
-        ));
-
+      ({ error } = await supabaseClient.from("materials").insert(materialData));
     }
-
 
     if (error) {
-
       console.error(error);
-
-      showMessage(
-        "message",
-        "Gagal menyimpan materi: " +
-        error.message,
-        "error"
-      );
-
+      showMessage("message", "Gagal menyimpan materi: " + error.message, "error");
       return;
-
     }
 
-
-    showMessage(
-      "message",
-      editingId
-        ? "Materi berhasil diperbarui."
-        : "Materi berhasil ditambahkan.",
-      "success"
-    );
-
-
+    showMessage("message", editingId ? "Materi berhasil diperbarui." : "Materi berhasil ditambahkan.", "success");
     clearForm();
-
     loadMaterials();
-
     loadResourceMaterials();
-
   }
-
 
   async function editMaterial(id) {
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("materials")
-      .select("*")
-      .eq(
-        "id",
-        id
-      )
-      .single();
-
-
-    if (
-      error ||
-      !data
-    ) {
-
-      alert(
-        "Gagal mengambil data materi."
-      );
-
+    const { data, error } = await supabaseClient.from("materials").select("*").eq("id", id).single();
+    if (error || !data) {
+      alert("Gagal mengambil data materi.");
       return;
-
     }
-
-
-    editingId =
-      id;
-
-
-    document.getElementById(
-      "title"
-    ).value =
-      data.title || "";
-
-
-    document.getElementById(
-      "subject"
-    ).value =
-      data.subject || "";
-
-
-    document.getElementById(
-      "semester"
-    ).value =
-      data.semester || "";
-
-
-    document.getElementById(
-      "topic"
-    ).value =
-      data.topic || "";
-
-
-    document.getElementById(
-      "category"
-    ).value =
-      data.category_id || "";
-
-
-    document.getElementById(
-      "description"
-    ).value =
-      data.description || "";
-
-
-    document.getElementById(
-      "content"
-    ).value =
-      data.content || "";
-
-
-    showMessage(
-      "message",
-      "Mode edit aktif. Silakan ubah materi lalu klik Simpan Materi.",
-      "info"
-    );
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
+    editingId = id;
+    document.getElementById("title").value = data.title || "";
+    document.getElementById("subject").value = data.subject || "";
+    document.getElementById("semester").value = data.semester || "";
+    document.getElementById("topic").value = data.topic || "";
+    document.getElementById("category").value = data.category_id || "";
+    document.getElementById("description").value = data.description || "";
+    document.getElementById("content").value = data.content || "";
+    
+    // Parse attachments jika ada
+    materialAttachments = [];
+    if (data.attachments) {
+      const parts = data.attachments.split(' | ');
+      parts.forEach(part => {
+        const [type, url] = part.split(': ');
+        if (type && url) {
+          materialAttachments.push({ type, url, file_path: null });
+        }
+      });
+    }
+    renderMaterialAttachments();
+    
+    showMessage("message", "Mode edit aktif. Silakan ubah materi lalu klik Simpan Materi.", "info");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
-
 
   async function deleteMaterial(id) {
-
-    const confirmed =
-      confirm(
-        "Hapus materi ini? Referensi yang terhubung juga dapat ikut terhapus."
-      );
-
-
-    if (!confirmed) return;
-
-
-    const {
-      error
-    } = await supabaseClient
-      .from("materials")
-      .delete()
-      .eq(
-        "id",
-        id
-      );
-
-
+    if (!confirm("Hapus materi ini? Referensi yang terhubung juga dapat ikut terhapus.")) return;
+    const { error } = await supabaseClient.from("materials").delete().eq("id", id);
     if (error) {
-
-      alert(
-        "Gagal menghapus materi: " +
-        error.message
-      );
-
+      alert("Gagal menghapus materi: " + error.message);
       return;
-
     }
-
-
     loadMaterials();
-
     loadResourceMaterials();
-
     loadResources();
-
   }
-
 
   function clearForm() {
-
-    editingId =
-      null;
-
-
-    document.getElementById(
-      "title"
-    ).value = "";
-
-
-    document.getElementById(
-      "subject"
-    ).value = "";
-
-
-    document.getElementById(
-      "semester"
-    ).value = "";
-
-
-    document.getElementById(
-      "topic"
-    ).value = "";
-
-
-    document.getElementById(
-      "category"
-    ).value = "";
-
-
-    document.getElementById(
-      "description"
-    ).value = "";
-
-
-    document.getElementById(
-      "content"
-    ).value = "";
-
-
-    document.getElementById(
-      "message"
-    ).className =
-      "message";
-
+    editingId = null;
+    materialAttachments = [];
+    renderMaterialAttachments();
+    document.getElementById("title").value = "";
+    document.getElementById("subject").value = "";
+    document.getElementById("semester").value = "";
+    document.getElementById("topic").value = "";
+    document.getElementById("category").value = "";
+    document.getElementById("description").value = "";
+    document.getElementById("content").value = "";
+    document.getElementById("message").className = "message";
+    clearMaterialAttachmentForm();
   }
 
-
-  /* ============================================================
-     RESOURCES
-  ============================================================ */
-
+  // ============================================================
+  // RESOURCES
+  // ============================================================
   async function loadResourceMaterials() {
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("materials")
-      .select(
-        "id, title"
-      )
-      .order(
-        "title",
-        {
-          ascending: true
-        }
-      );
-
-
+    const { data, error } = await supabaseClient.from("materials").select("id, title").order("title", { ascending: true });
     if (error) {
-
       console.error(error);
-
       return;
-
     }
-
-
-    const select =
-      document.getElementById(
-        "resourceMaterial"
-      );
-
-
-    select.innerHTML =
-      '<option value="">Pilih materi</option>';
-
-
-    data.forEach(
-      material => {
-
-        const option =
-          document.createElement(
-            "option"
-          );
-
-        option.value =
-          material.id;
-
-        option.textContent =
-          material.title;
-
-        select.appendChild(
-          option
-        );
-
-      }
-    );
-
+    const select = document.getElementById("resourceMaterial");
+    select.innerHTML = '<option value="">Pilih materi</option>';
+    data.forEach(material => {
+      const option = document.createElement("option");
+      option.value = material.id;
+      option.textContent = material.title;
+      select.appendChild(option);
+    });
   }
-
 
   function updateResourceSource() {
-
-  const source =
-    document.querySelector(
-      'input[name="resourceSource"]:checked'
-    ).value;
-
-  const fileSection =
-    document.getElementById(
-      "resourceFileSection"
-    );
-
-  const urlSection =
-    document.getElementById(
-      "resourceUrlSection"
-    );
-
-  if (source === "upload") {
-
-    fileSection.style.display =
-      "block";
-
-    urlSection.style.display =
-      "none";
-
-  } else {
-
-    fileSection.style.display =
-      "none";
-
-    urlSection.style.display =
-      "block";
-
-  }
-
-}
-
-
-function clearResourceForm() {
-
-  document.getElementById(
-    "resourceTitle"
-  ).value = "";
-
-  document.getElementById(
-    "resourceType"
-  ).value = "";
-
-  document.getElementById(
-    "resourceUrl"
-  ).value = "";
-
-  document.getElementById(
-    "resourceDescription"
-  ).value = "";
-
-  document.getElementById(
-    "resourceFile"
-  ).value = "";
-
-  document.querySelector(
-    'input[name="resourceSource"][value="upload"]'
-  ).checked = true;
-
-  updateResourceSource();
-
-  document.getElementById(
-    "resourceMessage"
-  ).className = "message";
-
-}
-
-
-async function uploadMaterialResourceFile(file) {
-
-  const safeName =
-    file.name.replace(
-      /[^a-zA-Z0-9._-]/g,
-      "_"
-    );
-
-  const filePath =
-    Date.now() +
-    "_" +
-    Math.random()
-      .toString(36)
-      .substring(2, 8) +
-    "_" +
-    safeName;
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .storage
-      .from("references")
-      .upload(
-        filePath,
-        file,
-        {
-          upsert: false
-        }
-      );
-
-  if (error) {
-    throw error;
-  }
-
-  const {
-    data: publicData
-  } =
-    supabaseClient
-      .storage
-      .from("references")
-      .getPublicUrl(
-        data.path
-      );
-
-  return {
-    path: data.path,
-    url: publicData.publicUrl
-  };
-
-}
-
-
-async function addResource() {
-
-  const materialId =
-    document.getElementById(
-      "resourceMaterial"
-    ).value;
-
-  const title =
-    document.getElementById(
-      "resourceTitle"
-    ).value.trim();
-
-  const type =
-    document.getElementById(
-      "resourceType"
-    ).value;
-
-  const description =
-    document.getElementById(
-      "resourceDescription"
-    ).value.trim();
-
-  const source =
-    document.querySelector(
-      'input[name="resourceSource"]:checked'
-    ).value;
-
-  const urlInput =
-    document.getElementById(
-      "resourceUrl"
-    );
-
-  const fileInput =
-    document.getElementById(
-      "resourceFile"
-    );
-
-  if (!materialId) {
-
-    showMessage(
-      "resourceMessage",
-      "Pilih materi terlebih dahulu.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  if (!title) {
-
-    showMessage(
-      "resourceMessage",
-      "Judul referensi wajib diisi.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  if (!type) {
-
-    showMessage(
-      "resourceMessage",
-      "Pilih jenis referensi terlebih dahulu.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  const button =
-    document.getElementById(
-      "resourceSubmitButton"
-    );
-
-  button.disabled = true;
-
-  button.textContent =
-    "Menyimpan...";
-
-  let uploadedPath = null;
-
-  try {
-
-    let url = null;
-    let filePath = null;
-
-    /*
-     * =========================
-     * UPLOAD FILE
-     * =========================
-     */
-
+    const source = document.querySelector('input[name="resourceSource"]:checked').value;
+    const fileSection = document.getElementById("resourceFileSection");
+    const urlSection = document.getElementById("resourceUrlSection");
+    
     if (source === "upload") {
-
-      const file =
-        fileInput.files[0];
-
-      if (!file) {
-
-        throw new Error(
-          "Silakan pilih file terlebih dahulu."
-        );
-
-      }
-
-      const uploaded =
-        await uploadMaterialResourceFile(
-          file
-        );
-
-      url =
-        uploaded.url;
-
-      filePath =
-        uploaded.path;
-
-      uploadedPath =
-        uploaded.path;
-
+      fileSection.style.display = "block";
+      urlSection.style.display = "none";
+    } else {
+      fileSection.style.display = "none";
+      urlSection.style.display = "block";
     }
-
-    /*
-     * =========================
-     * URL
-     * =========================
-     */
-
-    else {
-
-      url =
-        urlInput.value.trim();
-
-      if (!url) {
-
-        throw new Error(
-          "Silakan masukkan URL referensi."
-        );
-
-      }
-
-    }
-
-    /*
-     * =========================
-     * DATABASE
-     * =========================
-     */
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("resources")
-        .insert({
-
-          title:
-            title,
-
-          description:
-            description,
-
-          type:
-            type,
-
-          url:
-            url,
-
-          file_path:
-            filePath,
-
-          material_id:
-            Number(materialId)
-
-        });
-
-    if (error) {
-
-      /*
-       * Jika database gagal
-       * setelah file berhasil upload,
-       * hapus file agar tidak menjadi
-       * file yatim.
-       */
-
-      if (uploadedPath) {
-
-        await supabaseClient
-          .storage
-          .from("references")
-          .remove([
-            uploadedPath
-          ]);
-
-      }
-
-      throw error;
-
-    }
-
-    showMessage(
-      "resourceMessage",
-      "Referensi materi berhasil ditambahkan.",
-      "success"
-    );
-
-    clearResourceForm();
-
-    document.getElementById(
-      "resourceMaterial"
-    ).value =
-      materialId;
-
-    await loadResources();
-
-  } catch (error) {
-
-    console.error(error);
-
-    showMessage(
-      "resourceMessage",
-      "Gagal menambahkan referensi: " +
-      error.message,
-      "error"
-    );
-
-  } finally {
-
-    button.disabled =
-      false;
-
-    button.textContent =
-      "➕ Tambahkan Referensi";
-
   }
 
-}
+  function clearResourceForm() {
+    document.getElementById("resourceTitle").value = "";
+    document.getElementById("resourceType").value = "";
+    document.getElementById("resourceUrl").value = "";
+    document.getElementById("resourceDescription").value = "";
+    document.getElementById("resourceFile").value = "";
+    document.querySelector('input[name="resourceSource"][value="upload"]').checked = true;
+    updateResourceSource();
+    document.getElementById("resourceMessage").className = "message";
+  }
 
+  async function uploadResourceFile(file) {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const filePath = Date.now() + "_" + Math.random().toString(36).substring(2, 8) + "_" + safeName;
+    
+    const { data, error } = await supabaseClient.storage.from("references").upload(filePath, file, { upsert: false });
+    if (error) throw error;
+    
+    const { data: publicData } = supabaseClient.storage.from("references").getPublicUrl(data.path);
+    return { path: data.path, url: publicData.publicUrl };
+  }
+
+  async function addResource() {
+    const materialId = document.getElementById("resourceMaterial").value;
+    const title = document.getElementById("resourceTitle").value.trim();
+    const type = document.getElementById("resourceType").value;
+    const description = document.getElementById("resourceDescription").value.trim();
+    const source = document.querySelector('input[name="resourceSource"]:checked').value;
+    const urlInput = document.getElementById("resourceUrl");
+    const fileInput = document.getElementById("resourceFile");
+
+    if (!materialId) {
+      showMessage("resourceMessage", "Pilih materi terlebih dahulu.", "error");
+      return;
+    }
+    if (!title) {
+      showMessage("resourceMessage", "Judul referensi wajib diisi.", "error");
+      return;
+    }
+    if (!type) {
+      showMessage("resourceMessage", "Pilih jenis referensi terlebih dahulu.", "error");
+      return;
+    }
+
+    const button = document.getElementById("resourceSubmitButton");
+    button.disabled = true;
+    button.textContent = "Menyimpan...";
+
+    let uploadedPath = null;
+
+    try {
+      let url = null;
+      let filePath = null;
+
+      if (source === "upload") {
+        const file = fileInput.files[0];
+        if (!file) throw new Error("Silakan pilih file terlebih dahulu.");
+        const uploaded = await uploadResourceFile(file);
+        url = uploaded.url;
+        filePath = uploaded.path;
+        uploadedPath = uploaded.path;
+      } else {
+        url = urlInput.value.trim();
+        if (!url) throw new Error("Silakan masukkan URL referensi.");
+      }
+
+      const { error } = await supabaseClient.from("resources").insert({
+        title, description, type, url, file_path: filePath, material_id: Number(materialId)
+      });
+
+      if (error) {
+        if (uploadedPath) {
+          await supabaseClient.storage.from("references").remove([uploadedPath]);
+        }
+        throw error;
+      }
+
+      showMessage("resourceMessage", "Referensi materi berhasil ditambahkan.", "success");
+      clearResourceForm();
+      document.getElementById("resourceMaterial").value = materialId;
+      await loadResources();
+
+    } catch (error) {
+      console.error(error);
+      showMessage("resourceMessage", "Gagal menambahkan referensi: " + error.message, "error");
+    } finally {
+      button.disabled = false;
+      button.textContent = "➕ Tambahkan Referensi";
+    }
+  }
 
   async function loadResources() {
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("resources")
-      .select(`
-        *,
-        materials (
-          title
-        )
-      `)
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
-
-
+    const { data, error } = await supabaseClient.from("resources").select(`*, materials (title)`).order("created_at", { ascending: false });
     if (error) {
-
       console.error(error);
-
-      document.getElementById(
-        "resources"
-      ).innerHTML =
-        '<div class="empty">Gagal memuat referensi.</div>';
-
+      document.getElementById("resources").innerHTML = '<div class="empty">Gagal memuat referensi.</div>';
       return;
-
     }
-
-
-    const container =
-      document.getElementById(
-        "resources"
-      );
-
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      container.innerHTML =
-        '<div class="empty">Belum ada referensi.</div>';
-
+    const container = document.getElementById("resources");
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="empty">Belum ada referensi.</div>';
       return;
-
     }
-
-
-    container.innerHTML =
-      data.map(resource => `
-
-        <div class="item">
-
-          <div class="item-title">
-
-            ${escapeHtml(
-              resource.title
-            )}
-
-          </div>
-
-          <div class="item-meta">
-
-            ${escapeHtml(
-              resource.type
-            )}
-
-            •
-
-            ${escapeHtml(
-              resource.materials?.title ||
-              "Tanpa materi"
-            )}
-
-          </div>
-
-          <div class="item-description">
-
-            ${escapeHtml(
-              resource.description || ""
-            )}
-
-          </div>
-
-          <div class="button-row">
-
-            <a
-              href="${escapeAttribute(
-                resource.url || "#"
-              )}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-
-              <button
-                class="btn-primary"
-                type="button"
-              >
-                Buka
-              </button>
-
-            </a>
-
-            <button
-              class="btn-danger"
-              onclick="deleteResource(${resource.id})"
-            >
-              Hapus
-            </button>
-
-          </div>
-
+    container.innerHTML = data.map(resource => `
+      <div class="item">
+        <div class="item-title">${escapeHtml(resource.title)}</div>
+        <div class="item-meta">${escapeHtml(resource.type)} • ${escapeHtml(resource.materials?.title || "Tanpa materi")}</div>
+        <div class="item-description">${escapeHtml(resource.description || "")}</div>
+        <div class="button-row">
+          <a href="${escapeAttribute(resource.url || "#")}" target="_blank" rel="noopener noreferrer">
+            <button class="btn-primary" type="button">Buka</button>
+          </a>
+          <button class="btn-danger" onclick="deleteResource(${resource.id})">Hapus</button>
         </div>
-
-      `).join("");
-
+      </div>
+    `).join("");
   }
-
 
   async function deleteResource(id) {
-
-    const confirmed =
-      confirm(
-        "Hapus referensi ini?"
-      );
-
-
-    if (!confirmed) return;
-
-
-    const {
-      error
-    } = await supabaseClient
-      .from("resources")
-      .delete()
-      .eq(
-        "id",
-        id
-      );
-
-
+    if (!confirm("Hapus referensi ini?")) return;
+    const { error } = await supabaseClient.from("resources").delete().eq("id", id);
     if (error) {
-
-      alert(
-        "Gagal menghapus referensi: " +
-        error.message
-      );
-
+      alert("Gagal menghapus referensi: " + error.message);
       return;
-
     }
-
-
     loadResources();
-
   }
 
-
-  /* ============================================================
-     CBT - SINGLE JSON
-  ============================================================ */
-
+  // ============================================================
+  // CBT - SINGLE JSON
+  // ============================================================
   function clearCBTForm() {
-
-    document.getElementById(
-      "cbtJson"
-    ).value = "";
-
-
-    document.getElementById(
-      "cbtMessage"
-    ).className =
-      "message";
-
+    document.getElementById("cbtJson").value = "";
+    document.getElementById("cbtMessage").className = "message";
   }
-
 
   function validateCBTJson(data) {
-
-    if (
-      !data ||
-      typeof data !== "object"
-    ) {
-
-      throw new Error(
-        "JSON tidak valid atau kosong."
-      );
-
+    if (!data || typeof data !== "object") throw new Error("JSON tidak valid atau kosong.");
+    if (!data.title || typeof data.title !== "string") throw new Error("Field 'title' wajib diisi.");
+    if (!data.category || typeof data.category !== "string") throw new Error("Field 'category' wajib diisi.");
+    if (!Array.isArray(data.questions) || data.questions.length === 0) throw new Error("Field 'questions' harus berupa array dan tidak boleh kosong.");
+    if (data.duration_minutes !== undefined && (!Number.isInteger(Number(data.duration_minutes)) || Number(data.duration_minutes) <= 0)) {
+      throw new Error("'duration_minutes' harus berupa angka lebih dari 0.");
     }
-
-
-    if (
-      !data.title ||
-      typeof data.title !== "string"
-    ) {
-
-      throw new Error(
-        "Field 'title' wajib diisi."
-      );
-
-    }
-
-
-    if (
-      !data.category ||
-      typeof data.category !== "string"
-    ) {
-
-      throw new Error(
-        "Field 'category' wajib diisi."
-      );
-
-    }
-
-
-    if (
-      !Array.isArray(
-        data.questions
-      ) ||
-      data.questions.length === 0
-    ) {
-
-      throw new Error(
-        "Field 'questions' harus berupa array dan tidak boleh kosong."
-      );
-
-    }
-
-
-    if (
-      data.duration_minutes !== undefined &&
-      (
-        !Number.isInteger(
-          Number(
-            data.duration_minutes
-          )
-        ) ||
-        Number(
-          data.duration_minutes
-        ) <= 0
-      )
-    ) {
-
-      throw new Error(
-        "'duration_minutes' harus berupa angka lebih dari 0."
-      );
-
-    }
-
-
-    data.questions.forEach(
-      (item, index) => {
-
-        const number =
-          index + 1;
-
-
-        validateQuestionItem(
-          item,
-          number
-        );
-
+    data.questions.forEach((item, index) => {
+      const number = index + 1;
+      if (!item || typeof item !== "object") throw new Error(`Soal nomor ${number} tidak valid.`);
+      if (!item.question || typeof item.question !== "string") throw new Error(`Soal nomor ${number}: field 'question' wajib diisi.`);
+      if (!Array.isArray(item.options) || item.options.length < 2) throw new Error(`Soal nomor ${number}: minimal harus memiliki 2 pilihan jawaban.`);
+      item.options.forEach((option, optionIndex) => {
+        if (typeof option !== "string" || !option.trim()) throw new Error(`Soal nomor ${number}: pilihan nomor ${optionIndex + 1} kosong.`);
+      });
+      const answer = Number(item.answer);
+      if (!Number.isInteger(answer) || answer < 1 || answer > item.options.length) {
+        throw new Error(`Soal nomor ${number}: 'answer' harus antara 1 dan ${item.options.length}.`);
       }
-    );
-
-
+    });
     return true;
-
   }
 
-
-  function validateQuestionItem(
-    item,
-    displayNumber
-  ) {
-
-    if (
-      !item ||
-      typeof item !== "object"
-    ) {
-
-      throw new Error(
-        `Soal nomor ${displayNumber} tidak valid.`
-      );
-
-    }
-
-
-    if (
-      !item.question ||
-      typeof item.question !== "string"
-    ) {
-
-      throw new Error(
-        `Soal nomor ${displayNumber}: field 'question' wajib diisi.`
-      );
-
-    }
-
-
-    if (
-      !Array.isArray(
-        item.options
-      ) ||
-      item.options.length < 2
-    ) {
-
-      throw new Error(
-        `Soal nomor ${displayNumber}: minimal harus memiliki 2 pilihan jawaban.`
-      );
-
-    }
-
-
-    item.options.forEach(
-      (
-        option,
-        optionIndex
-      ) => {
-
-        if (
-          typeof option !== "string" ||
-          !option.trim()
-        ) {
-
-          throw new Error(
-            `Soal nomor ${displayNumber}: pilihan nomor ${optionIndex + 1} kosong.`
-          );
-
-        }
-
-      }
-    );
-
-
-    const answer =
-      Number(
-        item.answer
-      );
-
-
-    if (
-      !Number.isInteger(answer) ||
-      answer < 1 ||
-      answer > item.options.length
-    ) {
-
-      throw new Error(
-        `Soal nomor ${displayNumber}: 'answer' harus antara 1 dan ${item.options.length}.`
-      );
-
-    }
-
-  }
-
-
-  async function findCategoryId(
-    categoryName
-  ) {
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("categories")
-      .select(
-        "id, name"
-      );
-
-
-    if (error) {
-
-      throw new Error(
-        "Gagal mengambil kategori: " +
-        error.message
-      );
-
-    }
-
-
-    const normalized =
-      categoryName
-        .trim()
-        .toLowerCase();
-
-
-    const category =
-      data.find(
-        item =>
-          item.name
-            .trim()
-            .toLowerCase() ===
-          normalized
-      );
-
-
-    if (!category) {
-
-      throw new Error(
-        `Kategori "${categoryName}" tidak ditemukan. Tambahkan kategori tersebut terlebih dahulu.`
-      );
-
-    }
-
-
+  async function findCategoryId(categoryName) {
+    const { data, error } = await supabaseClient.from("categories").select("id, name");
+    if (error) throw new Error("Gagal mengambil kategori: " + error.message);
+    const normalized = categoryName.trim().toLowerCase();
+    const category = data.find(item => item.name.trim().toLowerCase() === normalized);
+    if (!category) throw new Error(`Kategori "${categoryName}" tidak ditemukan. Tambahkan kategori tersebut terlebih dahulu.`);
     return category.id;
-
   }
-
 
   async function importCBT() {
-
-    const textarea =
-      document.getElementById(
-        "cbtJson"
-      );
-
-
-    const raw =
-      textarea.value.trim();
-
-
+    const textarea = document.getElementById("cbtJson");
+    const raw = textarea.value.trim();
     if (!raw) {
-
-      showMessage(
-        "cbtMessage",
-        "Paste JSON CBT terlebih dahulu.",
-        "error"
-      );
-
+      showMessage("cbtMessage", "Paste JSON CBT terlebih dahulu.", "error");
       return;
-
     }
-
-
     let data;
-
-
     try {
-
-      data =
-        JSON.parse(raw);
-
+      data = JSON.parse(raw);
     } catch (error) {
-
       console.error(error);
-
-      showMessage(
-        "cbtMessage",
-        "JSON tidak valid. Pastikan format JSON benar.",
-        "error"
-      );
-
+      showMessage("cbtMessage", "JSON tidak valid. Pastikan format JSON benar.", "error");
       return;
-
     }
-
-
     try {
-
-      validateCBTJson(
-        data
-      );
-
-
-      showMessage(
-        "cbtMessage",
-        "Memvalidasi dan menyiapkan import...",
-        "info"
-      );
-
-
-      const categoryId =
-        await findCategoryId(
-          data.category
-        );
-
-
-      const duration =
-        data.duration_minutes
-          ? Number(
-              data.duration_minutes
-            )
-          : 60;
-
-
-      const {
-        data: quiz,
-        error: quizError
-      } = await supabaseClient
-        .from("quizzes")
-        .insert({
-
-          title:
-            data.title.trim(),
-
-          description:
-            data.description ||
-            null,
-
-          category_id:
-            categoryId,
-
-          duration_minutes:
-            duration,
-
-          status:
-            "draft"
-
-        })
-        .select()
-        .single();
-
-
-      if (quizError) {
-
-        throw new Error(
-          "Gagal membuat CBT: " +
-          quizError.message
-        );
-
-      }
-
-
+      validateCBTJson(data);
+      showMessage("cbtMessage", "Memvalidasi dan menyiapkan import...", "info");
+      const categoryId = await findCategoryId(data.category);
+      const duration = data.duration_minutes ? Number(data.duration_minutes) : 60;
+      const { data: quiz, error: quizError } = await supabaseClient.from("quizzes").insert({
+        title: data.title.trim(),
+        description: data.description || null,
+        category_id: categoryId,
+        duration_minutes: duration,
+        status: "draft"
+      }).select().single();
+      if (quizError) throw new Error("Gagal membuat CBT: " + quizError.message);
       try {
-
-        for (
-          let i = 0;
-          i < data.questions.length;
-          i++
-        ) {
-
-          const item =
-            data.questions[i];
-
-
-          const {
-            data: question,
-            error: questionError
-          } = await supabaseClient
-            .from("quiz_questions")
-            .insert({
-
-              quiz_id:
-                quiz.id,
-
-              question:
-                item.question.trim(),
-
-              explanation:
-                item.explanation ||
-                null,
-
-              question_number:
-                i + 1
-
-            })
-            .select()
-            .single();
-
-
-          if (questionError) {
-
-            throw new Error(
-              `Gagal menyimpan soal nomor ${i + 1}: ${questionError.message}`
-            );
-
-          }
-
-
-          const answer =
-            Number(
-              item.answer
-            );
-
-
-          const options =
-            item.options.map(
-              (
-                optionText,
-                optionIndex
-              ) => ({
-
-                question_id:
-                  question.id,
-
-                option_text:
-                  optionText.trim(),
-
-                is_correct:
-                  optionIndex + 1 ===
-                  answer
-
-              })
-            );
-
-
-          const {
-            error: optionError
-          } = await supabaseClient
-            .from("quiz_options")
-            .insert(
-              options
-            );
-
-
-          if (optionError) {
-
-            throw new Error(
-              `Gagal menyimpan pilihan jawaban soal nomor ${i + 1}: ${optionError.message}`
-            );
-
-          }
-
+        for (let i = 0; i < data.questions.length; i++) {
+          const item = data.questions[i];
+          const { data: question, error: questionError } = await supabaseClient.from("quiz_questions").insert({
+            quiz_id: quiz.id,
+            question: item.question.trim(),
+            explanation: item.explanation || null,
+            question_number: i + 1
+          }).select().single();
+          if (questionError) throw new Error(`Gagal menyimpan soal nomor ${i + 1}: ${questionError.message}`);
+          const answer = Number(item.answer);
+          const options = item.options.map((optionText, optionIndex) => ({
+            question_id: question.id,
+            option_text: optionText.trim(),
+            is_correct: optionIndex + 1 === answer
+          }));
+          const { error: optionError } = await supabaseClient.from("quiz_options").insert(options);
+          if (optionError) throw new Error(`Gagal menyimpan pilihan jawaban soal nomor ${i + 1}: ${optionError.message}`);
         }
-
-      } catch (
-        importError
-      ) {
-
-        await supabaseClient
-          .from("quizzes")
-          .delete()
-          .eq(
-            "id",
-            quiz.id
-          );
-
-
+      } catch (importError) {
+        await supabaseClient.from("quizzes").delete().eq("id", quiz.id);
         throw importError;
-
       }
-
-
-      showMessage(
-        "cbtMessage",
-        `CBT "${data.title}" berhasil diimport. ${data.questions.length} soal tersimpan dan status awalnya DRAFT.`,
-        "success"
-      );
-
-
+      showMessage("cbtMessage", `CBT "${data.title}" berhasil diimport. ${data.questions.length} soal tersimpan dan status awalnya DRAFT.`, "success");
       clearCBTForm();
-
       loadCBTs();
-
-
     } catch (error) {
-
       console.error(error);
-
-      showMessage(
-        "cbtMessage",
-        error.message ||
-        "Terjadi kesalahan saat import CBT.",
-        "error"
-      );
-
+      showMessage("cbtMessage", error.message || "Terjadi kesalahan saat import CBT.", "error");
     }
-
   }
 
-
-  /* ============================================================
-     CBT - BATCH SYSTEM
-  ============================================================ */
-
-  function getBatchConfig(
-    batchNumber
-  ) {
-
+  // ============================================================
+  // CBT - BATCH SYSTEM
+  // ============================================================
+  function getBatchConfig(batchNumber) {
     const configs = {
-
-      1: {
-        textarea: "batch1Json",
-        status: "batch1Status",
-        start: 1,
-        end: 25
-      },
-
-      2: {
-        textarea: "batch2Json",
-        status: "batch2Status",
-        start: 26,
-        end: 50
-      },
-
-      3: {
-        textarea: "batch3Json",
-        status: "batch3Status",
-        start: 51,
-        end: 75
-      },
-
-      4: {
-        textarea: "batch4Json",
-        status: "batch4Status",
-        start: 76,
-        end: 100
-      }
-
+      1: { textarea: "batch1Json", status: "batch1Status", start: 1, end: 25 },
+      2: { textarea: "batch2Json", status: "batch2Status", start: 26, end: 50 },
+      3: { textarea: "batch3Json", status: "batch3Status", start: 51, end: 75 },
+      4: { textarea: "batch4Json", status: "batch4Status", start: 76, end: 100 }
     };
-
-
-    return configs[
-      batchNumber
-    ];
-
+    return configs[batchNumber];
   }
 
-
-  function parseBatch(
-    batchNumber
-  ) {
-
-    const config =
-      getBatchConfig(
-        batchNumber
-      );
-
-
-    const raw =
-      document.getElementById(
-        config.textarea
-      ).value.trim();
-
-
-    if (!raw) {
-
-      throw new Error(
-        `Batch ${batchNumber} masih kosong.`
-      );
-
-    }
-
-
+  function parseBatch(batchNumber) {
+    const config = getBatchConfig(batchNumber);
+    const raw = document.getElementById(config.textarea).value.trim();
+    if (!raw) throw new Error(`Batch ${batchNumber} masih kosong.`);
     let data;
-
-
-    try {
-
-      data =
-        JSON.parse(raw);
-
-    } catch (error) {
-
-      throw new Error(
-        `Batch ${batchNumber}: JSON tidak valid.`
-      );
-
-    }
-
-
-    if (
-      !data ||
-      typeof data !== "object"
-    ) {
-
-      throw new Error(
-        `Batch ${batchNumber}: format JSON tidak valid.`
-      );
-
-    }
-
-
-    if (
-      Number(
-        data.batch
-      ) !== batchNumber
-    ) {
-
-      throw new Error(
-        `Batch ${batchNumber}: field 'batch' harus bernilai ${batchNumber}.`
-      );
-
-    }
-
-
-    if (
-      Number(
-        data.start_question
-      ) !== config.start
-    ) {
-
-      throw new Error(
-        `Batch ${batchNumber}: 'start_question' harus ${config.start}.`
-      );
-
-    }
-
-
-    if (
-      Number(
-        data.end_question
-      ) !== config.end
-    ) {
-
-      throw new Error(
-        `Batch ${batchNumber}: 'end_question' harus ${config.end}.`
-      );
-
-    }
-
-
-    if (
-      !Array.isArray(
-        data.questions
-      )
-    ) {
-
-      throw new Error(
-        `Batch ${batchNumber}: field 'questions' harus berupa array.`
-      );
-
-    }
-
-
-    if (
-      data.questions.length !== 25
-    ) {
-
-      throw new Error(
-        `Batch ${batchNumber}: harus tepat 25 soal, tetapi ditemukan ${data.questions.length} soal.`
-      );
-
-    }
-
-
-    data.questions.forEach(
-      (
-        item,
-        index
-      ) => {
-
-        const actualNumber =
-          config.start +
-          index;
-
-
-        validateQuestionItem(
-          item,
-          actualNumber
-        );
-
+    try { data = JSON.parse(raw); } catch (error) { throw new Error(`Batch ${batchNumber}: JSON tidak valid.`); }
+    if (!data || typeof data !== "object") throw new Error(`Batch ${batchNumber}: format JSON tidak valid.`);
+    if (Number(data.batch) !== batchNumber) throw new Error(`Batch ${batchNumber}: field 'batch' harus bernilai ${batchNumber}.`);
+    if (Number(data.start_question) !== config.start) throw new Error(`Batch ${batchNumber}: 'start_question' harus ${config.start}.`);
+    if (Number(data.end_question) !== config.end) throw new Error(`Batch ${batchNumber}: 'end_question' harus ${config.end}.`);
+    if (!Array.isArray(data.questions)) throw new Error(`Batch ${batchNumber}: field 'questions' harus berupa array.`);
+    if (data.questions.length !== 25) throw new Error(`Batch ${batchNumber}: harus tepat 25 soal, tetapi ditemukan ${data.questions.length} soal.`);
+    data.questions.forEach((item, index) => {
+      const actualNumber = config.start + index;
+      if (!item || typeof item !== "object") throw new Error(`Batch ${batchNumber} soal nomor ${actualNumber}: tidak valid.`);
+      if (!item.question || typeof item.question !== "string") throw new Error(`Batch ${batchNumber} soal nomor ${actualNumber}: field 'question' wajib diisi.`);
+      if (!Array.isArray(item.options) || item.options.length < 2) throw new Error(`Batch ${batchNumber} soal nomor ${actualNumber}: minimal harus memiliki 2 pilihan jawaban.`);
+      item.options.forEach((option, optionIndex) => {
+        if (typeof option !== "string" || !option.trim()) throw new Error(`Batch ${batchNumber} soal nomor ${actualNumber}: pilihan nomor ${optionIndex + 1} kosong.`);
+      });
+      const answer = Number(item.answer);
+      if (!Number.isInteger(answer) || answer < 1 || answer > item.options.length) {
+        throw new Error(`Batch ${batchNumber} soal nomor ${actualNumber}: 'answer' harus antara 1 dan ${item.options.length}.`);
       }
-    );
-
-
+    });
     return data;
-
   }
 
-
-  function updateBatchStatus(
-    batchNumber,
-    message,
-    success = false
-  ) {
-
-    const config =
-      getBatchConfig(
-        batchNumber
-      );
-
-
-    const element =
-      document.getElementById(
-        config.status
-      );
-
-
+  function updateBatchStatus(batchNumber, message, success = false) {
+    const config = getBatchConfig(batchNumber);
+    const element = document.getElementById(config.status);
     if (!element) return;
-
-
-    element.textContent =
-      message;
-
-
-    element.style.color =
-      success
-        ? "#166534"
-        : "#991b1b";
-
+    element.textContent = message;
+    element.style.color = success ? "#166534" : "#991b1b";
   }
-
 
   function resetBatchStats() {
-
-    document.getElementById(
-      "batchCount"
-    ).textContent =
-      "0/4";
-
-
-    document.getElementById(
-      "questionCount"
-    ).textContent =
-      "0/100";
-
-
-    document.getElementById(
-      "duplicateCount"
-    ).textContent =
-      "0";
-
+    document.getElementById("batchCount").textContent = "0/4";
+    document.getElementById("questionCount").textContent = "0/100";
+    document.getElementById("duplicateCount").textContent = "0";
   }
 
-
-  function normalizeQuestion(
-    question
-  ) {
-
-    return String(
-      question
-    )
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, " ");
-
+  function normalizeQuestion(question) {
+    return String(question).trim().toLowerCase().replace(/\s+/g, " ");
   }
 
-
-  function findDuplicateQuestions(
-    batches
-  ) {
-
-    const seen =
-      new Map();
-
-
-    const duplicates =
-      [];
-
-
-    batches.forEach(
-      (
-        batch,
-        batchIndex
-      ) => {
-
-        batch.questions.forEach(
-          (
-            item,
-            questionIndex
-          ) => {
-
-            const key =
-              normalizeQuestion(
-                item.question
-              );
-
-
-            const number =
-              getBatchConfig(
-                batchIndex + 1
-              ).start +
-              questionIndex;
-
-
-            if (
-              seen.has(key)
-            ) {
-
-              duplicates.push({
-                question: item.question,
-                first: seen.get(key),
-                duplicate: number
-              });
-
-            } else {
-
-              seen.set(
-                key,
-                number
-              );
-
-            }
-
-          }
-        );
-
-      }
-    );
-
-
+  function findDuplicateQuestions(batches) {
+    const seen = new Map();
+    const duplicates = [];
+    batches.forEach((batch, batchIndex) => {
+      batch.questions.forEach((item, questionIndex) => {
+        const key = normalizeQuestion(item.question);
+        const number = getBatchConfig(batchIndex + 1).start + questionIndex;
+        if (seen.has(key)) {
+          duplicates.push({ question: item.question, first: seen.get(key), duplicate: number });
+        } else {
+          seen.set(key, number);
+        }
+      });
+    });
     return duplicates;
-
   }
-
 
   function validateAllBatches() {
-
     try {
-
-      const batches =
-        [];
-
-
-      for (
-        let i = 1;
-        i <= 4;
-        i++
-      ) {
-
-        const data =
-          parseBatch(
-            i
-          );
-
-
-        batches.push(
-          data
-        );
-
-
-        updateBatchStatus(
-          i,
-          "✓ Valid — 25 soal",
-          true
-        );
-
+      const batches = [];
+      for (let i = 1; i <= 4; i++) {
+        const data = parseBatch(i);
+        batches.push(data);
+        updateBatchStatus(i, "✓ Valid — 25 soal", true);
       }
-
-
-      const duplicates =
-        findDuplicateQuestions(
-          batches
-        );
-
-
-      document.getElementById(
-        "batchCount"
-      ).textContent =
-        "4/4";
-
-
-      document.getElementById(
-        "questionCount"
-      ).textContent =
-        "100/100";
-
-
-      document.getElementById(
-        "duplicateCount"
-      ).textContent =
-        duplicates.length;
-
-
-      if (
-        duplicates.length > 0
-      ) {
-
-        throw new Error(
-          `Ditemukan ${duplicates.length} soal duplikat antar-batch. Periksa kembali sebelum import.`
-        );
-
+      const duplicates = findDuplicateQuestions(batches);
+      document.getElementById("batchCount").textContent = "4/4";
+      document.getElementById("questionCount").textContent = "100/100";
+      document.getElementById("duplicateCount").textContent = duplicates.length;
+      if (duplicates.length > 0) {
+        throw new Error(`Ditemukan ${duplicates.length} soal duplikat antar-batch. Periksa kembali sebelum import.`);
       }
-
-
-      showMessage(
-        "batchMessage",
-        "✓ Semua batch valid. 4 batch berisi tepat 100 soal dan tidak ditemukan duplikasi.",
-        "success"
-      );
-
-
+      showMessage("batchMessage", "✓ Semua batch valid. 4 batch berisi tepat 100 soal dan tidak ditemukan duplikasi.", "success");
       return true;
-
     } catch (error) {
-
       console.error(error);
-
-
-      showMessage(
-        "batchMessage",
-        error.message,
-        "error"
-      );
-
-
+      showMessage("batchMessage", error.message, "error");
       return false;
-
     }
-
   }
-
 
   function clearBatchForm() {
-
-    document.getElementById(
-      "batchTitle"
-    ).value = "";
-
-
-    document.getElementById(
-      "batchDescription"
-    ).value = "";
-
-
-    document.getElementById(
-      "batchCategory"
-    ).value = "";
-
-
-    document.getElementById(
-      "batchDuration"
-    ).value = "100";
-
-
-    for (
-      let i = 1;
-      i <= 4;
-      i++
-    ) {
-
-      const config =
-        getBatchConfig(
-          i
-        );
-
-
-      document.getElementById(
-        config.textarea
-      ).value = "";
-
-
-      updateBatchStatus(
-        i,
-        "Belum diperiksa"
-      );
-
+    document.getElementById("batchTitle").value = "";
+    document.getElementById("batchDescription").value = "";
+    document.getElementById("batchCategory").value = "";
+    document.getElementById("batchDuration").value = "100";
+    for (let i = 1; i <= 4; i++) {
+      const config = getBatchConfig(i);
+      document.getElementById(config.textarea).value = "";
+      updateBatchStatus(i, "Belum diperiksa");
     }
-
-
     resetBatchStats();
-
-
-    document.getElementById(
-      "batchMessage"
-    ).className =
-      "message";
-
+    document.getElementById("batchMessage").className = "message";
   }
-
 
   async function importBatchCBT() {
+    const title = document.getElementById("batchTitle").value.trim();
+    const description = document.getElementById("batchDescription").value.trim();
+    const categoryId = document.getElementById("batchCategory").value;
+    const duration = Number(document.getElementById("batchDuration").value);
 
-    const title =
-      document.getElementById(
-        "batchTitle"
-      ).value.trim();
+    if (!title) { showMessage("batchMessage", "Judul CBT wajib diisi.", "error"); return; }
+    if (!categoryId) { showMessage("batchMessage", "Kategori CBT wajib dipilih.", "error"); return; }
+    if (!Number.isInteger(duration) || duration <= 0) { showMessage("batchMessage", "Durasi CBT harus berupa angka lebih dari 0.", "error"); return; }
 
-
-    const description =
-      document.getElementById(
-        "batchDescription"
-      ).value.trim();
-
-
-    const categoryId =
-      document.getElementById(
-        "batchCategory"
-      ).value;
-
-
-    const duration =
-      Number(
-        document.getElementById(
-          "batchDuration"
-        ).value
-      );
-
-
-    if (!title) {
-
-      showMessage(
-        "batchMessage",
-        "Judul CBT wajib diisi.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    if (!categoryId) {
-
-      showMessage(
-        "batchMessage",
-        "Kategori CBT wajib dipilih.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    if (
-      !Number.isInteger(
-        duration
-      ) ||
-      duration <= 0
-    ) {
-
-      showMessage(
-        "batchMessage",
-        "Durasi CBT harus berupa angka lebih dari 0.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    showMessage(
-      "batchMessage",
-      "Memvalidasi keempat batch...",
-      "info"
-    );
-
+    showMessage("batchMessage", "Memvalidasi keempat batch...", "info");
 
     let batches;
-
-
     try {
-
       batches = [];
-
-
-      for (
-        let i = 1;
-        i <= 4;
-        i++
-      ) {
-
-        const data =
-          parseBatch(
-            i
-          );
-
-
-        batches.push(
-          data
-        );
-
-
-        updateBatchStatus(
-          i,
-          "✓ Valid — 25 soal",
-          true
-        );
-
+      for (let i = 1; i <= 4; i++) {
+        const data = parseBatch(i);
+        batches.push(data);
+        updateBatchStatus(i, "✓ Valid — 25 soal", true);
       }
-
-
-      const duplicates =
-        findDuplicateQuestions(
-          batches
-        );
-
-
-      document.getElementById(
-        "batchCount"
-      ).textContent =
-        "4/4";
-
-
-      document.getElementById(
-        "questionCount"
-      ).textContent =
-        "100/100";
-
-
-      document.getElementById(
-        "duplicateCount"
-      ).textContent =
-        duplicates.length;
-
-
-      if (
-        duplicates.length > 0
-      ) {
-
-        throw new Error(
-          `Ditemukan ${duplicates.length} soal duplikat. Import dibatalkan.`
-        );
-
+      const duplicates = findDuplicateQuestions(batches);
+      document.getElementById("batchCount").textContent = "4/4";
+      document.getElementById("questionCount").textContent = "100/100";
+      document.getElementById("duplicateCount").textContent = duplicates.length;
+      if (duplicates.length > 0) {
+        throw new Error(`Ditemukan ${duplicates.length} soal duplikat. Import dibatalkan.`);
       }
-
     } catch (error) {
-
       console.error(error);
-
-      showMessage(
-        "batchMessage",
-        error.message,
-        "error"
-      );
-
+      showMessage("batchMessage", error.message, "error");
       return;
-
     }
 
-
-    const confirmed =
-      confirm(
-        `Gabungkan 4 batch menjadi CBT "${title}" dengan 100 soal?`
-      );
-
-
-    if (!confirmed) {
-
-      showMessage(
-        "batchMessage",
-        "Import dibatalkan.",
-        "info"
-      );
-
+    if (!confirm(`Gabungkan 4 batch menjadi CBT "${title}" dengan 100 soal?`)) {
+      showMessage("batchMessage", "Import dibatalkan.", "info");
       return;
-
     }
 
-
-    showMessage(
-      "batchMessage",
-      "Membuat CBT dan menyimpan 100 soal...",
-      "info"
-    );
-
+    showMessage("batchMessage", "Membuat CBT dan menyimpan 100 soal...", "info");
 
     let quiz = null;
-
-
     try {
+      const { data, error: quizError } = await supabaseClient.from("quizzes").insert({
+        title,
+        description: description || null,
+        category_id: Number(categoryId),
+        duration_minutes: duration,
+        status: "draft"
+      }).select().single();
 
-      const {
-        data,
-        error: quizError
-      } = await supabaseClient
-        .from("quizzes")
-        .insert({
+      if (quizError) throw new Error("Gagal membuat CBT: " + quizError.message);
+      quiz = data;
 
-          title,
-
-          description:
-            description ||
-            null,
-
-          category_id:
-            Number(
-              categoryId
-            ),
-
-          duration_minutes:
-            duration,
-
-          status:
-            "draft"
-
-        })
-        .select()
-        .single();
-
-
-      if (quizError) {
-
-        throw new Error(
-          "Gagal membuat CBT: " +
-          quizError.message
-        );
-
+      const allQuestions = batches.flatMap(batch => batch.questions);
+      if (allQuestions.length !== 100) {
+        throw new Error(`Jumlah soal setelah penggabungan tidak sesuai. Ditemukan ${allQuestions.length} soal.`);
       }
 
+      for (let i = 0; i < allQuestions.length; i++) {
+        const item = allQuestions[i];
+        const questionNumber = i + 1;
+        const { data: question, error: questionError } = await supabaseClient.from("quiz_questions").insert({
+          quiz_id: quiz.id,
+          question: item.question.trim(),
+          explanation: item.explanation || null,
+          question_number: questionNumber
+        }).select().single();
 
-      quiz =
-        data;
+        if (questionError) throw new Error(`Gagal menyimpan soal nomor ${questionNumber}: ${questionError.message}`);
 
+        const answer = Number(item.answer);
+        const options = item.options.map((optionText, optionIndex) => ({
+          question_id: question.id,
+          option_text: optionText.trim(),
+          is_correct: optionIndex + 1 === answer
+        }));
 
-      const allQuestions =
-        batches.flatMap(
-          batch =>
-            batch.questions
-        );
+        const { error: optionError } = await supabaseClient.from("quiz_options").insert(options);
+        if (optionError) throw new Error(`Gagal menyimpan pilihan jawaban soal nomor ${questionNumber}: ${optionError.message}`);
 
-
-      if (
-        allQuestions.length !== 100
-      ) {
-
-        throw new Error(
-          `Jumlah soal setelah penggabungan tidak sesuai. Ditemukan ${allQuestions.length} soal.`
-        );
-
+        if (questionNumber === 1 || questionNumber % 10 === 0 || questionNumber === 100) {
+          showMessage("batchMessage", `Menyimpan soal ${questionNumber}/100...`, "info");
+        }
       }
 
-
-      for (
-        let i = 0;
-        i < allQuestions.length;
-        i++
-      ) {
-
-        const item =
-          allQuestions[i];
-
-
-        const questionNumber =
-          i + 1;
-
-
-        const {
-          data: question,
-          error: questionError
-        } = await supabaseClient
-          .from("quiz_questions")
-          .insert({
-
-            quiz_id:
-              quiz.id,
-
-            question:
-              item.question.trim(),
-
-            explanation:
-              item.explanation ||
-              null,
-
-            question_number:
-              questionNumber
-
-          })
-          .select()
-          .single();
-
-
-        if (questionError) {
-
-          throw new Error(
-            `Gagal menyimpan soal nomor ${questionNumber}: ${questionError.message}`
-          );
-
-        }
-
-
-        const answer =
-          Number(
-            item.answer
-          );
-
-
-        const options =
-          item.options.map(
-            (
-              optionText,
-              optionIndex
-            ) => ({
-
-              question_id:
-                question.id,
-
-              option_text:
-                optionText.trim(),
-
-              is_correct:
-                optionIndex + 1 ===
-                answer
-
-            })
-          );
-
-
-        const {
-          error: optionError
-        } = await supabaseClient
-          .from("quiz_options")
-          .insert(
-            options
-          );
-
-
-        if (optionError) {
-
-          throw new Error(
-            `Gagal menyimpan pilihan jawaban soal nomor ${questionNumber}: ${optionError.message}`
-          );
-
-        }
-
-
-        if (
-          questionNumber === 1 ||
-          questionNumber % 10 === 0 ||
-          questionNumber === 100
-        ) {
-
-          showMessage(
-            "batchMessage",
-            `Menyimpan soal ${questionNumber}/100...`,
-            "info"
-          );
-
-        }
-
-      }
-
-
-      showMessage(
-        "batchMessage",
-        `🎉 CBT "${title}" berhasil dibuat dengan 100 soal. Nomor soal 1–100 sudah tersimpan. Status awal: DRAFT.`,
-        "success"
-      );
-
-
+      showMessage("batchMessage", `🎉 CBT "${title}" berhasil dibuat dengan 100 soal. Nomor soal 1–100 sudah tersimpan. Status awal: DRAFT.`, "success");
       clearBatchForm();
-
       loadCBTs();
 
-
     } catch (error) {
-
       console.error(error);
-
-
       if (quiz) {
-
-        await supabaseClient
-          .from("quizzes")
-          .delete()
-          .eq(
-            "id",
-            quiz.id
-          );
-
+        await supabaseClient.from("quizzes").delete().eq("id", quiz.id);
       }
-
-
-      showMessage(
-        "batchMessage",
-        error.message ||
-        "Gagal mengimport CBT batch.",
-        "error"
-      );
-
+      showMessage("batchMessage", error.message || "Gagal mengimport CBT batch.", "error");
     }
-
   }
 
-
-  /* ============================================================
-     LOAD CBT
-  ============================================================ */
-
+  // ============================================================
+  // LOAD CBT
+  // ============================================================
   async function loadCBTs() {
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("quizzes")
-      .select(`
-        *,
-        categories (
-          name
-        )
-      `)
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
-
-
-    const container =
-      document.getElementById(
-        "cbtList"
-      );
-
-
+    const { data, error } = await supabaseClient.from("quizzes").select(`*, categories (name)`).order("created_at", { ascending: false });
+    const container = document.getElementById("cbtList");
     if (error) {
-
       console.error(error);
-
-      container.innerHTML =
-        '<div class="empty">Gagal memuat daftar CBT.</div>';
-
+      container.innerHTML = '<div class="empty">Gagal memuat daftar CBT.</div>';
       return;
-
     }
-
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      container.innerHTML =
-        '<div class="empty">Belum ada CBT.</div>';
-
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="empty">Belum ada CBT.</div>';
       return;
-
     }
+    container.innerHTML = data.map(quiz => {
+      let badgeClass = "badge";
+      if (quiz.status === "published") badgeClass += " badge-published";
+      else if (quiz.status === "draft") badgeClass += " badge-draft";
+      else if (quiz.status === "closed") badgeClass += " badge-closed";
 
-
-    container.innerHTML =
-      data.map(
-        quiz => {
-
-          let badgeClass =
-            "badge";
-
-
-          if (
-            quiz.status ===
-            "published"
-          ) {
-
-            badgeClass +=
-              " badge-published";
-
-          } else if (
-            quiz.status ===
-            "draft"
-          ) {
-
-            badgeClass +=
-              " badge-draft";
-
-          } else if (
-            quiz.status ===
-            "closed"
-          ) {
-
-            badgeClass +=
-              " badge-closed";
-
-          }
-
-
-          return `
-
-            <div class="item">
-
-              <div class="item-title">
-
-                ${escapeHtml(
-                  quiz.title
-                )}
-
-              </div>
-
-
-              <div class="item-meta">
-
-                Kategori:
-                ${escapeHtml(
-                  quiz.categories?.name ||
-                  "Tanpa kategori"
-                )}
-
-                •
-
-                Durasi:
-                ${escapeHtml(
-                  quiz.duration_minutes ||
-                  60
-                )}
-                menit
-
-                •
-
-                <span
-                  class="${badgeClass}"
-                >
-                  ${escapeHtml(
-                    quiz.status ||
-                    "draft"
-                  )}
-                </span>
-
-              </div>
-
-
-              <div class="item-description">
-
-                ${escapeHtml(
-                  quiz.description ||
-                  "Tidak ada deskripsi."
-                )}
-
-              </div>
-
-
-              <div class="button-row">
-
-                <button
-                  class="btn-danger"
-                  onclick="deleteCBT(${quiz.id})"
-                >
-                  Hapus CBT
-                </button>
-
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      ).join("");
-
+      return `
+        <div class="item">
+          <div class="item-title">${escapeHtml(quiz.title)}</div>
+          <div class="item-meta">Kategori: ${escapeHtml(quiz.categories?.name || "Tanpa kategori")} • Durasi: ${escapeHtml(quiz.duration_minutes || 60)} menit • <span class="${badgeClass}">${escapeHtml(quiz.status || "draft")}</span></div>
+          <div class="item-description">${escapeHtml(quiz.description || "Tidak ada deskripsi.")}</div>
+          <div class="button-row">
+            <button class="btn-danger" onclick="deleteCBT(${quiz.id})">Hapus CBT</button>
+          </div>
+        </div>
+      `;
+    }).join("");
   }
-
 
   async function deleteCBT(id) {
-
-    const confirmed =
-      confirm(
-        "Hapus CBT ini? Semua soal dan pilihan jawaban yang terhubung juga akan dihapus."
-      );
-
-
-    if (!confirmed) return;
-
-
-    const {
-      error
-    } = await supabaseClient
-      .from("quizzes")
-      .delete()
-      .eq(
-        "id",
-        id
-      );
-
-
+    if (!confirm("Hapus CBT ini? Semua soal dan pilihan jawaban yang terhubung juga akan dihapus.")) return;
+    const { error } = await supabaseClient.from("quizzes").delete().eq("id", id);
     if (error) {
-
-      alert(
-        "Gagal menghapus CBT: " +
-        error.message
-      );
-
+      alert("Gagal menghapus CBT: " + error.message);
       return;
-
     }
-
-
     loadCBTs();
-
   }
 
-
-  /* ============================================================
-     OSCE
-  ============================================================ */
-
-  let editingStationId = null;
-
-
-  function addChecklistRow(
-    item = "",
-    points = 1
-  ) {
-
-    const container =
-      document.getElementById(
-        "osceChecklistContainer"
-      );
-
-
+  // ============================================================
+  // OSCE
+  // ============================================================
+  function addChecklistRow(item = "", points = 1) {
+    const container = document.getElementById("osceChecklistContainer");
     if (!container) return;
-
-
-    const row =
-      document.createElement(
-        "div"
-      );
-
-
-    row.className =
-      "osce-checklist";
-
-
-    const selectedPoints =
-      [0, 1, 2, 3].includes(
-        Number(points)
-      )
-        ? Number(points)
-        : 1;
-
-
-    const scoreGroupName =
-      "osce-points-" +
-      Date.now() +
-      "-" +
-      Math.random()
-        .toString(36)
-        .slice(2);
-
+    const row = document.createElement("div");
+    row.className = "osce-checklist";
+    const selectedPoints = [0, 1, 2, 3].includes(Number(points)) ? Number(points) : 1;
+    const scoreGroupName = "osce-points-" + Date.now() + "-" + Math.random().toString(36).slice(2);
 
     row.innerHTML = `
-
       <div class="osce-checklist-header">
-
-        <div class="osce-step">
-
-          Langkah
-          <span class="osce-step-number"></span>
-
-        </div>
-
-        <button
-          type="button"
-          class="btn-danger"
-          onclick="removeChecklistRow(this)"
-        >
-          Hapus
-        </button>
-
+        <div class="osce-step">Langkah <span class="osce-step-number"></span></div>
+        <button type="button" class="btn-danger" onclick="removeChecklistRow(this)">Hapus</button>
       </div>
-
-
       <div class="osce-checklist-grid">
-
-        <div
-          class="form-group"
-          style="margin-bottom:0;"
-        >
-
-          <label>
-            Item Checklist
-          </label>
-
-          <input
-            type="text"
-            class="osce-item-input"
-            value="${escapeAttribute(item)}"
-            placeholder="Contoh: Mencuci tangan sebelum pemeriksaan"
-          >
-
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Item Checklist</label>
+          <input type="text" class="osce-item-input" value="${escapeAttribute(item)}" placeholder="Contoh: Mencuci tangan sebelum pemeriksaan">
         </div>
-
-
-        <div
-          class="form-group"
-          style="margin-bottom:0;"
-        >
-
-          <label>
-            Poin
-          </label>
-
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Poin</label>
           <div class="osce-score-group">
-
-            <span class="osce-score-label">
-              Pilih:
-            </span>
-
+            <span class="osce-score-label">Pilih:</span>
             <label class="osce-score-option">
-
-              <input
-                type="radio"
-                name="${scoreGroupName}"
-                value="0"
-                class="osce-points-input"
-                ${selectedPoints === 0 ? "checked" : ""}
-              >
-
+              <input type="radio" name="${scoreGroupName}" value="0" class="osce-points-input" ${selectedPoints === 0 ? "checked" : ""}>
               <span>0</span>
-
             </label>
-
-
             <label class="osce-score-option">
-
-              <input
-                type="radio"
-                name="${scoreGroupName}"
-                value="1"
-                class="osce-points-input"
-                ${selectedPoints === 1 ? "checked" : ""}
-              >
-
+              <input type="radio" name="${scoreGroupName}" value="1" class="osce-points-input" ${selectedPoints === 1 ? "checked" : ""}>
               <span>1</span>
-
             </label>
-
-
             <label class="osce-score-option">
-
-              <input
-                type="radio"
-                name="${scoreGroupName}"
-                value="2"
-                class="osce-points-input"
-                ${selectedPoints === 2 ? "checked" : ""}
-              >
-
+              <input type="radio" name="${scoreGroupName}" value="2" class="osce-points-input" ${selectedPoints === 2 ? "checked" : ""}>
               <span>2</span>
-
             </label>
-
-
             <label class="osce-score-option">
-
-              <input
-                type="radio"
-                name="${scoreGroupName}"
-                value="3"
-                class="osce-points-input"
-                ${selectedPoints === 3 ? "checked" : ""}
-              >
-
+              <input type="radio" name="${scoreGroupName}" value="3" class="osce-points-input" ${selectedPoints === 3 ? "checked" : ""}>
               <span>3</span>
-
             </label>
-
           </div>
-
         </div>
-
       </div>
-
     `;
-
-
-    container.appendChild(
-      row
-    );
-
-
+    container.appendChild(row);
     updateChecklistNumbers();
-
   }
 
-
-  function removeChecklistRow(
-    button
-  ) {
-
-    const row =
-      button.closest(
-        ".osce-checklist"
-      );
-
-
+  function removeChecklistRow(button) {
+    const row = button.closest(".osce-checklist");
     if (!row) return;
-
-
     row.remove();
-
-
     updateChecklistNumbers();
-
   }
-
 
   function updateChecklistNumbers() {
-
-    const rows =
-      document.querySelectorAll(
-        "#osceChecklistContainer .osce-checklist"
-      );
-
-
-    rows.forEach(
-      (
-        row,
-        index
-      ) => {
-
-        const number =
-          row.querySelector(
-            ".osce-step-number"
-          );
-
-
-        if (number) {
-
-          number.textContent =
-            index + 1;
-
-        }
-
-      }
-    );
-
+    const rows = document.querySelectorAll("#osceChecklistContainer .osce-checklist");
+    rows.forEach((row, index) => {
+      const number = row.querySelector(".osce-step-number");
+      if (number) number.textContent = index + 1;
+    });
   }
-
 
   function resetChecklistRows() {
-
-    const container =
-      document.getElementById(
-        "osceChecklistContainer"
-      );
-
-
+    const container = document.getElementById("osceChecklistContainer");
     if (!container) return;
-
-
-    container.innerHTML =
-      "";
-
+    container.innerHTML = "";
   }
-
 
   function clearOSCEForm() {
-
-    editingStationId =
-      null;
-
-
-    document.getElementById(
-      "osceTitle"
-    ).value =
-      "";
-
-
-    document.getElementById(
-      "osceDescription"
-    ).value =
-      "";
-
-
-    document.getElementById(
-      "osceObjective"
-    ).value =
-      "";
-
-
-    document.getElementById(
-      "osceInstructions"
-    ).value =
-      "";
-
-
+    editingStationId = null;
+    document.getElementById("osceTitle").value = "";
+    document.getElementById("osceDescription").value = "";
+    document.getElementById("osceObjective").value = "";
+    document.getElementById("osceInstructions").value = "";
     resetChecklistRows();
-
-
     addChecklistRow();
-
-
-    const message =
-      document.getElementById(
-        "osceMessage"
-      );
-
-
+    const message = document.getElementById("osceMessage");
     if (message) {
-
-      message.className =
-        "message";
-
-      message.textContent =
-        "";
-
+      message.className = "message";
+      message.textContent = "";
     }
-
   }
-
 
   function getOSCEChecklistData() {
-
-    const rows =
-      document.querySelectorAll(
-        "#osceChecklistContainer .osce-checklist"
-      );
-
-
-    const checklist =
-      [];
-
-
-    rows.forEach(
-      (
-        row,
-        index
-      ) => {
-
-        const itemInput =
-          row.querySelector(
-            ".osce-item-input"
-          );
-
-
-        const pointsInput =
-          row.querySelector(
-            ".osce-points-input:checked"
-          );
-
-
-        const item =
-          itemInput
-            ? itemInput.value.trim()
-            : "";
-
-
-        const points =
-          pointsInput
-            ? Number(pointsInput.value)
-            : 0;
-
-
-        if (!item) {
-
-          throw new Error(
-            `Checklist langkah ${index + 1} belum diisi.`
-          );
-
-        }
-
-
-        if (
-          !Number.isInteger(points) ||
-          points < 0 ||
-          points > 3
-        ) {
-
-          throw new Error(
-            `Poin checklist langkah ${index + 1} harus berada pada rentang 0–3.`
-          );
-
-        }
-
-
-        checklist.push({
-
-          step_number:
-            index + 1,
-
-          item,
-
-          points
-
-        });
-
-      }
-    );
-
-
-    if (
-      checklist.length === 0
-    ) {
-
-      throw new Error(
-        "Minimal harus ada satu checklist."
-      );
-
-    }
-
-
+    const rows = document.querySelectorAll("#osceChecklistContainer .osce-checklist");
+    const checklist = [];
+    rows.forEach((row, index) => {
+      const itemInput = row.querySelector(".osce-item-input");
+      const pointsInput = row.querySelector(".osce-points-input:checked");
+      const item = itemInput ? itemInput.value.trim() : "";
+      const points = pointsInput ? Number(pointsInput.value) : 0;
+      if (!item) throw new Error(`Checklist langkah ${index + 1} belum diisi.`);
+      if (!Number.isInteger(points) || points < 0 || points > 3) throw new Error(`Poin checklist langkah ${index + 1} harus berada pada rentang 0–3.`);
+      checklist.push({ step_number: index + 1, item, points });
+    });
+    if (checklist.length === 0) throw new Error("Minimal harus ada satu checklist.");
     return checklist;
-
   }
-
 
   async function saveOSCEStation() {
-
-    const title =
-      document.getElementById(
-        "osceTitle"
-      ).value.trim();
-
-
-    const description =
-      document.getElementById(
-        "osceDescription"
-      ).value.trim();
-
-
-    const objective =
-      document.getElementById(
-        "osceObjective"
-      ).value.trim();
-
-
-    const instructions =
-      document.getElementById(
-        "osceInstructions"
-      ).value.trim();
-
+    const title = document.getElementById("osceTitle").value.trim();
+    const description = document.getElementById("osceDescription").value.trim();
+    const objective = document.getElementById("osceObjective").value.trim();
+    const instructions = document.getElementById("osceInstructions").value.trim();
 
     if (!title) {
-
-      showMessage(
-        "osceMessage",
-        "Judul station wajib diisi.",
-        "error"
-      );
-
+      showMessage("osceMessage", "Judul station wajib diisi.", "error");
       return;
-
     }
-
 
     let checklist;
-
-
     try {
-
-      checklist =
-        getOSCEChecklistData();
-
+      checklist = getOSCEChecklistData();
     } catch (error) {
-
-      showMessage(
-        "osceMessage",
-        error.message,
-        "error"
-      );
-
+      showMessage("osceMessage", error.message, "error");
       return;
-
     }
 
+    showMessage("osceMessage", "Menyimpan station OSCE...", "info");
 
-    showMessage(
-      "osceMessage",
-      "Menyimpan station OSCE...",
-      "info"
-    );
-
-
-    let stationId =
-      editingStationId;
-
-
+    let stationId = editingStationId;
     try {
+      if (editingStationId) {
+        const { error: updateError } = await supabaseClient.from("osce_stations").update({
+          title,
+          description: description || null,
+          objective: objective || null,
+          instructions: instructions || null
+        }).eq("id", editingStationId);
 
-      if (
-        editingStationId
-      ) {
+        if (updateError) throw new Error("Gagal memperbarui station: " + updateError.message);
 
-        const {
-          error: updateError
-        } = await supabaseClient
-          .from("osce_stations")
-          .update({
-
-            title,
-
-            description:
-              description ||
-              null,
-
-            objective:
-              objective ||
-              null,
-
-            instructions:
-              instructions ||
-              null
-
-          })
-          .eq(
-            "id",
-            editingStationId
-          );
-
-
-        if (updateError) {
-
-          throw new Error(
-            "Gagal memperbarui station: " +
-            updateError.message
-          );
-
-        }
-
-
-        const {
-          error:
-            deleteChecklistError
-        } = await supabaseClient
-          .from("osce_checklists")
-          .delete()
-          .eq(
-            "station_id",
-            editingStationId
-          );
-
-
-        if (
-          deleteChecklistError
-        ) {
-
-          throw new Error(
-            "Gagal memperbarui checklist: " +
-            deleteChecklistError.message
-          );
-
-        }
-
+        const { error: deleteChecklistError } = await supabaseClient.from("osce_checklists").delete().eq("station_id", editingStationId);
+        if (deleteChecklistError) throw new Error("Gagal memperbarui checklist: " + deleteChecklistError.message);
       } else {
+        const { data, error: stationError } = await supabaseClient.from("osce_stations").insert({
+          title,
+          description: description || null,
+          objective: objective || null,
+          instructions: instructions || null
+        }).select().single();
 
-        const {
-          data,
-          error: stationError
-        } = await supabaseClient
-          .from("osce_stations")
-          .insert({
-
-            title,
-
-            description:
-              description ||
-              null,
-
-            objective:
-              objective ||
-              null,
-
-            instructions:
-              instructions ||
-              null
-
-          })
-          .select()
-          .single();
-
-
-        if (stationError) {
-
-          throw new Error(
-            "Gagal membuat station: " +
-            stationError.message
-          );
-
-        }
-
-
-        stationId =
-          data.id;
-
+        if (stationError) throw new Error("Gagal membuat station: " + stationError.message);
+        stationId = data.id;
       }
 
+      const checklistData = checklist.map(item => ({
+        station_id: stationId,
+        step_number: item.step_number,
+        item: item.item,
+        points: item.points
+      }));
 
-      const checklistData =
-        checklist.map(
-          item => ({
-
-            station_id:
-              stationId,
-
-            step_number:
-              item.step_number,
-
-            item:
-              item.item,
-
-            points:
-              item.points
-
-          })
-        );
-
-
-      const {
-        error: checklistError
-      } = await supabaseClient
-        .from("osce_checklists")
-        .insert(
-          checklistData
-        );
-
-
+      const { error: checklistError } = await supabaseClient.from("osce_checklists").insert(checklistData);
       if (checklistError) {
-
-        if (
-          !editingStationId &&
-          stationId
-        ) {
-
-          await supabaseClient
-            .from("osce_stations")
-            .delete()
-            .eq(
-              "id",
-              stationId
-            );
-
+        if (!editingStationId && stationId) {
+          await supabaseClient.from("osce_stations").delete().eq("id", stationId);
         }
-
-
-        throw new Error(
-          "Gagal menyimpan checklist: " +
-          checklistError.message
-        );
-
+        throw new Error("Gagal menyimpan checklist: " + checklistError.message);
       }
 
-
-      showMessage(
-        "osceMessage",
-        editingStationId
-          ? "Station OSCE berhasil diperbarui."
-          : "Station OSCE berhasil dibuat.",
-        "success"
-      );
-
-
+      showMessage("osceMessage", editingStationId ? "Station OSCE berhasil diperbarui." : "Station OSCE berhasil dibuat.", "success");
       clearOSCEForm();
-
-
       await loadOSCEStations();
-
     } catch (error) {
-
       console.error(error);
-
-
-      showMessage(
-        "osceMessage",
-        error.message ||
-        "Terjadi kesalahan saat menyimpan OSCE.",
-        "error"
-      );
-
+      showMessage("osceMessage", error.message || "Terjadi kesalahan saat menyimpan OSCE.", "error");
     }
-
   }
-
 
   async function loadOSCEStations() {
-
-    const container =
-      document.getElementById(
-        "osceStationList"
-      );
-
-
+    const container = document.getElementById("osceStationList");
     if (!container) return;
 
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("osce_stations")
-      .select(`
-        *,
-        osce_checklists (
-          id
-        )
-      `)
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
-
+    const { data, error } = await supabaseClient.from("osce_stations").select(`*, osce_checklists (id)`).order("created_at", { ascending: false });
 
     if (error) {
-
       console.error(error);
-
-
-      container.innerHTML =
-        '<div class="empty">Gagal memuat station OSCE.</div>';
-
-
+      container.innerHTML = '<div class="empty">Gagal memuat station OSCE.</div>';
       return;
-
     }
 
-
-    if (
-      !data ||
-      data.length === 0
-    ) {
-
-      container.innerHTML =
-        '<div class="empty">Belum ada station OSCE.</div>';
-
-
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="empty">Belum ada station OSCE.</div>';
       return;
-
     }
 
-
-    container.innerHTML =
-      data.map(
-        station => {
-
-          const checklistCount =
-            station.osce_checklists
-              ? station.osce_checklists.length
-              : 0;
-
-
-          return `
-
-            <div class="osce-station">
-
-              <div class="osce-station-title">
-
-                ${escapeHtml(
-                  station.title
-                )}
-
-              </div>
-
-
-              <div class="osce-station-meta">
-
-                ${checklistCount}
-                checklist
-
-              </div>
-
-
-              ${
-                station.description
-                  ? `
-
-                    <div class="osce-station-section">
-
-                      <strong>
-                        Deskripsi
-                      </strong>
-
-                      <div class="item-description">
-
-                        ${escapeHtml(
-                          station.description
-                        )}
-
-                      </div>
-
-                    </div>
-
-                  `
-                  : ""
-              }
-
-
-              ${
-                station.objective
-                  ? `
-
-                    <div class="osce-station-section">
-
-                      <strong>
-                        Objective
-                      </strong>
-
-                      <div class="item-description">
-
-                        ${escapeHtml(
-                          station.objective
-                        )}
-
-                      </div>
-
-                    </div>
-
-                  `
-                  : ""
-              }
-
-
-              ${
-                station.instructions
-                  ? `
-
-                    <div class="osce-station-section">
-
-                      <strong>
-                        Instruksi
-                      </strong>
-
-                      <div class="item-description">
-
-                        ${escapeHtml(
-                          station.instructions
-                        )}
-
-                      </div>
-
-                    </div>
-
-                  `
-                  : ""
-              }
-
-
-              <div class="button-row">
-
-                <button
-                  type="button"
-                  class="btn-warning"
-                  onclick="editOSCEStation(${station.id})"
-                >
-                  Edit
-                </button>
-
-
-                <button
-                  type="button"
-                  class="btn-danger"
-                  onclick="deleteOSCEStation(${station.id})"
-                >
-                  Hapus
-                </button>
-
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      ).join("");
-
+    container.innerHTML = data.map(station => {
+      const checklistCount = station.osce_checklists ? station.osce_checklists.length : 0;
+      return `
+        <div class="osce-station">
+          <div class="osce-station-title">${escapeHtml(station.title)}</div>
+          <div class="osce-station-meta">${checklistCount} checklist</div>
+          ${station.description ? `<div class="osce-station-section"><strong>Deskripsi</strong><div class="item-description">${escapeHtml(station.description)}</div></div>` : ''}
+          ${station.objective ? `<div class="osce-station-section"><strong>Objective</strong><div class="item-description">${escapeHtml(station.objective)}</div></div>` : ''}
+          ${station.instructions ? `<div class="osce-station-section"><strong>Instruksi</strong><div class="item-description">${escapeHtml(station.instructions)}</div></div>` : ''}
+          <div class="button-row">
+            <button type="button" class="btn-warning" onclick="editOSCEStation(${station.id})">Edit</button>
+            <button type="button" class="btn-danger" onclick="deleteOSCEStation(${station.id})">Hapus</button>
+          </div>
+        </div>
+      `;
+    }).join("");
   }
 
+  async function editOSCEStation(id) {
+    showMessage("osceMessage", "Mengambil data station...", "info");
 
-  async function editOSCEStation(
-    id
-  ) {
-
-    showMessage(
-      "osceMessage",
-      "Mengambil data station...",
-      "info"
-    );
-
-
-    const {
-      data: station,
-      error: stationError
-    } = await supabaseClient
-      .from("osce_stations")
-      .select("*")
-      .eq(
-        "id",
-        id
-      )
-      .single();
-
-
-    if (
-      stationError ||
-      !station
-    ) {
-
-      showMessage(
-        "osceMessage",
-        "Gagal mengambil data station OSCE.",
-        "error"
-      );
-
+    const { data: station, error: stationError } = await supabaseClient.from("osce_stations").select("*").eq("id", id).single();
+    if (stationError || !station) {
+      showMessage("osceMessage", "Gagal mengambil data station OSCE.", "error");
       return;
-
     }
 
-
-    const {
-      data: checklist,
-      error: checklistError
-    } = await supabaseClient
-      .from("osce_checklists")
-      .select("*")
-      .eq(
-        "station_id",
-        id
-      )
-      .order(
-        "step_number",
-        {
-          ascending: true
-        }
-      );
-
-
+    const { data: checklist, error: checklistError } = await supabaseClient.from("osce_checklists").select("*").eq("station_id", id).order("step_number", { ascending: true });
     if (checklistError) {
-
-      showMessage(
-        "osceMessage",
-        "Gagal mengambil checklist OSCE: " +
-        checklistError.message,
-        "error"
-      );
-
+      showMessage("osceMessage", "Gagal mengambil checklist OSCE: " + checklistError.message, "error");
       return;
-
     }
 
-
-    editingStationId =
-      id;
-
-
-    document.getElementById(
-      "osceTitle"
-    ).value =
-      station.title || "";
-
-
-    document.getElementById(
-      "osceDescription"
-    ).value =
-      station.description || "";
-
-
-    document.getElementById(
-      "osceObjective"
-    ).value =
-      station.objective || "";
-
-
-    document.getElementById(
-      "osceInstructions"
-    ).value =
-      station.instructions || "";
-
+    editingStationId = id;
+    document.getElementById("osceTitle").value = station.title || "";
+    document.getElementById("osceDescription").value = station.description || "";
+    document.getElementById("osceObjective").value = station.objective || "";
+    document.getElementById("osceInstructions").value = station.instructions || "";
 
     resetChecklistRows();
-
-
-    if (
-      checklist &&
-      checklist.length > 0
-    ) {
-
-      checklist.forEach(
-        item =>
-          addChecklistRow(
-            item.item,
-            item.points
-          )
-      );
-
+    if (checklist && checklist.length > 0) {
+      checklist.forEach(item => addChecklistRow(item.item, item.points));
     } else {
-
       addChecklistRow();
-
     }
 
-
-    showMessage(
-      "osceMessage",
-      "Mode edit aktif. Ubah data lalu klik Simpan Station.",
-      "info"
-    );
-
-
+    showMessage("osceMessage", "Mode edit aktif. Ubah data lalu klik Simpan Station.", "info");
     window.scrollTo({
-
-      top:
-        document.getElementById(
-          "osceTitle"
-        ).getBoundingClientRect().top +
-        window.scrollY -
-        100,
-
-      behavior:
-        "smooth"
-
+      top: document.getElementById("osceTitle").getBoundingClientRect().top + window.scrollY - 100,
+      behavior: "smooth"
     });
-
   }
 
-
-  async function deleteOSCEStation(
-    id
-  ) {
-
-    const confirmed =
-      confirm(
-        "Hapus station OSCE ini? Semua checklist yang terhubung juga akan dihapus."
-      );
-
-
-    if (!confirmed) return;
-
-
-    const {
-      error
-    } = await supabaseClient
-      .from("osce_stations")
-      .delete()
-      .eq(
-        "id",
-        id
-      );
-
-
+  async function deleteOSCEStation(id) {
+    if (!confirm("Hapus station OSCE ini? Semua checklist yang terhubung juga akan dihapus.")) return;
+    const { error } = await supabaseClient.from("osce_stations").delete().eq("id", id);
     if (error) {
-
-      alert(
-        "Gagal menghapus station OSCE: " +
-        error.message
-      );
-
+      alert("Gagal menghapus station OSCE: " + error.message);
       return;
-
     }
-
-
-    if (
-      editingStationId === id
-    ) {
-
-      clearOSCEForm();
-
-    }
-
-
+    if (editingStationId === id) clearOSCEForm();
     await loadOSCEStations();
-
   }
 
-
-  /* ============================================================
-     LOGOUT
-  ============================================================ */
-
+  // ============================================================
+  // LOGOUT
+  // ============================================================
   async function logout() {
-
     await supabaseClient.auth.signOut();
-
-    window.location.href =
-      "login.html";
-
+    window.location.href = "login.html";
   }
 
-
-  /* ============================================================
-     INITIAL LOAD
-  ============================================================ */
-
+  // ============================================================
+  // INITIAL LOAD
+  // ============================================================
   async function init() {
-
-    const isAdmin =
-      await checkAdmin();
-
-
+    const isAdmin = await checkAdmin();
     if (!isAdmin) return;
 
-
     await loadCategories();
-
     await loadMaterials();
-
     await loadResourceMaterials();
-
     await loadResources();
-
     await loadCBTs();
-
     clearOSCEForm();
-
     await loadOSCEStations();
-
+    renderMaterialAttachments();
   }
-
 
   init();
 </script>
 
 <!-- MENU REFERENSI ADMIN -->
 <script>
-    const referenceAdminButton = document.createElement("a");
-
-    referenceAdminButton.href = "referensi-admin.html";
-    referenceAdminButton.textContent = "📚 Kelola Referensi";
-
-    referenceAdminButton.style.cssText = `
-        position: fixed;
-        right: 20px;
-        bottom: 20px;
-        z-index: 9999;
-        display: inline-block;
-        padding: 14px 20px;
-        border-radius: 12px;
-        background: #2563eb;
-        color: white;
-        text-decoration: none;
-        font-weight: 700;
-        font-size: 14px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-    `;
-
-    document.body.appendChild(referenceAdminButton);
+  const referenceAdminButton = document.createElement("a");
+  referenceAdminButton.href = "referensi-admin.html";
+  referenceAdminButton.textContent = "📚 Kelola Referensi";
+  referenceAdminButton.style.cssText = `
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 9999;
+    display: inline-block;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  `;
+  document.body.appendChild(referenceAdminButton);
 </script>
 
 </body>
-          </html>
+      </html>
