@@ -2744,134 +2744,6 @@ async function addResource() {
 
 }
 
-    const materialId =
-      document.getElementById(
-        "resourceMaterial"
-      ).value;
-
-
-    const title =
-      document.getElementById(
-        "resourceTitle"
-      ).value.trim();
-
-
-    const type =
-      document.getElementById(
-        "resourceType"
-      ).value;
-
-
-    const url =
-      document.getElementById(
-        "resourceUrl"
-      ).value.trim();
-
-
-    const description =
-      document.getElementById(
-        "resourceDescription"
-      ).value.trim();
-
-
-    if (!materialId) {
-
-      showMessage(
-        "resourceMessage",
-        "Pilih materi terlebih dahulu.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    if (!title) {
-
-      showMessage(
-        "resourceMessage",
-        "Judul referensi wajib diisi.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    if (!url) {
-
-      showMessage(
-        "resourceMessage",
-        "URL wajib diisi.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    const {
-      error
-    } = await supabaseClient
-      .from("resources")
-      .insert({
-
-        title,
-        description,
-        type,
-        url,
-
-        material_id:
-          Number(materialId)
-
-      });
-
-
-    if (error) {
-
-      console.error(error);
-
-      showMessage(
-        "resourceMessage",
-        "Gagal menambahkan referensi: " +
-        error.message,
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    document.getElementById(
-      "resourceTitle"
-    ).value = "";
-
-
-    document.getElementById(
-      "resourceUrl"
-    ).value = "";
-
-
-    document.getElementById(
-      "resourceDescription"
-    ).value = "";
-
-
-    showMessage(
-      "resourceMessage",
-      "Referensi berhasil ditambahkan.",
-      "success"
-    );
-
-
-    loadResources();
-
-  }
-
 
   async function loadResources() {
 
@@ -5743,6 +5615,8 @@ async function addResource() {
 
 
   init();
+</script>
+
 <!-- MENU REFERENSI ADMIN -->
 <script>
     const referenceAdminButton = document.createElement("a");
@@ -5769,6 +5643,5 @@ async function addResource() {
     document.body.appendChild(referenceAdminButton);
 </script>
 
-
 </body>
-</html>
+          </html>
