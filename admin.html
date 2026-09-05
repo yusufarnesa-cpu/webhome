@@ -692,72 +692,196 @@
 
   <div class="card">
 
-    <h2>🔗 Tambah Referensi Materi</h2>
+  <h2>🔗 Tambah Referensi Materi</h2>
 
-    <p class="description">
-      Tambahkan PDF, video, website, artikel, atau buku yang
-      berhubungan dengan materi.
-    </p>
+  <p class="description">
+    Tambahkan referensi yang terhubung langsung dengan materi.
+    Referensi dapat berupa file atau URL.
+  </p>
 
-    <div class="form-group">
-      <label for="resourceMaterial">Materi</label>
+  <div class="form-group">
+    <label for="resourceMaterial">Materi</label>
 
-      <select id="resourceMaterial">
-        <option value="">Pilih materi</option>
-      </select>
-    </div>
+    <select id="resourceMaterial">
+      <option value="">Pilih materi</option>
+    </select>
+  </div>
 
-    <div class="form-group">
-      <label for="resourceTitle">Judul Referensi</label>
+  <div class="form-group">
+    <label for="resourceTitle">Judul Referensi</label>
 
+    <input
+      type="text"
+      id="resourceTitle"
+      placeholder="Contoh: Anatomi Telinga - Video Pembelajaran"
+    >
+  </div>
+
+  <div class="form-group">
+    <label for="resourceType">Jenis Referensi</label>
+
+    <select id="resourceType">
+
+      <option value="">
+        Pilih jenis referensi
+      </option>
+
+      <option value="Gambar">
+        🖼️ Gambar
+      </option>
+
+      <option value="PDF">
+        📄 PDF
+      </option>
+
+      <option value="Word">
+        📝 Microsoft Word
+      </option>
+
+      <option value="PowerPoint">
+        📊 Microsoft PowerPoint
+      </option>
+
+      <option value="Excel">
+        📈 Microsoft Excel
+      </option>
+
+      <option value="Video">
+        🎬 Video
+      </option>
+
+      <option value="YouTube">
+        ▶️ YouTube
+      </option>
+
+      <option value="Website">
+        🌐 Website
+      </option>
+
+      <option value="Jurnal">
+        📚 Jurnal
+      </option>
+
+      <option value="Buku">
+        📖 Buku
+      </option>
+
+      <option value="Lainnya">
+        📎 Lainnya
+      </option>
+
+    </select>
+  </div>
+
+  <div class="form-group">
+
+    <label>
+      Sumber Referensi
+    </label>
+
+    <label style="font-weight:normal;">
       <input
-        type="text"
-        id="resourceTitle"
-        placeholder="Contoh: Video Anatomi Telinga"
+        type="radio"
+        name="resourceSource"
+        value="upload"
+        checked
+        onchange="updateResourceSource()"
       >
-    </div>
+      📁 Upload File
+    </label>
 
-    <div class="form-group">
-      <label for="resourceType">Jenis</label>
-
-      <select id="resourceType">
-        <option value="PDF">PDF</option>
-        <option value="Video">Video</option>
-        <option value="Website">Website</option>
-        <option value="Artikel">Artikel</option>
-        <option value="Buku">Buku</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="resourceUrl">URL</label>
-
+    <label style="font-weight:normal;">
       <input
-        type="url"
-        id="resourceUrl"
-        placeholder="https://..."
+        type="radio"
+        name="resourceSource"
+        value="url"
+        onchange="updateResourceSource()"
       >
-    </div>
+      🔗 Masukkan URL
+    </label>
 
-    <div class="form-group">
-      <label for="resourceDescription">Deskripsi</label>
+  </div>
 
-      <textarea
-        id="resourceDescription"
-        placeholder="Deskripsi referensi..."
-      ></textarea>
-    </div>
+  <div
+    id="resourceFileSection"
+    class="form-group"
+  >
+
+    <label for="resourceFile">
+      Pilih File
+    </label>
+
+    <input
+      type="file"
+      id="resourceFile"
+    >
+
+    <small>
+      File akan disimpan di Supabase Storage bucket
+      <strong>references</strong>.
+    </small>
+
+  </div>
+
+  <div
+    id="resourceUrlSection"
+    class="form-group"
+    style="display:none;"
+  >
+
+    <label for="resourceUrl">
+      URL Referensi
+    </label>
+
+    <input
+      type="url"
+      id="resourceUrl"
+      placeholder="https://..."
+    >
+
+  </div>
+
+  <div class="form-group">
+
+    <label for="resourceDescription">
+      Deskripsi
+    </label>
+
+    <textarea
+      id="resourceDescription"
+      placeholder="Deskripsi singkat referensi..."
+    ></textarea>
+
+  </div>
+
+  <div class="button-row">
 
     <button
       class="btn-primary"
+      type="button"
       onclick="addResource()"
+      id="resourceSubmitButton"
     >
-      Tambah Referensi
+      ➕ Tambahkan Referensi
     </button>
 
-    <div id="resourceMessage" class="message"></div>
+    <button
+      class="btn-secondary"
+      type="button"
+      onclick="clearResourceForm()"
+    >
+      Bersihkan
+    </button>
 
   </div>
+
+  <div
+    id="resourceMessage"
+    class="message"
+  ></div>
+
+  </div>
+
 
 
   <!-- =========================================================
@@ -2252,7 +2376,373 @@
   }
 
 
-  async function addResource() {
+  function updateResourceSource() {
+
+  const source =
+    document.querySelector(
+      'input[name="resourceSource"]:checked'
+    ).value;
+
+  const fileSection =
+    document.getElementById(
+      "resourceFileSection"
+    );
+
+  const urlSection =
+    document.getElementById(
+      "resourceUrlSection"
+    );
+
+  if (source === "upload") {
+
+    fileSection.style.display =
+      "block";
+
+    urlSection.style.display =
+      "none";
+
+  } else {
+
+    fileSection.style.display =
+      "none";
+
+    urlSection.style.display =
+      "block";
+
+  }
+
+}
+
+
+function clearResourceForm() {
+
+  document.getElementById(
+    "resourceTitle"
+  ).value = "";
+
+  document.getElementById(
+    "resourceType"
+  ).value = "";
+
+  document.getElementById(
+    "resourceUrl"
+  ).value = "";
+
+  document.getElementById(
+    "resourceDescription"
+  ).value = "";
+
+  document.getElementById(
+    "resourceFile"
+  ).value = "";
+
+  document.querySelector(
+    'input[name="resourceSource"][value="upload"]'
+  ).checked = true;
+
+  updateResourceSource();
+
+  document.getElementById(
+    "resourceMessage"
+  ).className = "message";
+
+}
+
+
+async function uploadMaterialResourceFile(file) {
+
+  const safeName =
+    file.name.replace(
+      /[^a-zA-Z0-9._-]/g,
+      "_"
+    );
+
+  const filePath =
+    Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .substring(2, 8) +
+    "_" +
+    safeName;
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .storage
+      .from("references")
+      .upload(
+        filePath,
+        file,
+        {
+          upsert: false
+        }
+      );
+
+  if (error) {
+    throw error;
+  }
+
+  const {
+    data: publicData
+  } =
+    supabaseClient
+      .storage
+      .from("references")
+      .getPublicUrl(
+        data.path
+      );
+
+  return {
+    path: data.path,
+    url: publicData.publicUrl
+  };
+
+}
+
+
+async function addResource() {
+
+  const materialId =
+    document.getElementById(
+      "resourceMaterial"
+    ).value;
+
+  const title =
+    document.getElementById(
+      "resourceTitle"
+    ).value.trim();
+
+  const type =
+    document.getElementById(
+      "resourceType"
+    ).value;
+
+  const description =
+    document.getElementById(
+      "resourceDescription"
+    ).value.trim();
+
+  const source =
+    document.querySelector(
+      'input[name="resourceSource"]:checked'
+    ).value;
+
+  const urlInput =
+    document.getElementById(
+      "resourceUrl"
+    );
+
+  const fileInput =
+    document.getElementById(
+      "resourceFile"
+    );
+
+  if (!materialId) {
+
+    showMessage(
+      "resourceMessage",
+      "Pilih materi terlebih dahulu.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  if (!title) {
+
+    showMessage(
+      "resourceMessage",
+      "Judul referensi wajib diisi.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  if (!type) {
+
+    showMessage(
+      "resourceMessage",
+      "Pilih jenis referensi terlebih dahulu.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  const button =
+    document.getElementById(
+      "resourceSubmitButton"
+    );
+
+  button.disabled = true;
+
+  button.textContent =
+    "Menyimpan...";
+
+  let uploadedPath = null;
+
+  try {
+
+    let url = null;
+    let filePath = null;
+
+    /*
+     * =========================
+     * UPLOAD FILE
+     * =========================
+     */
+
+    if (source === "upload") {
+
+      const file =
+        fileInput.files[0];
+
+      if (!file) {
+
+        throw new Error(
+          "Silakan pilih file terlebih dahulu."
+        );
+
+      }
+
+      const uploaded =
+        await uploadMaterialResourceFile(
+          file
+        );
+
+      url =
+        uploaded.url;
+
+      filePath =
+        uploaded.path;
+
+      uploadedPath =
+        uploaded.path;
+
+    }
+
+    /*
+     * =========================
+     * URL
+     * =========================
+     */
+
+    else {
+
+      url =
+        urlInput.value.trim();
+
+      if (!url) {
+
+        throw new Error(
+          "Silakan masukkan URL referensi."
+        );
+
+      }
+
+    }
+
+    /*
+     * =========================
+     * DATABASE
+     * =========================
+     */
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("resources")
+        .insert({
+
+          title:
+            title,
+
+          description:
+            description,
+
+          type:
+            type,
+
+          url:
+            url,
+
+          file_path:
+            filePath,
+
+          material_id:
+            Number(materialId)
+
+        });
+
+    if (error) {
+
+      /*
+       * Jika database gagal
+       * setelah file berhasil upload,
+       * hapus file agar tidak menjadi
+       * file yatim.
+       */
+
+      if (uploadedPath) {
+
+        await supabaseClient
+          .storage
+          .from("references")
+          .remove([
+            uploadedPath
+          ]);
+
+      }
+
+      throw error;
+
+    }
+
+    showMessage(
+      "resourceMessage",
+      "Referensi materi berhasil ditambahkan.",
+      "success"
+    );
+
+    clearResourceForm();
+
+    document.getElementById(
+      "resourceMaterial"
+    ).value =
+      materialId;
+
+    await loadResources();
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "resourceMessage",
+      "Gagal menambahkan referensi: " +
+      error.message,
+      "error"
+    );
+
+  } finally {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "➕ Tambahkan Referensi";
+
+  }
+
+}
 
     const materialId =
       document.getElementById(
@@ -5253,8 +5743,32 @@
 
 
   init();
+<!-- MENU REFERENSI ADMIN -->
+<script>
+    const referenceAdminButton = document.createElement("a");
 
+    referenceAdminButton.href = "referensi-admin.html";
+    referenceAdminButton.textContent = "📚 Kelola Referensi";
+
+    referenceAdminButton.style.cssText = `
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        z-index: 9999;
+        display: inline-block;
+        padding: 14px 20px;
+        border-radius: 12px;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    `;
+
+    document.body.appendChild(referenceAdminButton);
 </script>
 
+
 </body>
-  </html>
+</html>
