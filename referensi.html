@@ -129,11 +129,129 @@
 
 
             <p>
-                Pilih sumber yang ingin kamu buka.
+                Cari dan pilih sumber pembelajaran
+                yang ingin kamu gunakan.
             </p>
 
         </div>
 
+
+
+        <!-- =========================
+             SEARCH & FILTER
+        ========================== -->
+
+        <div
+            style="
+                max-width:1000px;
+                margin:0 auto 35px;
+                display:flex;
+                gap:12px;
+                flex-wrap:wrap;
+            "
+        >
+
+            <input
+                type="text"
+                id="search-input"
+                placeholder="🔎 Cari referensi..."
+                style="
+                    flex:1;
+                    min-width:220px;
+                    padding:14px 16px;
+                    border:1px solid #ddd;
+                    border-radius:10px;
+                    font-size:15px;
+                    box-sizing:border-box;
+                "
+            >
+
+
+            <select
+                id="type-filter"
+                style="
+                    min-width:200px;
+                    padding:14px 16px;
+                    border:1px solid #ddd;
+                    border-radius:10px;
+                    font-size:15px;
+                    background:white;
+                "
+            >
+
+                <option value="all">
+                    Semua Jenis
+                </option>
+
+                <option value="Gambar">
+                    🖼️ Gambar
+                </option>
+
+                <option value="PDF">
+                    📄 PDF
+                </option>
+
+                <option value="Word">
+                    📝 Microsoft Word
+                </option>
+
+                <option value="PowerPoint">
+                    📊 PowerPoint
+                </option>
+
+                <option value="Excel">
+                    📈 Excel
+                </option>
+
+                <option value="Video">
+                    🎬 Video
+                </option>
+
+                <option value="YouTube">
+                    ▶️ YouTube
+                </option>
+
+                <option value="Website">
+                    🌐 Website
+                </option>
+
+                <option value="Jurnal">
+                    📚 Jurnal
+                </option>
+
+                <option value="Buku">
+                    📖 Buku
+                </option>
+
+                <option value="Lainnya">
+                    📎 Lainnya
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- =========================
+             RESULT INFO
+        ========================== -->
+
+        <div
+            id="result-info"
+            style="
+                max-width:1000px;
+                margin:0 auto 20px;
+                opacity:0.7;
+                font-size:14px;
+            "
+        ></div>
+
+
+
+        <!-- =========================
+             CONTAINER
+        ========================== -->
 
         <div
             id="references-container"
@@ -209,12 +327,14 @@
 
     <script>
 
+
         /* =========================
            SUPABASE
         ========================== */
 
         const SUPABASE_URL =
             "https://hqzishiazabguknallei.supabase.co";
+
 
         const SUPABASE_KEY =
             "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
@@ -237,10 +357,37 @@
                 "references-container"
             );
 
+
         const emptyState =
             document.getElementById(
                 "empty-state"
             );
+
+
+        const searchInput =
+            document.getElementById(
+                "search-input"
+            );
+
+
+        const typeFilter =
+            document.getElementById(
+                "type-filter"
+            );
+
+
+        const resultInfo =
+            document.getElementById(
+                "result-info"
+            );
+
+
+
+        /* =========================
+           DATA
+        ========================== */
+
+        let allReferences = [];
 
 
 
@@ -259,11 +406,17 @@
 
             try {
 
-                const { data, error } =
+                const {
+                    data,
+                    error
+                } =
                     await supabaseClient
                         .from("resources")
                         .select("*")
-                        .is("material_id", null)
+                        .is(
+                            "material_id",
+                            null
+                        )
                         .order(
                             "created_at",
                             {
@@ -279,6 +432,7 @@
                         error
                     );
 
+
                     container.innerHTML = `
                         <div class="loading">
                             Gagal memuat referensi.
@@ -286,17 +440,28 @@
                     `;
 
                     return;
+
                 }
 
 
-                if (!data || data.length === 0) {
+                allReferences =
+                    data || [];
+
+
+                if (
+                    allReferences.length === 0
+                ) {
 
                     container.innerHTML = "";
 
                     emptyState.style.display =
                         "block";
 
+                    resultInfo.textContent =
+                        "";
+
                     return;
+
                 }
 
 
@@ -304,20 +469,12 @@
                     "none";
 
 
-                container.innerHTML =
-                    data
-                        .map(
-                            resource =>
-                                createReferenceCard(
-                                    resource
-                                )
-                        )
-                        .join("");
-
+                renderReferences();
 
             } catch (error) {
 
                 console.error(error);
+
 
                 container.innerHTML = `
                     <div class="loading">
@@ -333,10 +490,124 @@
 
 
         /* =========================
+           FILTER
+        ========================== */
+
+        function renderReferences() {
+
+            const search =
+                searchInput.value
+                    .toLowerCase()
+                    .trim();
+
+
+            const selectedType =
+                typeFilter.value;
+
+
+            const filtered =
+                allReferences.filter(
+                    resource => {
+
+                        const title =
+                            (
+                                resource.title ||
+                                ""
+                            )
+                            .toLowerCase();
+
+
+                        const description =
+                            (
+                                resource.description ||
+                                ""
+                            )
+                            .toLowerCase();
+
+
+                        const type =
+                            (
+                                resource.type ||
+                                ""
+                            );
+
+
+                        const matchesSearch =
+                            title.includes(search) ||
+                            description.includes(search);
+
+
+                        const matchesType =
+                            selectedType === "all" ||
+                            type === selectedType;
+
+
+                        return (
+                            matchesSearch &&
+                            matchesType
+                        );
+
+                    }
+                );
+
+
+            resultInfo.textContent =
+                `${filtered.length} referensi ditemukan`;
+
+
+            if (
+                filtered.length === 0
+            ) {
+
+                container.innerHTML = `
+
+                    <div
+                        style="
+                            grid-column:1/-1;
+                            text-align:center;
+                            padding:40px 20px;
+                        "
+                    >
+
+                        <h3>
+                            Referensi tidak ditemukan
+                        </h3>
+
+                        <p>
+                            Coba gunakan kata kunci
+                            atau jenis referensi lain.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            container.innerHTML =
+                filtered
+                    .map(
+                        resource =>
+                            createReferenceCard(
+                                resource
+                            )
+                    )
+                    .join("");
+
+        }
+
+
+
+        /* =========================
            CREATE CARD
         ========================== */
 
-        function createReferenceCard(resource) {
+        function createReferenceCard(
+            resource
+        ) {
 
             const title =
                 escapeHTML(
@@ -353,67 +624,174 @@
 
 
             const type =
-                escapeHTML(
-                    resource.type ||
-                    "Referensi"
-                );
+                resource.type ||
+                "Referensi";
 
 
-            let link = "";
+            const safeType =
+                escapeHTML(type);
 
 
-            if (resource.url) {
-
-                link = resource.url;
-
-            }
+            const icon =
+                getTypeIcon(type);
 
 
-            if (!link && resource.file_path) {
-
-                link = resource.file_path;
-
-            }
+            const link =
+                resource.url ||
+                "";
 
 
-            let button = "";
+            let content = "";
 
 
-            if (link) {
 
-                button = `
-                    <a
-                        class="button primary"
-                        href="${escapeAttribute(link)}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Buka Referensi →
-                    </a>
-                `;
+            /* =========================
+               IMAGE
+            ========================== */
 
-            } else {
+            if (
+                isImageType(type) &&
+                link
+            ) {
 
-                button = `
-                    <span
+                content = `
+
+                    <div
                         style="
-                            display:inline-block;
-                            opacity:0.6;
+                            margin-bottom:18px;
+                            border-radius:12px;
+                            overflow:hidden;
                         "
                     >
-                        Link belum tersedia
-                    </span>
+
+                        <img
+                            src="${escapeAttribute(link)}"
+                            alt="${title}"
+                            style="
+                                width:100%;
+                                max-height:220px;
+                                object-fit:cover;
+                                display:block;
+                            "
+                            loading="lazy"
+                        >
+
+                    </div>
+
                 `;
 
             }
 
+
+
+            /* =========================
+               YOUTUBE
+            ========================== */
+
+            else if (
+                isYouTubeType(type) &&
+                link
+            ) {
+
+                const embedUrl =
+                    getYouTubeEmbedUrl(link);
+
+
+                if (embedUrl) {
+
+                    content = `
+
+                        <div
+                            style="
+                                position:relative;
+                                width:100%;
+                                padding-bottom:56.25%;
+                                margin-bottom:18px;
+                                border-radius:12px;
+                                overflow:hidden;
+                            "
+                        >
+
+                            <iframe
+                                src="${escapeAttribute(embedUrl)}"
+                                title="${title}"
+                                style="
+                                    position:absolute;
+                                    top:0;
+                                    left:0;
+                                    width:100%;
+                                    height:100%;
+                                    border:0;
+                                "
+                                allowfullscreen
+                                loading="lazy"
+                            ></iframe>
+
+                        </div>
+
+                    `;
+
+                }
+
+            }
+
+
+
+            /* =========================
+               VIDEO
+            ========================== */
+
+            else if (
+                isVideoType(type) &&
+                link
+            ) {
+
+                content = `
+
+                    <video
+                        controls
+                        preload="metadata"
+                        style="
+                            width:100%;
+                            max-height:260px;
+                            border-radius:12px;
+                            margin-bottom:18px;
+                        "
+                    >
+
+                        <source
+                            src="${escapeAttribute(link)}"
+                        >
+
+                        Browser kamu tidak
+                        mendukung video.
+                        
+                    </video>
+
+                `;
+
+            }
+
+
+
+            /* =========================
+               NORMAL CARD
+            ========================== */
 
             return `
 
-                <div class="feature-card">
+                <div
+                    class="feature-card"
+                    style="
+                        overflow:hidden;
+                    "
+                >
+
+                    ${content}
+
 
                     <div class="feature-icon">
-                        📖
+                        ${icon}
                     </div>
 
 
@@ -427,7 +805,7 @@
                             text-transform:uppercase;
                         "
                     >
-                        ${type}
+                        ${safeType}
                     </span>
 
 
@@ -446,12 +824,371 @@
                             margin-top:20px;
                         "
                     >
-                        ${button}
+
+                        ${
+                            link
+                            ?
+                            `
+                            <a
+                                class="button primary"
+                                href="${escapeAttribute(link)}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                ${getButtonText(type)}
+                            </a>
+                            `
+                            :
+                            `
+                            <span
+                                style="
+                                    opacity:0.6;
+                                "
+                            >
+                                Sumber belum tersedia
+                            </span>
+                            `
+                        }
+
                     </div>
 
                 </div>
 
             `;
+
+        }
+
+
+
+        /* =========================
+           TYPE ICON
+        ========================== */
+
+        function getTypeIcon(type) {
+
+            const normalized =
+                String(type)
+                    .toLowerCase();
+
+
+            if (
+                normalized.includes(
+                    "gambar"
+                ) ||
+                normalized.includes(
+                    "image"
+                )
+            ) {
+
+                return "🖼️";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "pdf"
+                )
+            ) {
+
+                return "📄";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "word"
+                )
+            ) {
+
+                return "📝";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "powerpoint"
+                )
+            ) {
+
+                return "📊";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "excel"
+                )
+            ) {
+
+                return "📈";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "youtube"
+                )
+            ) {
+
+                return "▶️";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "video"
+                )
+            ) {
+
+                return "🎬";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "website"
+                )
+            ) {
+
+                return "🌐";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "jurnal"
+                )
+            ) {
+
+                return "📚";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "buku"
+                )
+            ) {
+
+                return "📖";
+
+            }
+
+
+            return "📎";
+
+        }
+
+
+
+        /* =========================
+           BUTTON TEXT
+        ========================== */
+
+        function getButtonText(type) {
+
+            const normalized =
+                String(type)
+                    .toLowerCase();
+
+
+            if (
+                normalized.includes(
+                    "youtube"
+                )
+            ) {
+
+                return "▶️ Tonton Video";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "video"
+                )
+            ) {
+
+                return "🎬 Buka Video";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "gambar"
+                ) ||
+                normalized.includes(
+                    "image"
+                )
+            ) {
+
+                return "🖼️ Lihat Gambar";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "pdf"
+                )
+            ) {
+
+                return "📄 Buka PDF";
+
+            }
+
+
+            if (
+                normalized.includes(
+                    "website"
+                )
+            ) {
+
+                return "🌐 Buka Website";
+
+            }
+
+
+            return "📖 Buka Referensi";
+
+        }
+
+
+
+        /* =========================
+           TYPE CHECK
+        ========================== */
+
+        function isImageType(type) {
+
+            const normalized =
+                String(type)
+                    .toLowerCase();
+
+
+            return (
+                normalized.includes(
+                    "gambar"
+                ) ||
+                normalized.includes(
+                    "image"
+                )
+            );
+
+        }
+
+
+        function isYouTubeType(type) {
+
+            return String(type)
+                .toLowerCase()
+                .includes(
+                    "youtube"
+                );
+
+        }
+
+
+        function isVideoType(type) {
+
+            const normalized =
+                String(type)
+                    .toLowerCase();
+
+
+            return (
+                normalized.includes(
+                    "video"
+                ) &&
+                !normalized.includes(
+                    "youtube"
+                )
+            );
+
+        }
+
+
+
+        /* =========================
+           YOUTUBE URL
+        ========================== */
+
+        function getYouTubeEmbedUrl(
+            url
+        ) {
+
+            try {
+
+                const parsed =
+                    new URL(url);
+
+
+                let videoId = "";
+
+
+                if (
+                    parsed.hostname
+                        .includes(
+                            "youtu.be"
+                        )
+                ) {
+
+                    videoId =
+                        parsed.pathname
+                            .replace(
+                                "/",
+                                ""
+                            );
+
+                }
+
+
+                else if (
+                    parsed.hostname
+                        .includes(
+                            "youtube.com"
+                        )
+                ) {
+
+                    videoId =
+                        parsed.searchParams
+                            .get(
+                                "v"
+                            ) ||
+                        "";
+
+                }
+
+
+                if (!videoId) {
+
+                    return null;
+
+                }
+
+
+                return (
+                    "https://www.youtube.com/embed/" +
+                    encodeURIComponent(
+                        videoId
+                    )
+                );
+
+            } catch {
+
+                return null;
+
+            }
 
         }
 
@@ -493,6 +1230,10 @@
 
             return String(value)
                 .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
                     /"/g,
                     "&quot;"
                 )
@@ -506,6 +1247,23 @@
                 );
 
         }
+
+
+
+        /* =========================
+           EVENTS
+        ========================== */
+
+        searchInput.addEventListener(
+            "input",
+            renderReferences
+        );
+
+
+        typeFilter.addEventListener(
+            "change",
+            renderReferences
+        );
 
 
 
