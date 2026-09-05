@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -103,7 +104,10 @@
       margin-bottom: 15px;
     }
 
-    /* REFERENSI */
+
+    /* =========================
+       REFERENSI
+    ========================= */
 
     .references {
       margin-top: 40px;
@@ -119,7 +123,7 @@
     .reference-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
     }
 
     .reference-item {
@@ -148,6 +152,59 @@
       margin: 5px 0 14px;
       color: #667085;
       font-size: 14px;
+    }
+
+
+    /* =========================
+       PREVIEW REFERENSI
+    ========================= */
+
+    .reference-preview {
+      margin: 15px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #eef2f7;
+      border: 1px solid #e4e7ec;
+    }
+
+    .reference-preview img {
+      display: block;
+      width: 100%;
+      max-height: 500px;
+      object-fit: contain;
+      background: white;
+    }
+
+    .reference-preview iframe {
+      display: block;
+      width: 100%;
+      min-height: 500px;
+      border: 0;
+      background: white;
+    }
+
+    .reference-preview video {
+      display: block;
+      width: 100%;
+      max-height: 500px;
+      background: black;
+    }
+
+    .reference-file-info {
+      padding: 15px;
+      background: #f8fafc;
+      color: #667085;
+      font-size: 14px;
+      border: 1px solid #e4e7ec;
+      border-radius: 10px;
+      margin-top: 14px;
+    }
+
+    .reference-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
     }
 
     .reference-link {
@@ -211,7 +268,13 @@
       .references-title {
         font-size: 21px;
       }
+
+      .reference-preview iframe {
+        min-height: 350px;
+      }
+
     }
+
   </style>
 
 </head>
@@ -219,20 +282,32 @@
 <body>
 
 <header>
+
   <div class="header-inner">
-    <h1>Learning Hub</h1>
+
+    <h1>
+      Learning Hub
+    </h1>
+
   </div>
+
 </header>
 
 
 <main class="container">
 
-  <a href="materi/" class="back-link">
+  <a
+    href="materi/"
+    class="back-link"
+  >
     ← Kembali ke Materi
   </a>
 
 
-  <div id="detail" class="card">
+  <div
+    id="detail"
+    class="card"
+  >
 
     <div class="loading">
       Memuat materi...
@@ -251,6 +326,7 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
 
+
 const supabaseClient =
   window.supabase.createClient(
     SUPABASE_URL,
@@ -259,7 +335,9 @@ const supabaseClient =
 
 
 const detail =
-  document.getElementById("detail");
+  document.getElementById(
+    "detail"
+  );
 
 
 const params =
@@ -272,23 +350,34 @@ const materialId =
   params.get("id");
 
 
-console.log("ID materi:", materialId);
+console.log(
+  "ID materi:",
+  materialId
+);
 
 
 if (!materialId) {
 
   detail.innerHTML = `
+
     <div class="error">
 
-      <h2>ID Materi Tidak Ada</h2>
-
-      <p>URL harus memiliki format:</p>
+      <h2>
+        ID Materi Tidak Ada
+      </h2>
 
       <p>
-        <strong>detail.html?id=1</strong>
+        URL harus memiliki format:
+      </p>
+
+      <p>
+        <strong>
+          detail.html?id=1
+        </strong>
       </p>
 
     </div>
+
   `;
 
 } else {
@@ -306,27 +395,44 @@ async function loadMaterial() {
 
   try {
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("materials")
         .select("*")
-        .eq("id", materialId)
+        .eq(
+          "id",
+          materialId
+        )
         .single();
 
 
-    console.log("Data materi:", data);
-    console.log("Error Supabase:", error);
+    console.log(
+      "Data materi:",
+      data
+    );
+
+    console.log(
+      "Error Supabase:",
+      error
+    );
 
 
     if (error) {
 
       detail.innerHTML = `
+
         <div class="error">
 
-          <h2>Gagal Memuat Materi</h2>
+          <h2>
+            Gagal Memuat Materi
+          </h2>
 
           <p>
-            Supabase memberikan error saat mengambil data.
+            Supabase memberikan error
+            saat mengambil data.
           </p>
 
           <div class="debug">
@@ -334,44 +440,59 @@ async function loadMaterial() {
           </div>
 
         </div>
+
       `;
 
       return;
+
     }
 
 
     if (!data) {
 
       detail.innerHTML = `
+
         <div class="error">
 
-          <h2>Materi Tidak Ditemukan</h2>
+          <h2>
+            Materi Tidak Ditemukan
+          </h2>
 
           <p>
-            Data materi dengan ID tersebut tidak tersedia.
+            Data materi dengan ID tersebut
+            tidak tersedia.
           </p>
 
         </div>
+
       `;
 
       return;
+
     }
 
 
-    /*
-      Ambil referensi berdasarkan material_id
-    */
+    /* =========================
+       LOAD REFERENSI
+    ========================= */
 
     const {
       data: resources,
       error: resourceError
-    } = await supabaseClient
-      .from("resources")
-      .select("*")
-      .eq("material_id", materialId)
-      .order("created_at", {
-        ascending: false
-      });
+    } =
+      await supabaseClient
+        .from("resources")
+        .select("*")
+        .eq(
+          "material_id",
+          materialId
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
 
 
     console.log(
@@ -384,11 +505,6 @@ async function loadMaterial() {
       resourceError
     );
 
-
-    /*
-      Jika referensi gagal dimuat,
-      materi tetap ditampilkan.
-    */
 
     if (resourceError) {
 
@@ -418,52 +534,16 @@ async function loadMaterial() {
 
           <div class="reference-list">
 
-            ${resources.map(resource => `
-
-              <div class="reference-item">
-
-                <h3>
-                  ${escapeHtml(resource.title)}
-                </h3>
-
-                ${
-                  resource.type
-                    ? `
-                      <span class="reference-type">
-                        ${escapeHtml(resource.type)}
-                      </span>
-                    `
-                    : ""
-                }
-
-                ${
-                  resource.description
-                    ? `
-                      <p class="reference-description">
-                        ${escapeHtml(resource.description)}
-                      </p>
-                    `
-                    : ""
-                }
-
-                ${
-                  resource.url
-                    ? `
-                      <a
-                        href="${escapeAttribute(resource.url)}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="reference-link"
-                      >
-                        Buka Referensi →
-                      </a>
-                    `
-                    : ""
-                }
-
-              </div>
-
-            `).join("")}
+            ${
+              resources
+                .map(
+                  resource =>
+                    renderResource(
+                      resource
+                    )
+                )
+                .join("")
+            }
 
           </div>
 
@@ -482,7 +562,10 @@ async function loadMaterial() {
           </h2>
 
           <div class="no-reference">
-            Belum ada referensi untuk materi ini.
+
+            Belum ada referensi
+            untuk materi ini.
+
           </div>
 
         </section>
@@ -492,9 +575,9 @@ async function loadMaterial() {
     }
 
 
-    /*
-      Tampilkan materi + referensi
-    */
+    /* =========================
+       TAMPILKAN MATERI
+    ========================= */
 
     detail.innerHTML = `
 
@@ -520,7 +603,8 @@ async function loadMaterial() {
           data.semester
             ? `
               <span class="tag">
-                Semester ${escapeHtml(data.semester)}
+                Semester
+                ${escapeHtml(data.semester)}
               </span>
             `
             : ""
@@ -613,17 +697,340 @@ async function loadMaterial() {
 
 
 /* =========================
+   RENDER RESOURCE
+========================= */
+
+function renderResource(resource) {
+
+  const type =
+    String(
+      resource.type || ""
+    )
+      .toLowerCase()
+      .trim();
+
+
+  const url =
+    resource.url || "";
+
+
+  const title =
+    resource.title ||
+    "Referensi";
+
+
+  let previewHTML = "";
+
+
+  /* =========================
+     GAMBAR
+  ========================= */
+
+  if (
+    type === "gambar" &&
+    url
+  ) {
+
+    previewHTML = `
+
+      <div class="reference-preview">
+
+        <img
+          src="${escapeAttribute(url)}"
+          alt="${escapeAttribute(title)}"
+          loading="lazy"
+        >
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* =========================
+     VIDEO
+  ========================= */
+
+  else if (
+    type === "video" &&
+    url
+  ) {
+
+    previewHTML = `
+
+      <div class="reference-preview">
+
+        <video
+          controls
+          preload="metadata"
+        >
+
+          <source
+            src="${escapeAttribute(url)}"
+          >
+
+          Browser kamu tidak
+          mendukung pemutaran video.
+
+        </video>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* =========================
+     YOUTUBE
+  ========================= */
+
+  else if (
+    type === "youtube" &&
+    url
+  ) {
+
+    const youtubeId =
+      getYouTubeId(url);
+
+
+    if (youtubeId) {
+
+      previewHTML = `
+
+        <div class="reference-preview">
+
+          <iframe
+            src="https://www.youtube.com/embed/${escapeAttribute(youtubeId)}"
+            title="${escapeAttribute(title)}"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+
+  /* =========================
+     PDF
+  ========================= */
+
+  else if (
+    type === "pdf" &&
+    url
+  ) {
+
+    previewHTML = `
+
+      <div class="reference-preview">
+
+        <iframe
+          src="${escapeAttribute(url)}"
+          title="${escapeAttribute(title)}"
+          loading="lazy"
+        ></iframe>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* =========================
+     FILE LAINNYA
+  ========================= */
+
+  else if (url) {
+
+    previewHTML = `
+
+      <div class="reference-file-info">
+
+        📎 Referensi tersedia.
+        Gunakan tombol di bawah
+        untuk membukanya.
+
+      </div>
+
+    `;
+
+  }
+
+
+  return `
+
+    <article class="reference-item">
+
+      <h3>
+        ${escapeHtml(title)}
+      </h3>
+
+
+      ${
+        resource.type
+          ? `
+            <span class="reference-type">
+              ${escapeHtml(resource.type)}
+            </span>
+          `
+          : ""
+      }
+
+
+      ${
+        resource.description
+          ? `
+            <p class="reference-description">
+              ${escapeHtml(
+                resource.description
+              )}
+            </p>
+          `
+          : ""
+      }
+
+
+      ${previewHTML}
+
+
+      ${
+        url
+          ? `
+
+            <div class="reference-actions">
+
+              <a
+                href="${escapeAttribute(url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="reference-link"
+              >
+                🔗 Buka Referensi →
+              </a>
+
+            </div>
+
+          `
+          : ""
+      }
+
+    </article>
+
+  `;
+
+}
+
+
+/* =========================
+   YOUTUBE ID
+========================= */
+
+function getYouTubeId(url) {
+
+  try {
+
+    const parsed =
+      new URL(url);
+
+
+    /*
+      youtube.com/watch?v=...
+    */
+
+    if (
+      parsed.hostname.includes(
+        "youtube.com"
+      )
+    ) {
+
+      if (
+        parsed.pathname.startsWith(
+          "/embed/"
+        )
+      ) {
+
+        return parsed.pathname
+          .split("/embed/")[1]
+          .split("/")[0];
+
+      }
+
+
+      return parsed.searchParams.get(
+        "v"
+      );
+
+    }
+
+
+    /*
+      youtu.be/...
+    */
+
+    if (
+      parsed.hostname ===
+      "youtu.be"
+    ) {
+
+      return parsed.pathname
+        .replace(
+          "/",
+          ""
+        )
+        .split("/")[0];
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "URL YouTube tidak valid:",
+      error
+    );
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================
    SECURITY HELPERS
 ========================= */
 
 function escapeHtml(text) {
 
   return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
 
@@ -631,14 +1038,27 @@ function escapeHtml(text) {
 function escapeAttribute(text) {
 
   return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    );
 
 }
 
 </script>
 
 </body>
+
 </html>
