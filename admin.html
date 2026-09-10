@@ -475,13 +475,22 @@
   // UTILITY
   // ============================================================
   function escapeHtml(value) {
-    if (value === null || value === undefined) return "";
-    return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  if (value === null || value === undefined) {
+    return "";
   }
 
-  function escapeAttribute(value) {
-    return escapeHtml(value);
-  }
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
+}
+ 
 
   function showMessage(elementId, message, type = "success") {
     const element = document.getElementById(elementId);
@@ -717,53 +726,134 @@
   }
 
   async function saveMaterial() {
-    const title = document.getElementById("title").value.trim();
-    const subject = document.getElementById("subject").value.trim();
-    const semester = document.getElementById("semester").value.trim();
-    const topic = document.getElementById("topic").value.trim();
-    const categoryId = document.getElementById("category").value || null;
-    const description = document.getElementById("description").value.trim();
-    const content = document.getElementById("content").value.trim();
+  const title = document.getElementById("title").value.trim();
+  const subject = document.getElementById("subject").value.trim();
+  const semester = document.getElementById("semester").value.trim();
+  const topic = document.getElementById("topic").value.trim();
+  const categoryId = document.getElementById("category").value || null;
+  const description = document.getElementById("description").value.trim();
+  const content = document.getElementById("content").value.trim();
 
-    if (!title) {
-      showMessage("message", "Judul materi wajib diisi.", "error");
-      return;
-    }
-
-    // Siapkan data attachments dalam format string untuk disimpan
-    const attachmentsStr = materialAttachments.map(a => `${a.type}: ${a.url}`).join(' | ');
-
-    const materialData = { 
-      title, 
-      subject, 
-      semester, 
-      topic, 
-      category_id: categoryId ? Number(categoryId) : null, 
-      description, 
-      content, 
-      status: "published",
-      attachments: attachmentsStr || null
-    };
-
-    let error;
-
-    if (editingId) {
-      ({ error } = await supabaseClient.from("materials").update(materialData).eq("id", editingId));
-    } else {
-      ({ error } = await supabaseClient.from("materials").insert(materialData));
-    }
-
-    if (error) {
-      console.error(error);
-      showMessage("message", "Gagal menyimpan materi: " + error.message, "error");
-      return;
-    }
-
-    showMessage("message", editingId ? "Materi berhasil diperbarui." : "Materi berhasil ditambahkan.", "success");
-    clearForm();
-    loadMaterials();
-    loadResourceMaterials();
+  if (!title) {
+    showMessage("message", "Judul materi wajib diisi.", "error");
+    return;
   }
+
+  const materialData = {
+    title,
+    subject,
+    semester,
+    topic,
+    category_id: categoryId ? Number(categoryId) : null,
+    description,
+    content,
+    status: "published"
+  };
+
+  let materialId = editingId;
+  let error = null;
+
+  // =========================
+  // EDIT MATERI
+  // =========================
+  if (editingId) {
+    const result = await supabaseClient
+      .from("materials")
+      .update(materialData)
+      .eq("id", editingId);
+
+    error = result.error;
+
+  // =========================
+  // TAMBAH MATERI BARU
+  // =========================
+  } else {
+    const result = await supabaseClient
+      .from("materials")
+      .insert(materialData)
+      .select("id")
+      .single();
+
+    error = result.error;
+
+    if (!error && result.data) {
+      materialId = result.data.id;
+    }
+  }
+
+  if (error) {
+    console.error("Gagal menyimpan materi:", error);
+
+    showMessage(
+      "message",
+      "Gagal menyimpan materi: " + error.message,
+      "error"
+    );
+
+    return;
+  }
+
+  // =========================
+  // SIMPAN LAMPIRAN KE RESOURCES
+  // =========================
+  if (materialAttachments.length > 0) {
+
+    const resourcesData = materialAttachments
+      .filter(att => !att.id)
+      .map(att => ({
+        title: att.type,
+        description: "",
+        type: att.type,
+        url: att.url,
+        file_path: att.file_path || null,
+        material_id: materialId
+      }));
+
+    if (resourcesData.length > 0) {
+
+      const { error: resourceError } =
+        await supabaseClient
+          .from("resources")
+          .insert(resourcesData);
+
+      if (resourceError) {
+
+        console.error(
+          "Gagal menyimpan lampiran:",
+          resourceError
+        );
+
+        showMessage(
+          "message",
+          "Materi tersimpan, tetapi lampiran gagal disimpan: " +
+          resourceError.message,
+          "error"
+        );
+
+        await loadMaterials();
+        await loadResourceMaterials();
+        await loadResources();
+
+        return;
+      }
+    }
+  }
+
+  showMessage(
+    "message",
+    editingId
+      ? "Materi berhasil diperbarui."
+      : "Materi berhasil ditambahkan.",
+    "success"
+  );
+
+  clearForm();
+
+  await loadMaterials();
+  await loadResourceMaterials();
+  await loadResources();
+  }
+  
 
   async function editMaterial(id) {
     const { data, error } = await supabaseClient.from("materials").select("*").eq("id", id).single();
