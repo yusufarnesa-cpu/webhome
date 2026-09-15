@@ -1141,7 +1141,7 @@ function escapeAttribute(value) {
         description: data.description || null,
         category_id: categoryId,
         duration_minutes: duration,
-        status: "draft"
+        status: "published"
       }).select().single();
       if (quizError) throw new Error("Gagal membuat CBT: " + quizError.message);
       try {
