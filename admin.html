@@ -964,48 +964,243 @@
 
   <!-- KELOLA OSCE -->
   <div class="card">
-    <h2>🎯 Kelola OSCE</h2>
-    <p class="description">Buat dan kelola station OSCE beserta checklist penilaiannya.</p>
+<h2>🎯 Kelola OSCE</h2>
 
-    <div class="form-group">
-      <label for="osceTitle">Judul Station</label>
-      <input type="text" id="osceTitle" placeholder="Contoh: Pemeriksaan Telinga">
-    </div>
+<p class="description">
+  Kelola folder OSCE, keterampilan/station, checklist,
+  poin penilaian, dan feedback untuk peserta.
+</p>
 
-    <div class="form-group">
-      <label for="osceDescription">Deskripsi</label>
-      <textarea id="osceDescription" placeholder="Deskripsi singkat station..."></textarea>
-    </div>
 
-    <div class="form-group">
-      <label for="osceObjective">Tujuan / Objective</label>
-      <textarea id="osceObjective" placeholder="Contoh: Mahasiswa mampu melakukan pemeriksaan otoskopi dengan benar."></textarea>
-    </div>
+<!-- =========================================================
+     FOLDER OSCE
+========================================================= -->
 
-    <div class="form-group">
-      <label for="osceInstructions">Instruksi</label>
-      <textarea id="osceInstructions" placeholder="Instruksi yang harus dilakukan peserta..."></textarea>
-    </div>
+<h3>📁 Folder OSCE</h3>
 
-    <h3>Checklist Penilaian</h3>
+<div class="info-box">
 
-    <div class="info-box">
-      Tambahkan langkah pemeriksaan. Setiap langkah dapat diberikan poin 0–3.<br><br>
-      <strong>0 = Tidak dilakukan/salah</strong><br>
-      <strong>1 = Banyak kekurangan</strong><br>
-      <strong>2 = Cukup benar, masih ada kekurangan</strong><br>
-      <strong>3 = Benar dan lengkap</strong>
-    </div>
+  Folder digunakan untuk mengelompokkan beberapa keterampilan
+  dalam satu materi OSCE.
 
-    <div id="osceChecklistContainer"></div>
+  <br><br>
 
-    <div class="button-row">
-      <button type="button" class="btn-secondary" onclick="addChecklistRow()">➕ Tambah Checklist</button>
-      <button type="button" class="btn-primary" onclick="saveOSCEStation()">💾 Simpan Station</button>
-      <button type="button" class="btn-warning" onclick="clearOSCEForm()">Bersihkan</button>
-    </div>
+  Contoh:
 
-    <div id="osceMessage" class="message"></div>
+  <strong>
+    OSCE Ginekologi → Pemasangan Spekulum, Pap Smear, IVA Test
+  </strong>
+
+</div>
+
+
+<div class="form-group">
+
+  <label for="osceFolderName">
+    Nama Folder
+  </label>
+
+  <input
+    type="text"
+    id="osceFolderName"
+    placeholder="Contoh: OSCE Ginekologi"
+  >
+
+</div>
+
+
+<div class="form-group">
+
+  <label for="osceFolderDescription">
+    Deskripsi Folder
+  </label>
+
+  <textarea
+    id="osceFolderDescription"
+    placeholder="Contoh: Kumpulan keterampilan pemeriksaan ginekologi..."
+  ></textarea>
+
+</div>
+
+
+<div class="button-row">
+
+  <button
+    type="button"
+    class="btn-primary"
+    onclick="addOSCEFolder()"
+  >
+    ➕ Buat Folder
+  </button>
+
+</div>
+
+
+<div
+  id="osceFolderMessage"
+  class="message"
+></div>
+
+
+<div id="osceFolderList"></div>
+
+
+<hr style="
+  margin:30px 0;
+  border:none;
+  border-top:1px solid #e2e8f0;
+">
+
+
+<!-- =========================================================
+     STATION / KETERAMPILAN
+========================================================= -->
+
+<h3>🩺 Tambah Keterampilan / Station</h3>
+
+
+<input
+  type="hidden"
+  id="editingStationId"
+  value=""
+>
+
+
+<div class="form-group">
+
+  <label for="osceFolder">
+
+    Folder OSCE
+
+  </label>
+
+  <select id="osceFolder">
+
+    <option value="">
+      Pilih folder OSCE
+    </option>
+
+  </select>
+
+</div>
+
+
+<div class="form-group">
+
+  <label for="osceTitle">
+    Nama Keterampilan / Station
+  </label>
+
+  <input
+    type="text"
+    id="osceTitle"
+    placeholder="Contoh: Pemasangan Spekulum"
+  >
+
+</div>
+
+
+<div class="form-group">
+
+  <label for="osceDescription">
+    Deskripsi
+  </label>
+
+  <textarea
+    id="osceDescription"
+    placeholder="Deskripsi singkat station..."
+  ></textarea>
+
+</div>
+
+
+<div class="form-group">
+
+  <label for="osceObjective">
+    Tujuan / Objective
+  </label>
+
+  <textarea
+    id="osceObjective"
+    placeholder="Contoh: Mahasiswa mampu melakukan pemasangan spekulum dengan benar."
+  ></textarea>
+
+</div>
+
+
+<div class="form-group">
+
+  <label for="osceInstructions">
+    Instruksi
+  </label>
+
+  <textarea
+    id="osceInstructions"
+    placeholder="Instruksi yang harus dilakukan peserta..."
+  ></textarea>
+
+</div>
+
+
+<h3>Checklist Penilaian</h3>
+
+
+<div class="info-box">
+
+  Setiap checklist dapat memiliki beberapa poin.
+  Tekan <strong>Enter</strong> untuk membuat poin berikutnya.
+
+  <br><br>
+
+  Setiap checklist juga memiliki kolom
+  <strong>Feedback / Catatan</strong> tersendiri.
+
+  <br><br>
+
+  <strong>0</strong> = Tidak dilakukan / salah<br>
+  <strong>1</strong> = Banyak kekurangan<br>
+  <strong>2</strong> = Cukup benar, masih ada kekurangan<br>
+  <strong>3</strong> = Benar dan lengkap
+
+</div>
+
+
+<div id="osceChecklistContainer"></div>
+
+
+<div class="button-row">
+
+  <button
+    type="button"
+    class="btn-secondary"
+    onclick="addChecklistRow()"
+  >
+    ➕ Tambah Checklist
+  </button>
+
+  <button
+    type="button"
+    class="btn-primary"
+    onclick="saveOSCEStation()"
+  >
+    💾 Simpan Station
+  </button>
+
+  <button
+    type="button"
+    class="btn-warning"
+    onclick="clearOSCEForm()"
+  >
+    Bersihkan
+  </button>
+
+</div>
+
+
+<div
+  id="osceMessage"
+  class="message"
+></div>
 
     <h3>Daftar Station OSCE</h3>
     <div id="osceStationList"><div class="empty">Memuat station OSCE...</div></div>
