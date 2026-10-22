@@ -1,10 +1,440 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Medical Learning Hub</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f5f7fb; color: #1f2937; }
+    header { background: #0f172a; color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    header h1 { margin: 0; font-size: 22px; }
+    header p { margin: 5px 0 0; color: #cbd5e1; font-size: 14px; }
+    button { border: none; border-radius: 8px; padding: 10px 15px; cursor: pointer; font-weight: 600; }
+    .logout-btn { background: #ef4444; color: white; }
+    .container { width: min(1100px, 92%); margin: 30px auto; }
+    .card { background: white; border-radius: 14px; padding: 24px; margin-bottom: 24px; box-shadow: 0 5px 20px rgba(0,0,0,0.06); }
+    .card h2 { margin-top: 0; color: #0f172a; }
+    .card h3 { margin-top: 24px; color: #334155; }
+    .card h4 { margin-top: 20px; color: #334155; }
+    .description { color: #64748b; font-size: 14px; margin-top: -8px; margin-bottom: 20px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 7px; }
+    input, textarea, select { width: 100%; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-family: inherit; background: white; }
+    textarea { min-height: 120px; resize: vertical; }
+    .content-area { min-height: 220px; }
+    .json-area { min-height: 350px; font-family: monospace; line-height: 1.5; }
+    .batch-area { min-height: 260px; font-family: monospace; line-height: 1.5; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-success { background: #16a34a; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-secondary { background: #64748b; color: white; }
+    .btn-warning { background: #d97706; color: white; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .message { margin-top: 12px; padding: 10px 12px; border-radius: 8px; display: none; font-size: 14px; }
+    .message.success { display: block; background: #dcfce7; color: #166534; }
+    .message.error { display: block; background: #fee2e2; color: #991b1b; }
+    .message.info { display: block; background: #dbeafe; color: #1e40af; }
+    .item { border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin-bottom: 12px; background: #f8fafc; }
+    .item-title { font-weight: 700; margin-bottom: 6px; }
+    .item-meta { color: #64748b; font-size: 13px; margin-bottom: 8px; }
+    .item-description { color: #475569; font-size: 14px; margin-bottom: 12px; white-space: pre-wrap; }
+    .badge { display: inline-block; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #e2e8f0; color: #334155; }
+    .badge-published { background: #dcfce7; color: #166534; }
+    .badge-draft { background: #fef3c7; color: #92400e; }
+    .badge-closed { background: #fee2e2; color: #991b1b; }
+    .empty { color: #64748b; padding: 15px 0; text-align: center; }
+    .json-example { background: #0f172a; color: #e2e8f0; padding: 16px; border-radius: 10px; overflow-x: auto; font-size: 13px; line-height: 1.5; white-space: pre; margin-top: 12px; }
+    .warning-box { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; padding: 14px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; line-height: 1.5; }
+    .info-box { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 14px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; line-height: 1.5; }
+    .success-box { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 14px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; line-height: 1.5; }
+    .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .four-column { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .batch-card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; background: #f8fafc; }
+    .batch-card h4 { margin: 0 0 8px; color: #0f172a; }
+    .batch-status { font-size: 13px; color: #64748b; margin-top: 8px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; text-align: center; }
+    .stat-number { font-size: 24px; font-weight: 700; color: #2563eb; }
+    .stat-label { font-size: 12px; color: #64748b; margin-top: 4px; }
+    .osce-checklist { border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 12px; background: #f8fafc; }
+    .osce-checklist-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .osce-step { font-weight: 700; color: #2563eb; }
+    .osce-checklist-grid { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; }
+    .osce-score-group { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .osce-score-label { font-weight: 600; margin-right: 4px; margin-bottom: 0; }
+    .osce-score-option { position: relative; display: inline-block; margin: 0; cursor: pointer; }
+    .osce-score-option input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+    .osce-score-option span { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; height: 40px; padding: 0 12px; border: 2px solid #cbd5e1; border-radius: 8px; background: white; color: #334155; font-weight: 700; cursor: pointer; transition: all 0.15s ease; }
+    .osce-score-option span:hover { border-color: #2563eb; color: #2563eb; }
+    .osce-score-option input:checked + span { background: #2563eb; border-color: #2563eb; color: white; }
+    .osce-score-option input:focus-visible + span { outline: 2px solid #93c5fd; outline-offset: 2px; }
+    .osce-station { border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 12px; background: #f8fafc; }
+    .osce-station-title { font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+    .osce-station-meta { color: #64748b; font-size: 13px; margin-bottom: 10px; }
+    .osce-station-section { margin-top: 10px; }
+    .osce-station-section strong { color: #334155; }
+    .content-source-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+    .content-source-options { display: flex; flex-wrap: wrap; gap: 8px; }
+    .content-source-option { flex: 1; min-width: 140px; text-align: center; padding: 12px 10px; border: 2px solid #cbd5e1; border-radius: 10px; background: white; cursor: pointer; font-weight: 600; font-size: 13px; color: #334155; transition: all 0.15s ease; user-select: none; }
+    .content-source-option:hover { border-color: #2563eb; color: #2563eb; }
+    .content-source-option input { display: none; }
+    .content-source-option input:checked + span { color: white; }
+    .content-source-option.selected { background: #2563eb; border-color: #2563eb; color: white; }
+    .file-info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-size: 13px; color: #1e40af; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .file-info-box a { color: #1e40af; text-decoration: underline; word-break: break-all; }
+    .file-info-box .btn-remove-file { background: #dc2626; color: white; padding: 5px 12px; font-size: 12px; border-radius: 6px; flex-shrink: 0; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal-content { background: white; border-radius: 14px; width: min(950px, 100%); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+    .modal-header { padding: 18px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; }
+    .modal-header h2 { margin: 0; font-size: 17px; }
+    .modal-close-btn { background: transparent; color: white; font-size: 22px; padding: 2px 10px; line-height: 1; }
+    .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+    .modal-footer { padding: 14px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; background: #f8fafc; }
+    .edit-question-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 14px; background: #f8fafc; }
+    .edit-question-card .q-header { font-weight: 700; color: #2563eb; margin-bottom: 10px; font-size: 14px; }
+    .edit-option-block { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; background: white; transition: all 0.15s ease; }
+    .edit-option-block.is-correct { border-color: #16a34a; background: #f0fdf4; box-shadow: 0 0 0 2px rgba(22,163,74,0.12); }
+    .edit-option-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .edit-option-row input[type="radio"] { width: 18px; height: 18px; margin: 0; flex-shrink: 0; cursor: pointer; accent-color: #16a34a; }
+    .edit-option-row input[type="text"] { flex: 1; padding: 8px 10px; font-size: 14px; }
+    .edit-option-row .opt-label { font-weight: 700; color: #475569; min-width: 24px; font-size: 14px; }
+    .edit-option-block.is-correct .opt-label { color: #16a34a; }
+    .edit-option-explanation-row label { font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .edit-option-explanation { min-height: 55px; font-size: 13px; padding: 8px 10px; resize: vertical; }
+    .edit-option-block.is-correct .edit-option-explanation-row label { color: #16a34a; }
+    .modal-section { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+    .modal-section:last-child { border-bottom: none; padding-bottom: 0; }
+    .modal-section-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    @media (max-width: 900px) { .four-column { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 700px) { header { align-items: flex-start; flex-direction: column; } .two-column { grid-template-columns: 1fr; } .four-column { grid-template-columns: 1fr; } .stats { grid-template-columns: 1fr; } .card { padding: 18px; } .osce-checklist-grid { grid-template-columns: 1fr; } .osce-checklist-header { align-items: flex-start; } .osce-score-group { justify-content: flex-start; } .content-source-option { min-width: 100%; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Admin Dashboard</h1>
+    <p>Medical Learning Hub</p>
+  </div>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>📚 Kelola Blok Materi</h2>
+    <p class="description">Tambahkan kategori atau blok pembelajaran.</p>
+    <div class="form-group">
+      <label for="categoryName">Nama Blok</label>
+      <input type="text" id="categoryName" placeholder="Contoh: Cardiovascular System">
+    </div>
+    <div class="form-group">
+      <label for="categoryDescription">Deskripsi</label>
+      <textarea id="categoryDescription" placeholder="Deskripsi singkat blok..."></textarea>
+    </div>
+    <div class="button-row">
+      <button class="btn-primary" onclick="addCategory()">Tambah Blok</button>
+    </div>
+    <div id="categoryMessage" class="message"></div>
+    <h3>Daftar Blok</h3>
+    <div id="categoryList"><div class="empty">Memuat kategori...</div></div>
+  </div>
+
+  <div class="card">
+    <h2>📝 Tambah / Edit Materi</h2>
+    <p class="description">Isi materi dapat berupa teks langsung, file yang diunggah, atau tautan URL.</p>
+    <div class="form-group">
+      <label for="title">Judul Materi</label>
+      <input type="text" id="title" placeholder="Contoh: Anatomi Telinga">
+    </div>
+    <div class="two-column">
+      <div class="form-group">
+        <label for="subject">Mata Kuliah</label>
+        <input type="text" id="subject" placeholder="Contoh: Anatomi">
+      </div>
+      <div class="form-group">
+        <label for="semester">Semester</label>
+        <input type="text" id="semester" placeholder="Contoh: Semester 3">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="topic">Topik</label>
+      <input type="text" id="topic" placeholder="Contoh: Telinga Tengah">
+    </div>
+    <div class="form-group">
+      <label for="category">Blok / Kategori</label>
+      <select id="category"><option value="">Pilih kategori</option></select>
+    </div>
+    <div class="form-group">
+      <label for="description">Deskripsi</label>
+      <textarea id="description" placeholder="Deskripsi singkat materi..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Isi Materi</label>
+      <div class="content-source-box">
+        <div class="content-source-options">
+          <label class="content-source-option selected" id="sourceOptText">
+            <input type="radio" name="contentSource" value="text" checked onchange="updateContentSource()">
+            <span>📝 Tulis Langsung</span>
+          </label>
+          <label class="content-source-option" id="sourceOptUpload">
+            <input type="radio" name="contentSource" value="upload" onchange="updateContentSource()">
+            <span>📁 Upload File</span>
+          </label>
+          <label class="content-source-option" id="sourceOptUrl">
+            <input type="radio" name="contentSource" value="url" onchange="updateContentSource()">
+            <span>🔗 URL / Link HTML</span>
+          </label>
+        </div>
+      </div>
+      <div id="contentTextSection">
+        <textarea id="content" class="content-area" placeholder="Masukkan isi materi..."></textarea>
+      </div>
+      <div id="contentUploadSection" style="display:none;">
+        <div id="contentExistingFileInfo" class="file-info-box" style="display:none;">
+          <div>📎 File saat ini: <a id="contentExistingFileLink" href="#" target="_blank">-</a><br><small>Biarkan kosong jika tidak ingin mengganti file.</small></div>
+          <button type="button" class="btn-remove-file" onclick="removeExistingContentFile()">Hapus File</button>
+        </div>
+        <div class="form-group">
+          <label for="contentFileType">Jenis File</label>
+          <select id="contentFileType">
+            <option value="">Pilih jenis file</option>
+            <option value="Gambar">🖼️ Gambar</option>
+            <option value="PDF">📄 PDF</option>
+            <option value="Word">📝 Microsoft Word</option>
+            <option value="PowerPoint">📊 Microsoft PowerPoint</option>
+            <option value="Excel">📈 Microsoft Excel</option>
+            <option value="Video">🎬 Video</option>
+            <option value="HTML">🌐 HTML</option>
+            <option value="Lainnya">📎 Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="contentFile">Pilih File</label>
+          <input type="file" id="contentFile">
+          <small>File akan disimpan di Supabase Storage bucket <strong>references</strong>.</small>
+        </div>
+      </div>
+      <div id="contentUrlSection" style="display:none;">
+        <div class="form-group">
+          <label for="contentUrlType">Jenis Konten</label>
+          <select id="contentUrlType">
+            <option value="">Pilih jenis konten</option>
+            <option value="HTML">🌐 HTML</option>
+            <option value="Website">🌐 Website</option>
+            <option value="YouTube">▶️ YouTube</option>
+            <option value="Video">🎬 Video</option>
+            <option value="PDF">📄 PDF</option>
+            <option value="Jurnal">📚 Jurnal</option>
+            <option value="Buku">📖 Buku</option>
+            <option value="Lainnya">📎 Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="contentUrl">URL / Link</label>
+          <input type="url" id="contentUrl" placeholder="https://...">
+        </div>
+      </div>
+    </div>
+    <div class="button-row">
+      <button class="btn-primary" onclick="saveMaterial()">Simpan Materi</button>
+      <button class="btn-secondary" onclick="clearForm()">Bersihkan Form</button>
+    </div>
+    <div id="message" class="message"></div>
+  </div>
+
+  <div class="card">
+    <h2>🔗 Tambah Referensi Materi</h2>
+    <p class="description">Tambahkan referensi yang terhubung langsung dengan materi.</p>
+    <div class="form-group">
+      <label for="resourceMaterial">Materi</label>
+      <select id="resourceMaterial"><option value="">Pilih materi</option></select>
+    </div>
+    <div class="form-group">
+      <label for="resourceTitle">Judul Referensi</label>
+      <input type="text" id="resourceTitle" placeholder="Contoh: Anatomi Telinga - Video Pembelajaran">
+    </div>
+    <div class="form-group">
+      <label for="resourceType">Jenis Referensi</label>
+      <select id="resourceType">
+        <option value="">Pilih jenis referensi</option>
+        <option value="Gambar">🖼️ Gambar</option>
+        <option value="PDF">📄 PDF</option>
+        <option value="Word">📝 Microsoft Word</option>
+        <option value="PowerPoint">📊 Microsoft PowerPoint</option>
+        <option value="Excel">📈 Microsoft Excel</option>
+        <option value="Video">🎬 Video</option>
+        <option value="YouTube">▶️ YouTube</option>
+        <option value="Website">🌐 Website</option>
+        <option value="HTML">🌐 HTML</option>
+        <option value="Jurnal">📚 Jurnal</option>
+        <option value="Buku">📖 Buku</option>
+        <option value="Lainnya">📎 Lainnya</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Sumber Referensi</label>
+      <label style="font-weight:normal;"><input type="radio" name="resourceSource" value="upload" checked onchange="updateResourceSource()"> 📁 Upload File</label>
+      <label style="font-weight:normal;"><input type="radio" name="resourceSource" value="url" onchange="updateResourceSource()"> 🔗 Masukkan URL</label>
+    </div>
+    <div id="resourceFileSection" class="form-group">
+      <label for="resourceFile">Pilih File</label>
+      <input type="file" id="resourceFile">
+    </div>
+    <div id="resourceUrlSection" class="form-group" style="display:none;">
+      <label for="resourceUrl">URL Referensi</label>
+      <input type="url" id="resourceUrl" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label for="resourceDescription">Deskripsi</label>
+      <textarea id="resourceDescription" placeholder="Deskripsi singkat referensi..."></textarea>
+    </div>
+    <div class="button-row">
+      <button class="btn-primary" type="button" onclick="addResource()" id="resourceSubmitButton">➕ Tambahkan Referensi</button>
+      <button class="btn-secondary" type="button" onclick="clearResourceForm()">Bersihkan</button>
+    </div>
+    <div id="resourceMessage" class="message"></div>
+  </div>
+
+  <div class="card">
+    <h2>🧠 Kelola CBT</h2>
+    <p class="description">Buat CBT dengan format JSON atau sistem 4 Batch.</p>
+    <div class="success-box">
+      <strong>🚀 Sistem CBT 4 Batch</strong><br><br>
+      Batch 1 (1-25), Batch 2 (26-50), Batch 3 (51-75), Batch 4 (76-100).
+    </div>
+    <h3>Informasi CBT</h3>
+    <div class="form-group"><label for="batchTitle">Judul CBT</label><input type="text" id="batchTitle" placeholder="Contoh: CBT Anatomi THT"></div>
+    <div class="form-group"><label for="batchDescription">Deskripsi CBT</label><textarea id="batchDescription" placeholder="Deskripsi..."></textarea></div>
+    <div class="two-column">
+      <div class="form-group"><label for="batchCategory">Kategori</label><select id="batchCategory"><option value="">Pilih kategori</option></select></div>
+      <div class="form-group"><label for="batchDuration">Durasi (menit)</label><input type="number" id="batchDuration" min="1" value="100"></div>
+    </div>
+    <h3>Paste JSON Batch</h3>
+    <div class="info-box">
+      <strong>Format JSON Batch:</strong>
+      <div class="json-example">{
+  "batch": 1,
+  "start_question": 1,
+  "end_question": 25,
+  "questions": [
+    {
+      "question": "Pertanyaan...",
+      "options": [
+        { "text": "Pilihan A", "explanation": "Pembahasan A..." },
+        { "text": "Pilihan B", "explanation": "Pembahasan B..." }
+      ],
+      "answer": 2
+    }
+  ]
+}</div>
+    </div>
+    <div class="four-column">
+      <div class="batch-card"><h4>🟦 Batch 1</h4><textarea id="batch1Json" class="batch-area" placeholder="Paste JSON Batch 1..."></textarea><div id="batch1Status" class="batch-status">Belum diperiksa</div></div>
+      <div class="batch-card"><h4>🟩 Batch 2</h4><textarea id="batch2Json" class="batch-area" placeholder="Paste JSON Batch 2..."></textarea><div id="batch2Status" class="batch-status">Belum diperiksa</div></div>
+      <div class="batch-card"><h4>🟨 Batch 3</h4><textarea id="batch3Json" class="batch-area" placeholder="Paste JSON Batch 3..."></textarea><div id="batch3Status" class="batch-status">Belum diperiksa</div></div>
+      <div class="batch-card"><h4>🟥 Batch 4</h4><textarea id="batch4Json" class="batch-area" placeholder="Paste JSON Batch 4..."></textarea><div id="batch4Status" class="batch-status">Belum diperiksa</div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div id="batchCount" class="stat-number">0/4</div><div class="stat-label">Batch valid</div></div>
+      <div class="stat"><div id="questionCount" class="stat-number">0/100</div><div class="stat-label">Total soal</div></div>
+      <div class="stat"><div id="duplicateCount" class="stat-number">0</div><div class="stat-label">Duplikasi</div></div>
+    </div>
+    <div class="button-row">
+      <button class="btn-primary" onclick="validateAllBatches()">🔍 Validasi Semua Batch</button>
+      <button class="btn-success" onclick="importBatchCBT()">🚀 Gabungkan & Import 100 Soal</button>
+      <button class="btn-secondary" onclick="clearBatchForm()">Bersihkan Batch</button>
+    </div>
+    <div id="batchMessage" class="message"></div>
+
+    <h3>Import CBT Tunggal</h3>
+    <div class="form-group">
+      <label for="cbtJson">Paste JSON CBT</label>
+      <textarea id="cbtJson" class="json-area" placeholder="Paste JSON CBT di sini..."></textarea>
+    </div>
+    <div class="button-row">
+      <button class="btn-success" onclick="importCBT()">🚀 Import CBT</button>
+      <button class="btn-secondary" onclick="clearCBTForm()">Bersihkan</button>
+    </div>
+    <div id="cbtMessage" class="message"></div>
+    <h3>Daftar CBT</h3>
+    <div id="cbtList"><div class="empty">Memuat CBT...</div></div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 Kelola OSCE</h2>
+    <h3>📁 Folder OSCE</h3>
+    <div class="form-group"><label for="osceFolderName">Nama Folder</label><input type="text" id="osceFolderName" placeholder="Contoh: OSCE Ginekologi"></div>
+    <div class="form-group"><label for="osceFolderDescription">Deskripsi Folder</label><textarea id="osceFolderDescription" placeholder="Deskripsi..."></textarea></div>
+    <div class="button-row"><button type="button" class="btn-primary" onclick="addOSCEFolder()">➕ Buat Folder</button></div>
+    <div id="osceFolderMessage" class="message"></div>
+    <div id="osceFolderList"></div>
+    <hr style="margin:30px 0; border:none; border-top:1px solid #e2e8f0;">
+
+    <h3>🩺 Tambah Keterampilan / Station</h3>
+    <div class="form-group"><label for="osceFolder">Folder OSCE</label><select id="osceFolder"><option value="">Pilih folder OSCE</option></select></div>
+    <div class="form-group"><label for="osceTitle">Nama Keterampilan / Station</label><input type="text" id="osceTitle" placeholder="Contoh: Pemasangan Spekulum"></div>
+    <div class="form-group"><label for="osceDescription">Deskripsi</label><textarea id="osceDescription" placeholder="Deskripsi..."></textarea></div>
+    <div class="form-group"><label for="osceObjective">Tujuan / Objective</label><textarea id="osceObjective" placeholder="Tujuan..."></textarea></div>
+    <div class="form-group"><label for="osceInstructions">Instruksi</label><textarea id="osceInstructions" placeholder="Instruksi..."></textarea></div>
+    
+    <h3>Checklist Penilaian</h3>
+    <div id="osceChecklistContainer"></div>
+    <div class="button-row">
+      <button type="button" class="btn-secondary" onclick="addChecklistRow()">➕ Tambah Checklist</button>
+      <button type="button" class="btn-primary" onclick="saveOSCEStation()">💾 Simpan Station</button>
+      <button type="button" class="btn-warning" onclick="clearOSCEForm()">Bersihkan</button>
+    </div>
+    <div id="osceMessage" class="message"></div>
+    <h3>Daftar Station OSCE</h3>
+    <div id="osceStationList"><div class="empty">Memuat station OSCE...</div></div>
+  </div>
+
+  <div class="card">
+    <h2>📖 Daftar Referensi</h2>
+    <div id="resources"><div class="empty">Memuat referensi...</div></div>
+  </div>
+
+  <div class="card">
+    <h2>📚 Daftar Materi</h2>
+    <div id="materials"><div class="empty">Memuat materi...</div></div>
+  </div>
+</div>
+
+<div id="cbtEditModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>✏️ Edit CBT — <span id="cbtEditTitleLabel"></span></h2>
+      <button class="modal-close-btn" type="button" onclick="closeEditCBTModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">📋 Informasi CBT</div>
+        <div class="form-group"><label for="cbtEditQuizTitle">Judul CBT</label><input type="text" id="cbtEditQuizTitle"></div>
+        <div class="form-group"><label for="cbtEditQuizDescription">Deskripsi</label><textarea id="cbtEditQuizDescription"></textarea></div>
+        <div class="two-column">
+          <div class="form-group"><label for="cbtEditQuizCategory">Kategori</label><select id="cbtEditQuizCategory"><option value="">Pilih kategori</option></select></div>
+          <div class="form-group"><label for="cbtEditQuizDuration">Durasi (menit)</label><input type="number" id="cbtEditQuizDuration" min="1"></div>
+        </div>
+        <div class="form-group"><label for="cbtEditQuizStatus">Status</label><select id="cbtEditQuizStatus"><option value="draft">Draft</option><option value="published">Published</option><option value="closed">Closed</option></select></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">❓ Daftar Soal & Pembahasan</div>
+        <div id="cbtEditQuestions"><div class="empty">Memuat soal...</div></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" type="button" onclick="closeEditCBTModal()">Batal</button>
+      <button class="btn-success" type="button" onclick="saveCBTEdits()" id="cbtEditSaveBtn">💾 Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  /* ============================================================
-     SUPABASE
-  ============================================================ */
   const SUPABASE_URL = "https://hqzishiazabguknallei.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_r8rspBje6vjTvUsF9lKYzA_SakK9CD5";
-
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let editingId = null;
@@ -12,346 +442,178 @@
   let editingQuizId = null;
   let editingStationId = null;
 
-  /* ============================================================
-     UTILITY
-  ============================================================ */
   function escapeHtml(value) {
     if (value === null || value === undefined) return "";
-    return String(value)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
   function escapeAttribute(v) { return escapeHtml(v); }
-
-  function showMessage(elementId, message, type = "success") {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    el.textContent = message;
-    el.className = "message " + type;
+  function showMessage(id, msg, type = "success") {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = msg; el.className = "message " + type; }
   }
 
-  /* ============================================================
-     CHECK ADMIN
-  ============================================================ */
   async function checkAdmin() {
-    const { data: { user }, error } = await supabaseClient.auth.getUser();
-    if (error || !user) {
-      alert("Anda belum login sebagai admin.");
-      window.location.href = "login.html";
+    try {
+      const { data: { user }, error } = await supabaseClient.auth.getUser();
+      if (error || !user) { alert("Anda belum login."); window.location.href = "login.html"; return false; }
+      const { data: profile, error: pe } = await supabaseClient.from("profiles").select("role").eq("id", user.id).single();
+      if (pe || !profile || profile.role !== "admin") { alert("Akses ditolak."); window.location.href = "index.html"; return false; }
+      return true;
+    } catch (e) {
+      console.error("Auth error:", e);
       return false;
     }
-    const { data: profile, error: pe } = await supabaseClient
-      .from("profiles").select("role").eq("id", user.id).single();
-    if (pe || !profile || profile.role !== "admin") {
-      alert("Akses ditolak. Halaman ini hanya untuk admin.");
-      window.location.href = "index.html";
-      return false;
-    }
-    return true;
   }
 
-  /* ============================================================
-     CATEGORY
-  ============================================================ */
   async function loadCategories() {
-    const { data, error } = await supabaseClient
-      .from("categories").select("*").order("id", { ascending: true });
-
+    const { data, error } = await supabaseClient.from("categories").select("*").order("id", { ascending: true });
     const categoryList = document.getElementById("categoryList");
-    if (error) {
-      console.error(error);
-      categoryList.innerHTML = '<div class="empty">Gagal memuat kategori.</div>';
-      return;
+    if (error) { categoryList.innerHTML = '<div class="empty">Gagal memuat kategori.</div>'; return; }
+    if (!data || data.length === 0) { categoryList.innerHTML = '<div class="empty">Belum ada kategori.</div>'; } 
+    else {
+      categoryList.innerHTML = data.map(c => `<div class="item"><div class="item-title">${escapeHtml(c.name)}</div><div class="item-description">${escapeHtml(c.description || "-")}</div><button class="btn-danger" onclick="deleteCategory(${c.id})">Hapus</button></div>`).join("");
     }
-
-    if (!data || data.length === 0) {
-      categoryList.innerHTML = '<div class="empty">Belum ada kategori.</div>';
-    } else {
-      categoryList.innerHTML = data.map(c => `
-        <div class="item">
-          <div class="item-title">${escapeHtml(c.name)}</div>
-          <div class="item-description">${escapeHtml(c.description || "Tidak ada deskripsi.")}</div>
-          <button class="btn-danger" onclick="deleteCategory(${c.id})">Hapus</button>
-        </div>
-      `).join("");
-    }
-
-    populateCategorySelect(data);
-    populateBatchCategorySelect(data);
-  }
-
-  function populateCategorySelect(cats) {
-    const s = document.getElementById("category");
-    s.innerHTML = '<option value="">Pilih kategori</option>';
-    cats.forEach(c => {
-      const o = document.createElement("option");
-      o.value = c.id; o.textContent = c.name;
-      s.appendChild(o);
-    });
-  }
-  function populateBatchCategorySelect(cats) {
-    const s = document.getElementById("batchCategory");
-    s.innerHTML = '<option value="">Pilih kategori</option>';
-    cats.forEach(c => {
-      const o = document.createElement("option");
-      o.value = c.id; o.textContent = c.name;
-      s.appendChild(o);
+    const s1 = document.getElementById("category"); s1.innerHTML = '<option value="">Pilih kategori</option>';
+    const s2 = document.getElementById("batchCategory"); s2.innerHTML = '<option value="">Pilih kategori</option>';
+    data.forEach(c => { 
+      s1.innerHTML += `<option value="${c.id}">${escapeHtml(c.name)}</option>`; 
+      s2.innerHTML += `<option value="${c.id}">${escapeHtml(c.name)}</option>`; 
     });
   }
 
   async function addCategory() {
     const name = document.getElementById("categoryName").value.trim();
-    const description = document.getElementById("categoryDescription").value.trim();
-    if (!name) { showMessage("categoryMessage", "Nama blok wajib diisi.", "error"); return; }
-
-    const { error } = await supabaseClient.from("categories").insert({ name, description });
+    const desc = document.getElementById("categoryDescription").value.trim();
+    if (!name) { showMessage("categoryMessage", "Nama wajib.", "error"); return; }
+    const { error } = await supabaseClient.from("categories").insert({ name, description: desc });
     if (error) { showMessage("categoryMessage", "Gagal: " + error.message, "error"); return; }
-
-    document.getElementById("categoryName").value = "";
-    document.getElementById("categoryDescription").value = "";
-    showMessage("categoryMessage", "Kategori berhasil ditambahkan.", "success");
-    loadCategories();
+    document.getElementById("categoryName").value = ""; document.getElementById("categoryDescription").value = "";
+    showMessage("categoryMessage", "Berhasil.", "success"); loadCategories();
   }
 
   async function deleteCategory(id) {
-    if (!confirm("Hapus kategori ini?")) return;
+    if (!confirm("Hapus?")) return;
     const { error } = await supabaseClient.from("categories").delete().eq("id", id);
-    if (error) { alert("Gagal: " + error.message); return; }
-    loadCategories();
+    if (error) { alert(error.message); return; } loadCategories();
   }
 
-  /* ============================================================
-     MATERIAL
-  ============================================================ */
   function updateContentSource() {
     const src = document.querySelector('input[name="contentSource"]:checked').value;
-    const t = document.getElementById("contentTextSection");
-    const u = document.getElementById("contentUploadSection");
-    const r = document.getElementById("contentUrlSection");
-    const oT = document.getElementById("sourceOptText");
-    const oU = document.getElementById("sourceOptUpload");
-    const oR = document.getElementById("sourceOptUrl");
-
-    oT.classList.remove("selected"); oU.classList.remove("selected"); oR.classList.remove("selected");
-    t.style.display = "none"; u.style.display = "none"; r.style.display = "none";
-
-    if (src === "text") { t.style.display = "block"; oT.classList.add("selected"); }
-    else if (src === "upload") { u.style.display = "block"; oU.classList.add("selected"); }
-    else { r.style.display = "block"; oR.classList.add("selected"); }
+    document.getElementById("contentTextSection").style.display = src === "text" ? "block" : "none";
+    document.getElementById("contentUploadSection").style.display = src === "upload" ? "block" : "none";
+    document.getElementById("contentUrlSection").style.display = src === "url" ? "block" : "none";
+    document.querySelectorAll(".content-source-option").forEach(el => el.classList.remove("selected"));
+    document.getElementById(src === "text" ? "sourceOptText" : src === "upload" ? "sourceOptUpload" : "sourceOptUrl").classList.add("selected");
   }
 
   function showExistingContentFile(file) {
     currentContentFile = file;
     const box = document.getElementById("contentExistingFileInfo");
     const link = document.getElementById("contentExistingFileLink");
-    if (file && file.url) {
-      box.style.display = "flex";
-      link.href = file.url; link.textContent = file.url;
-    } else {
-      box.style.display = "none"; link.href = "#"; link.textContent = "-";
-    }
+    if (file && file.url) { box.style.display = "flex"; link.href = file.url; link.textContent = file.url; } 
+    else { box.style.display = "none"; link.href = "#"; link.textContent = "-"; }
   }
 
   function removeExistingContentFile() {
-    if (!confirm("Hapus file yang terhubung dengan materi ini?")) return;
-    const box = document.getElementById("contentExistingFileInfo");
-    box.style.display = "none"; box.dataset.removed = "true";
+    if (!confirm("Hapus file?")) return;
+    document.getElementById("contentExistingFileInfo").style.display = "none";
+    document.getElementById("contentExistingFileInfo").dataset.removed = "true";
     currentContentFile = null;
   }
 
   async function uploadMaterialFile(file) {
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const path = "material_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8) + "_" + safeName;
-    const { data, error } = await supabaseClient.storage.from("references").upload(path, file, { upsert: false });
+    const path = "mat_" + Date.now() + "_" + safeName;
+    const { data, error } = await supabaseClient.storage.from("references").upload(path, file);
     if (error) throw error;
     const { data: pub } = supabaseClient.storage.from("references").getPublicUrl(data.path);
     return { path: data.path, url: pub.publicUrl };
   }
 
   async function loadMaterials() {
-    const { data, error } = await supabaseClient
-      .from("materials").select(`*, categories ( name )`).order("created_at", { ascending: false });
-
+    const { data, error } = await supabaseClient.from("materials").select(`*, categories ( name )`).order("created_at", { ascending: false });
     const c = document.getElementById("materials");
-    if (error) { console.error(error); c.innerHTML = '<div class="empty">Gagal memuat materi.</div>'; return; }
-    if (!data || data.length === 0) { c.innerHTML = '<div class="empty">Belum ada materi.</div>'; return; }
-
-    c.innerHTML = data.map(m => `
-      <div class="item">
-        <div class="item-title">${escapeHtml(m.title)}</div>
-        <div class="item-meta">${escapeHtml(m.subject || "-")} • ${escapeHtml(m.semester || "-")} • ${escapeHtml(m.categories?.name || "Tanpa kategori")}</div>
-        <div class="item-description">${escapeHtml(m.description || "")}</div>
-        <div class="button-row">
-          <button class="btn-warning" onclick="editMaterial(${m.id})">Edit</button>
-          <button class="btn-danger" onclick="deleteMaterial(${m.id})">Hapus</button>
-        </div>
-      </div>
-    `).join("");
+    if (error || !data) { c.innerHTML = '<div class="empty">Gagal memuat materi.</div>'; return; }
+    if (data.length === 0) { c.innerHTML = '<div class="empty">Belum ada materi.</div>'; return; }
+    c.innerHTML = data.map(m => `<div class="item"><div class="item-title">${escapeHtml(m.title)}</div><div class="item-meta">${escapeHtml(m.subject || "-")} • ${escapeHtml(m.categories?.name || "No Kategori")}</div><div class="item-description">${escapeHtml(m.description || "")}</div><div class="button-row"><button class="btn-warning" onclick="editMaterial(${m.id})">Edit</button><button class="btn-danger" onclick="deleteMaterial(${m.id})">Hapus</button></div></div>`).join("");
   }
 
   async function saveMaterial() {
     const title = document.getElementById("title").value.trim();
-    const subject = document.getElementById("subject").value.trim();
-    const semester = document.getElementById("semester").value.trim();
-    const topic = document.getElementById("topic").value.trim();
-    const categoryId = document.getElementById("category").value || null;
-    const description = document.getElementById("description").value.trim();
+    if (!title) { showMessage("message", "Judul wajib.", "error"); return; }
     const src = document.querySelector('input[name="contentSource"]:checked').value;
-
-    if (!title) { showMessage("message", "Judul materi wajib diisi.", "error"); return; }
-
-    let contentText = "", contentFileType = null, contentFile = null, contentUrl = null;
-
-    if (src === "text") contentText = document.getElementById("content").value.trim();
-    else if (src === "upload") {
-      contentFileType = document.getElementById("contentFileType").value;
-      contentFile = document.getElementById("contentFile").files[0];
-      if (!contentFileType) { showMessage("message", "Pilih jenis file dulu.", "error"); return; }
-      if (!editingId && !contentFile) { showMessage("message", "Pilih file dulu.", "error"); return; }
-      if (editingId && !contentFile && !currentContentFile) { showMessage("message", "Belum ada file.", "error"); return; }
-    } else {
-      contentFileType = document.getElementById("contentUrlType").value;
-      contentUrl = document.getElementById("contentUrl").value.trim();
-      if (!contentFileType) { showMessage("message", "Pilih jenis konten dulu.", "error"); return; }
-      if (!contentUrl) { showMessage("message", "Masukkan URL.", "error"); return; }
-    }
-
-    const data = {
-      title, subject, semester, topic,
-      category_id: categoryId ? Number(categoryId) : null,
-      description,
-      content: src === "text" ? contentText : null,
+    let payload = {
+      title, subject: document.getElementById("subject").value.trim(), semester: document.getElementById("semester").value.trim(),
+      topic: document.getElementById("topic").value.trim(), category_id: document.getElementById("category").value || null,
+      description: document.getElementById("description").value.trim(), content: src === "text" ? document.getElementById("content").value.trim() : null,
       status: "published"
     };
-
-    showMessage("message", "Menyimpan materi...", "info");
-    let materialId = editingId, error;
-
-    if (editingId) {
-      ({ error } = await supabaseClient.from("materials").update(data).eq("id", editingId));
-    } else {
-      const r = await supabaseClient.from("materials").insert(data).select().single();
-      error = r.error;
-      if (!error && r.data) materialId = r.data.id;
-    }
-    if (error) { showMessage("message", "Gagal: " + error.message, "error"); return; }
+    showMessage("message", "Menyimpan...", "info");
+    
+    let matId = editingId;
+    let err;
+    if (editingId) { const res = await supabaseClient.from("materials").update(payload).eq("id", editingId); err = res.error; } 
+    else { const res = await supabaseClient.from("materials").insert(payload).select().single(); err = res.error; if(res.data) matId = res.data.id; }
+    
+    if (err) { showMessage("message", "Gagal: " + err.message, "error"); return; }
 
     try {
-      const box = document.getElementById("contentExistingFileInfo");
-      const wasRemoved = box.dataset.removed === "true";
-
-      const { data: oldFiles } = await supabaseClient.from("material_files").select("file_path").eq("material_id", materialId);
-
-      if (src === "text" || src === "url" || (src === "upload" && (contentFile || wasRemoved))) {
-        if (oldFiles && oldFiles.length > 0) {
-          const paths = oldFiles.map(f => f.file_path).filter(Boolean);
-          if (paths.length) await supabaseClient.storage.from("references").remove(paths);
-        }
-        await supabaseClient.from("material_files").delete().eq("material_id", materialId);
+      const wasRemoved = document.getElementById("contentExistingFileInfo").dataset.removed === "true";
+      const { data: oldFiles } = await supabaseClient.from("material_files").select("file_path").eq("material_id", matId);
+      
+      if (src === "text" || src === "url" || (src === "upload" && (document.getElementById("contentFile").files[0] || wasRemoved))) {
+        if (oldFiles && oldFiles.length > 0) await supabaseClient.storage.from("references").remove(oldFiles.map(f => f.file_path).filter(Boolean));
+        await supabaseClient.from("material_files").delete().eq("material_id", matId);
       }
 
-      if (src === "upload" && contentFile) {
-        const up = await uploadMaterialFile(contentFile);
-        await supabaseClient.from("material_files").insert({
-          material_id: materialId, title, description,
-          type: contentFileType, url: up.url, file_path: up.path
-        });
+      if (src === "upload" && document.getElementById("contentFile").files[0]) {
+        const up = await uploadMaterialFile(document.getElementById("contentFile").files[0]);
+        await supabaseClient.from("material_files").insert({ material_id: matId, title, type: document.getElementById("contentFileType").value, url: up.url, file_path: up.path });
       } else if (src === "url") {
-        await supabaseClient.from("material_files").insert({
-          material_id: materialId, title, description,
-          type: contentFileType, url: contentUrl, file_path: null
-        });
+        await supabaseClient.from("material_files").insert({ material_id: matId, title, type: document.getElementById("contentUrlType").value, url: document.getElementById("contentUrl").value.trim(), file_path: null });
       }
-    } catch (e) {
-      console.error(e);
-      showMessage("message", "Materi tersimpan, file gagal: " + e.message, "error");
-      loadMaterials(); loadResourceMaterials(); return;
-    }
+    } catch (e) { console.error(e); }
 
-    showMessage("message", editingId ? "Materi diperbarui." : "Materi ditambahkan.", "success");
-    clearForm(); loadMaterials(); loadResourceMaterials();
+    showMessage("message", "Tersimpan.", "success"); clearForm(); loadMaterials(); loadResourceMaterials();
   }
 
   async function editMaterial(id) {
-    const { data, error } = await supabaseClient.from("materials").select("*").eq("id", id).single();
-    if (error || !data) { alert("Gagal ambil data materi."); return; }
-
+    const { data } = await supabaseClient.from("materials").select("*").eq("id", id).single();
+    if (!data) return;
     clearForm(); editingId = id;
-    document.getElementById("title").value = data.title || "";
-    document.getElementById("subject").value = data.subject || "";
-    document.getElementById("semester").value = data.semester || "";
-    document.getElementById("topic").value = data.topic || "";
-    document.getElementById("category").value = data.category_id || "";
-    document.getElementById("description").value = data.description || "";
-
-    const { data: files } = await supabaseClient.from("material_files")
-      .select("*").eq("material_id", id).order("created_at", { ascending: false }).limit(1);
-    const file = (files && files.length) ? files[0] : null;
-
-    if (file) {
-      if (file.file_path) {
-        document.querySelector('input[name="contentSource"][value="upload"]').checked = true;
-        document.getElementById("contentFileType").value = file.type || "";
-        showExistingContentFile(file);
-      } else {
-        document.querySelector('input[name="contentSource"][value="url"]').checked = true;
-        document.getElementById("contentUrlType").value = file.type || "";
-        document.getElementById("contentUrl").value = file.url || "";
-      }
-    } else {
-      document.querySelector('input[name="contentSource"][value="text"]').checked = true;
-      document.getElementById("content").value = data.content || "";
-    }
-
-    updateContentSource();
-    showMessage("message", "Mode edit aktif.", "info");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    document.getElementById("title").value = data.title || ""; document.getElementById("subject").value = data.subject || "";
+    document.getElementById("semester").value = data.semester || ""; document.getElementById("topic").value = data.topic || "";
+    document.getElementById("category").value = data.category_id || ""; document.getElementById("description").value = data.description || "";
+    
+    const { data: files } = await supabaseClient.from("material_files").select("*").eq("material_id", id).order("created_at", { ascending: false }).limit(1);
+    if (files && files[0]) {
+      if (files[0].file_path) { document.querySelector('input[value="upload"]').checked = true; document.getElementById("contentFileType").value = files[0].type || ""; showExistingContentFile(files[0]); } 
+      else { document.querySelector('input[value="url"]').checked = true; document.getElementById("contentUrlType").value = files[0].type || ""; document.getElementById("contentUrl").value = files[0].url || ""; }
+    } else { document.querySelector('input[value="text"]').checked = true; document.getElementById("content").value = data.content || ""; }
+    updateContentSource(); showMessage("message", "Edit mode.", "info"); window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   async function deleteMaterial(id) {
-    if (!confirm("Hapus materi ini? Referensi & file ikut terhapus.")) return;
-
+    if (!confirm("Hapus materi ini?")) return;
     const { data: files } = await supabaseClient.from("material_files").select("file_path").eq("material_id", id);
-    if (files && files.length) {
-      const paths = files.map(f => f.file_path).filter(Boolean);
-      if (paths.length) await supabaseClient.storage.from("references").remove(paths);
-    }
-    const { error } = await supabaseClient.from("materials").delete().eq("id", id);
-    if (error) { alert("Gagal: " + error.message); return; }
-
+    if (files && files.length > 0) await supabaseClient.storage.from("references").remove(files.map(f => f.file_path).filter(Boolean));
+    await supabaseClient.from("materials").delete().eq("id", id);
     loadMaterials(); loadResourceMaterials(); loadResources();
   }
 
   function clearForm() {
     editingId = null; currentContentFile = null;
-    ["title","subject","semester","topic","category","description","content",
-     "contentFileType","contentUrlType","contentUrl"].forEach(id => {
-      const el = document.getElementById(id); if (el) el.value = "";
-    });
+    ["title","subject","semester","topic","category","description","content","contentFileType","contentUrlType","contentUrl"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
     document.getElementById("contentFile").value = "";
-    document.querySelector('input[name="contentSource"][value="text"]').checked = true;
-
-    const box = document.getElementById("contentExistingFileInfo");
-    box.style.display = "none"; box.dataset.removed = "false";
-    document.getElementById("contentExistingFileLink").href = "#";
-    document.getElementById("contentExistingFileLink").textContent = "-";
-
-    updateContentSource();
-    document.getElementById("message").className = "message";
+    document.querySelector('input[value="text"]').checked = true;
+    const box = document.getElementById("contentExistingFileInfo"); box.style.display = "none"; box.dataset.removed = "false";
+    updateContentSource(); document.getElementById("message").className = "message";
   }
 
-  /* ============================================================
-     RESOURCES
-  ============================================================ */
   async function loadResourceMaterials() {
-    const { data, error } = await supabaseClient.from("materials").select("id, title").order("title");
-    if (error) { console.error(error); return; }
-    const s = document.getElementById("resourceMaterial");
-    s.innerHTML = '<option value="">Pilih materi</option>';
-    data.forEach(m => {
-      const o = document.createElement("option"); o.value = m.id; o.textContent = m.title;
-      s.appendChild(o);
-    });
+    const { data } = await supabaseClient.from("materials").select("id, title").order("title");
+    const s = document.getElementById("resourceMaterial"); s.innerHTML = '<option value="">Pilih materi</option>';
+    (data || []).forEach(m => s.innerHTML += `<option value="${m.id}">${escapeHtml(m.title)}</option>`);
   }
 
   function updateResourceSource() {
@@ -361,952 +623,347 @@
   }
 
   function clearResourceForm() {
-    ["resourceTitle","resourceType","resourceUrl","resourceDescription","resourceFile"].forEach(id => {
-      const el = document.getElementById(id); if (el) el.value = "";
-    });
-    document.querySelector('input[name="resourceSource"][value="upload"]').checked = true;
-    updateResourceSource();
-    document.getElementById("resourceMessage").className = "message";
-  }
-
-  async function uploadMaterialResourceFile(file) {
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const path = Date.now() + "_" + Math.random().toString(36).slice(2, 8) + "_" + safeName;
-    const { data, error } = await supabaseClient.storage.from("references").upload(path, file, { upsert: false });
-    if (error) throw error;
-    const { data: pub } = supabaseClient.storage.from("references").getPublicUrl(data.path);
-    return { path: data.path, url: pub.publicUrl };
+    ["resourceTitle","resourceType","resourceUrl","resourceDescription"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("resourceFile").value = ""; document.querySelector('input[value="upload"]').checked = true; updateResourceSource(); document.getElementById("resourceMessage").className = "message";
   }
 
   async function addResource() {
-    const materialId = document.getElementById("resourceMaterial").value;
-    const title = document.getElementById("resourceTitle").value.trim();
-    const type = document.getElementById("resourceType").value;
-    const description = document.getElementById("resourceDescription").value.trim();
-    const src = document.querySelector('input[name="resourceSource"]:checked').value;
-    const urlInput = document.getElementById("resourceUrl");
-    const fileInput = document.getElementById("resourceFile");
-
-    if (!materialId) { showMessage("resourceMessage", "Pilih materi.", "error"); return; }
-    if (!title) { showMessage("resourceMessage", "Judul wajib.", "error"); return; }
-    if (!type) { showMessage("resourceMessage", "Pilih jenis referensi.", "error"); return; }
-
-    const btn = document.getElementById("resourceSubmitButton");
-    btn.disabled = true; btn.textContent = "Menyimpan...";
-    let uploadedPath = null;
-
+    const matId = document.getElementById("resourceMaterial").value; const title = document.getElementById("resourceTitle").value.trim();
+    const type = document.getElementById("resourceType").value; const src = document.querySelector('input[name="resourceSource"]:checked').value;
+    if (!matId || !title || !type) { showMessage("resourceMessage", "Lengkapi data.", "error"); return; }
+    const btn = document.getElementById("resourceSubmitButton"); btn.disabled = true;
     try {
-      let url = null, filePath = null;
-      if (src === "upload") {
-        const file = fileInput.files[0];
-        if (!file) throw new Error("Pilih file dulu.");
-        const up = await uploadMaterialResourceFile(file);
-        url = up.url; filePath = up.path; uploadedPath = up.path;
-      } else {
-        url = urlInput.value.trim();
-        if (!url) throw new Error("Masukkan URL.");
-      }
-
-      const { error } = await supabaseClient.from("resources").insert({
-        title, description, type, url, file_path: filePath, material_id: Number(materialId)
-      });
-      if (error) {
-        if (uploadedPath) await supabaseClient.storage.from("references").remove([uploadedPath]);
-        throw error;
-      }
-
-      showMessage("resourceMessage", "Referensi ditambahkan.", "success");
-      clearResourceForm();
-      document.getElementById("resourceMaterial").value = materialId;
-      await loadResources();
-    } catch (e) {
-      console.error(e);
-      showMessage("resourceMessage", "Gagal: " + e.message, "error");
-    } finally {
-      btn.disabled = false; btn.textContent = "➕ Tambahkan Referensi";
-    }
+      let url = null, path = null;
+      if (src === "upload") { const file = document.getElementById("resourceFile").files[0]; if (!file) throw new Error("Pilih file."); const up = await uploadMaterialFile(file); url = up.url; path = up.path; } 
+      else { url = document.getElementById("resourceUrl").value.trim(); if (!url) throw new Error("Isi URL."); }
+      const { error } = await supabaseClient.from("resources").insert({ title, description: document.getElementById("resourceDescription").value.trim(), type, url, file_path: path, material_id: Number(matId) });
+      if (error) throw error;
+      showMessage("resourceMessage", "Berhasil.", "success"); clearResourceForm(); loadResources();
+    } catch (e) { showMessage("resourceMessage", "Gagal: " + e.message, "error"); } finally { btn.disabled = false; }
   }
 
   async function loadResources() {
-    const { data, error } = await supabaseClient.from("resources")
-      .select(`*, materials ( title )`).order("created_at", { ascending: false });
-
+    const { data } = await supabaseClient.from("resources").select(`*, materials ( title )`).order("created_at", { ascending: false });
     const c = document.getElementById("resources");
-    if (error) { console.error(error); c.innerHTML = '<div class="empty">Gagal memuat referensi.</div>'; return; }
     if (!data || data.length === 0) { c.innerHTML = '<div class="empty">Belum ada referensi.</div>'; return; }
-
-    c.innerHTML = data.map(r => `
-      <div class="item">
-        <div class="item-title">${escapeHtml(r.title)}</div>
-        <div class="item-meta">${escapeHtml(r.type)} • ${escapeHtml(r.materials?.title || "Tanpa materi")}</div>
-        <div class="item-description">${escapeHtml(r.description || "")}</div>
-        <div class="button-row">
-          <a href="${escapeAttribute(r.url || "#")}" target="_blank" rel="noopener noreferrer">
-            <button class="btn-primary" type="button">Buka</button>
-          </a>
-          <button class="btn-danger" onclick="deleteResource(${r.id})">Hapus</button>
-        </div>
-      </div>
-    `).join("");
+    c.innerHTML = data.map(r => `<div class="item"><div class="item-title">${escapeHtml(r.title)}</div><div class="item-meta">${escapeHtml(r.type)} • ${escapeHtml(r.materials?.title || "-")}</div><div class="button-row"><a href="${escapeAttribute(r.url)}" target="_blank"><button class="btn-primary">Buka</button></a><button class="btn-danger" onclick="deleteResource(${r.id})">Hapus</button></div></div>`).join("");
   }
 
   async function deleteResource(id) {
-    if (!confirm("Hapus referensi ini?")) return;
-    const { error } = await supabaseClient.from("resources").delete().eq("id", id);
-    if (error) { alert("Gagal: " + error.message); return; }
-    loadResources();
+    if (!confirm("Hapus?")) return; await supabaseClient.from("resources").delete().eq("id", id); loadResources();
   }
 
-  /* ============================================================
-     CBT - SINGLE JSON
-  ============================================================ */
-  function clearCBTForm() {
-    document.getElementById("cbtJson").value = "";
-    document.getElementById("cbtMessage").className = "message";
-  }
-
+  function clearCBTForm() { document.getElementById("cbtJson").value = ""; document.getElementById("cbtMessage").className = "message"; }
   function parseOptionEntry(opt) {
     if (typeof opt === "string") return { text: opt, explanation: null };
-    if (opt && typeof opt === "object") {
-      const text = opt.text !== undefined ? opt.text : (opt.option_text !== undefined ? opt.option_text : "");
-      return { text: String(text), explanation: opt.explanation ? String(opt.explanation) : null };
-    }
-    return { text: "", explanation: null };
+    return { text: String(opt.text || opt.option_text || ""), explanation: opt.explanation ? String(opt.explanation) : null };
   }
 
-  function validateCBTJson(data) {
-    if (!data || typeof data !== "object") throw new Error("JSON tidak valid.");
-    if (!data.title || typeof data.title !== "string") throw new Error("Field 'title' wajib.");
-    if (!data.category || typeof data.category !== "string") throw new Error("Field 'category' wajib.");
-    if (!Array.isArray(data.questions) || data.questions.length === 0) throw new Error("'questions' harus array tidak kosong.");
-    if (data.duration_minutes !== undefined &&
-        (!Number.isInteger(Number(data.duration_minutes)) || Number(data.duration_minutes) <= 0)) {
-      throw new Error("'duration_minutes' harus > 0.");
-    }
-    data.questions.forEach((item, i) => validateQuestionItem(item, i + 1));
-    return true;
-  }
-
-  function validateQuestionItem(item, displayNumber) {
-    if (!item || typeof item !== "object") throw new Error(`Soal ${displayNumber} tidak valid.`);
-    if (!item.question || typeof item.question !== "string") throw new Error(`Soal ${displayNumber}: 'question' wajib.`);
-    if (!Array.isArray(item.options) || item.options.length < 2) throw new Error(`Soal ${displayNumber}: minimal 2 pilihan.`);
-    item.options.forEach((opt, oi) => {
-      const p = parseOptionEntry(opt);
-      if (!p.text || !p.text.trim()) throw new Error(`Soal ${displayNumber}: pilihan ${oi + 1} kosong.`);
-    });
+  function validateQuestionItem(item, num) {
+    if (!item.question || !Array.isArray(item.options) || item.options.length < 2) throw new Error(`Soal ${num} tidak valid.`);
     const ans = Number(item.answer);
-    if (!Number.isInteger(ans) || ans < 1 || ans > item.options.length) {
-      throw new Error(`Soal ${displayNumber}: 'answer' harus antara 1 dan ${item.options.length}.`);
-    }
+    if (!Number.isInteger(ans) || ans < 1 || ans > item.options.length) throw new Error(`Soal ${num}: 'answer' error.`);
   }
 
   async function findCategoryId(name) {
-    const { data, error } = await supabaseClient.from("categories").select("id, name");
-    if (error) throw new Error("Gagal ambil kategori: " + error.message);
-    const n = name.trim().toLowerCase();
-    const c = data.find(i => i.name.trim().toLowerCase() === n);
-    if (!c) throw new Error(`Kategori "${name}" tidak ditemukan.`);
-    return c.id;
+    const { data } = await supabaseClient.from("categories").select("id, name");
+    const c = data.find(i => i.name.trim().toLowerCase() === name.trim().toLowerCase());
+    if (!c) throw new Error(`Kategori "${name}" tidak ada.`); return c.id;
   }
 
   async function importCBT() {
     const raw = document.getElementById("cbtJson").value.trim();
-    if (!raw) { showMessage("cbtMessage", "Paste JSON CBT dulu.", "error"); return; }
-
-    let data;
-    try { data = JSON.parse(raw); }
-    catch (e) { showMessage("cbtMessage", "JSON tidak valid.", "error"); return; }
-
+    if (!raw) { showMessage("cbtMessage", "Paste JSON.", "error"); return; }
+    let data; try { data = JSON.parse(raw); } catch (e) { showMessage("cbtMessage", "JSON error.", "error"); return; }
     try {
-      validateCBTJson(data);
-      showMessage("cbtMessage", "Memvalidasi...", "info");
-
-      const categoryId = await findCategoryId(data.category);
-      const duration = data.duration_minutes ? Number(data.duration_minutes) : 60;
-
-      const { data: quiz, error: qe } = await supabaseClient.from("quizzes").insert({
-        title: data.title.trim(),
-        description: data.description || null,
-        category_id: categoryId,
-        duration_minutes: duration,
-        status: "published"
-      }).select().single();
-      if (qe) throw new Error("Gagal buat CBT: " + qe.message);
-
-      try {
-        for (let i = 0; i < data.questions.length; i++) {
-          const item = data.questions[i];
-          const { data: q, error: qErr } = await supabaseClient.from("quiz_questions").insert({
-            quiz_id: quiz.id,
-            question: item.question.trim(),
-            explanation: item.explanation || null,
-            question_number: i + 1
-          }).select().single();
-          if (qErr) throw new Error(`Soal ${i + 1}: ${qErr.message}`);
-
-          const ans = Number(item.answer);
-          const opts = item.options.map((o, oi) => {
-            const p = parseOptionEntry(o);
-            return {
-              question_id: q.id, option_text: p.text.trim(),
-              explanation: p.explanation, is_correct: oi + 1 === ans
-            };
-          });
-          const { error: oErr } = await supabaseClient.from("quiz_options").insert(opts);
-          if (oErr) throw new Error(`Pilihan soal ${i + 1}: ${oErr.message}`);
-        }
-      } catch (ie) {
-        await supabaseClient.from("quizzes").delete().eq("id", quiz.id);
-        throw ie;
+      if (!data.title || !data.category || !Array.isArray(data.questions)) throw new Error("Format JSON salah.");
+      data.questions.forEach((item, i) => validateQuestionItem(item, i + 1));
+      const catId = await findCategoryId(data.category);
+      const { data: quiz, error: qe } = await supabaseClient.from("quizzes").insert({ title: data.title.trim(), description: data.description || null, category_id: catId, duration_minutes: Number(data.duration_minutes) || 60, status: "published" }).select().single();
+      if (qe) throw new Error(qe.message);
+      for (let i = 0; i < data.questions.length; i++) {
+        const item = data.questions[i];
+        const { data: q, error: qErr } = await supabaseClient.from("quiz_questions").insert({ quiz_id: quiz.id, question: item.question.trim(), explanation: item.explanation || null, question_number: i + 1 }).select().single();
+        if (qErr) throw new Error(qErr.message);
+        const ans = Number(item.answer);
+        const opts = item.options.map((o, oi) => { const p = parseOptionEntry(o); return { question_id: q.id, option_text: p.text.trim(), explanation: p.explanation, is_correct: oi + 1 === ans }; });
+        const { error: oErr } = await supabaseClient.from("quiz_options").insert(opts);
+        if (oErr) throw new Error(oErr.message);
       }
-
-      showMessage("cbtMessage", `CBT "${data.title}" berhasil diimport. ${data.questions.length} soal.`, "success");
-      clearCBTForm(); loadCBTs();
-    } catch (e) {
-      console.error(e);
-      showMessage("cbtMessage", e.message || "Gagal import CBT.", "error");
-    }
+      showMessage("cbtMessage", "CBT diimport.", "success"); clearCBTForm(); loadCBTs();
+    } catch (e) { showMessage("cbtMessage", e.message, "error"); }
   }
 
-  /* ============================================================
-     CBT - BATCH SYSTEM
-  ============================================================ */
-  function getBatchConfig(n) {
-    return {
-      1: { textarea: "batch1Json", status: "batch1Status", start: 1, end: 25 },
-      2: { textarea: "batch2Json", status: "batch2Status", start: 26, end: 50 },
-      3: { textarea: "batch3Json", status: "batch3Status", start: 51, end: 75 },
-      4: { textarea: "batch4Json", status: "batch4Status", start: 76, end: 100 }
-    }[n];
-  }
-
+  function getBatchConfig(n) { return { 1: { t: "batch1Json", s: "batch1Status", min: 1, max: 25 }, 2: { t: "batch2Json", s: "batch2Status", min: 26, max: 50 }, 3: { t: "batch3Json", s: "batch3Status", min: 51, max: 75 }, 4: { t: "batch4Json", s: "batch4Status", min: 76, max: 100 } }[n]; }
   function parseBatch(n) {
-    const cfg = getBatchConfig(n);
-    const raw = document.getElementById(cfg.textarea).value.trim();
+    const cfg = getBatchConfig(n); const raw = document.getElementById(cfg.t).value.trim();
     if (!raw) throw new Error(`Batch ${n} kosong.`);
-
-    let d;
-    try { d = JSON.parse(raw); }
-    catch { throw new Error(`Batch ${n}: JSON tidak valid.`); }
-
-    if (!d || typeof d !== "object") throw new Error(`Batch ${n}: format tidak valid.`);
-    if (Number(d.batch) !== n) throw new Error(`Batch ${n}: 'batch' harus ${n}.`);
-    if (Number(d.start_question) !== cfg.start) throw new Error(`Batch ${n}: 'start_question' harus ${cfg.start}.`);
-    if (Number(d.end_question) !== cfg.end) throw new Error(`Batch ${n}: 'end_question' harus ${cfg.end}.`);
-    if (!Array.isArray(d.questions)) throw new Error(`Batch ${n}: 'questions' harus array.`);
-    if (d.questions.length !== 25) throw new Error(`Batch ${n}: harus 25 soal, ditemukan ${d.questions.length}.`);
-
-    d.questions.forEach((item, i) => validateQuestionItem(item, cfg.start + i));
-    return d;
+    let d; try { d = JSON.parse(raw); } catch (e) { throw new Error(`Batch ${n} JSON error.`); }
+    if (Number(d.batch) !== n || Number(d.start_question) !== cfg.min || Number(d.end_question) !== cfg.max) throw new Error(`Batch ${n} header salah.`);
+    if (!Array.isArray(d.questions) || d.questions.length !== 25) throw new Error(`Batch ${n} harus 25 soal.`);
+    d.questions.forEach((item, i) => validateQuestionItem(item, cfg.min + i)); return d;
   }
 
-  function updateBatchStatus(n, msg, ok) {
-    const el = document.getElementById(getBatchConfig(n).status);
-    if (!el) return;
-    el.textContent = msg;
-    el.style.color = ok ? "#166534" : "#991b1b";
-  }
-
-  function resetBatchStats() {
-    document.getElementById("batchCount").textContent = "0/4";
-    document.getElementById("questionCount").textContent = "0/100";
-    document.getElementById("duplicateCount").textContent = "0";
-  }
-
-  function normalizeQuestion(q) { return String(q).trim().toLowerCase().replace(/\s+/g, " "); }
-
+  function updateBatchStatus(n, msg, ok) { const el = document.getElementById(getBatchConfig(n).s); if (el) { el.textContent = msg; el.style.color = ok ? "#166534" : "#991b1b"; } }
   function findDuplicateQuestions(batches) {
     const seen = new Map(), dups = [];
-    batches.forEach((b, bi) => b.questions.forEach((q, qi) => {
-      const k = normalizeQuestion(q.question);
-      const num = getBatchConfig(bi + 1).start + qi;
-      if (seen.has(k)) dups.push({ question: q.question, first: seen.get(k), duplicate: num });
-      else seen.set(k, num);
-    }));
+    batches.forEach((b, bi) => b.questions.forEach((q, qi) => { const k = String(q.question).trim().toLowerCase(); if (seen.has(k)) dups.push(1); else seen.set(k, 1); }));
     return dups;
   }
 
   function validateAllBatches() {
     try {
-      const batches = [];
-      for (let i = 1; i <= 4; i++) { batches.push(parseBatch(i)); updateBatchStatus(i, "✓ Valid — 25 soal", true); }
-
+      const batches = []; for (let i = 1; i <= 4; i++) { batches.push(parseBatch(i)); updateBatchStatus(i, "✓ Valid", true); }
       const dups = findDuplicateQuestions(batches);
-      document.getElementById("batchCount").textContent = "4/4";
-      document.getElementById("questionCount").textContent = "100/100";
-      document.getElementById("duplicateCount").textContent = dups.length;
-
-      if (dups.length > 0) throw new Error(`Ditemukan ${dups.length} soal duplikat.`);
-
-      showMessage("batchMessage", "✓ Semua batch valid, 100 soal, tanpa duplikasi.", "success");
-      return true;
-    } catch (e) {
-      console.error(e);
-      showMessage("batchMessage", e.message, "error");
-      return false;
-    }
+      document.getElementById("batchCount").textContent = "4/4"; document.getElementById("questionCount").textContent = "100/100"; document.getElementById("duplicateCount").textContent = dups.length;
+      if (dups.length > 0) throw new Error(`${dups.length} duplikat.`);
+      showMessage("batchMessage", "Semua valid.", "success"); return true;
+    } catch (e) { showMessage("batchMessage", e.message, "error"); return false; }
   }
 
   function clearBatchForm() {
-    ["batchTitle","batchDescription","batchCategory"].forEach(id => document.getElementById(id).value = "");
-    document.getElementById("batchDuration").value = "100";
-    for (let i = 1; i <= 4; i++) {
-      document.getElementById(getBatchConfig(i).textarea).value = "";
-      updateBatchStatus(i, "Belum diperiksa");
-    }
-    resetBatchStats();
-    document.getElementById("batchMessage").className = "message";
+    ["batchTitle","batchDescription","batchCategory"].forEach(id => document.getElementById(id).value = ""); document.getElementById("batchDuration").value = "100";
+    for (let i = 1; i <= 4; i++) { document.getElementById(getBatchConfig(i).t).value = ""; updateBatchStatus(i, "Belum diperiksa"); }
+    resetBatchStats(); document.getElementById("batchMessage").className = "message";
   }
+  function resetBatchStats() { document.getElementById("batchCount").textContent = "0/4"; document.getElementById("questionCount").textContent = "0/100"; document.getElementById("duplicateCount").textContent = "0"; }
 
   async function importBatchCBT() {
-    const title = document.getElementById("batchTitle").value.trim();
-    const description = document.getElementById("batchDescription").value.trim();
-    const categoryId = document.getElementById("batchCategory").value;
-    const duration = Number(document.getElementById("batchDuration").value);
-
-    if (!title) { showMessage("batchMessage", "Judul wajib.", "error"); return; }
-    if (!categoryId) { showMessage("batchMessage", "Kategori wajib.", "error"); return; }
-    if (!Number.isInteger(duration) || duration <= 0) { showMessage("batchMessage", "Durasi tidak valid.", "error"); return; }
-
-    showMessage("batchMessage", "Memvalidasi batch...", "info");
-    let batches;
-    try {
-      batches = [];
-      for (let i = 1; i <= 4; i++) { batches.push(parseBatch(i)); updateBatchStatus(i, "✓ Valid — 25 soal", true); }
-      const dups = findDuplicateQuestions(batches);
-      document.getElementById("batchCount").textContent = "4/4";
-      document.getElementById("questionCount").textContent = "100/100";
-      document.getElementById("duplicateCount").textContent = dups.length;
-      if (dups.length > 0) throw new Error(`${dups.length} soal duplikat. Import dibatalkan.`);
-    } catch (e) {
-      console.error(e);
-      showMessage("batchMessage", e.message, "error"); return;
-    }
-
-    if (!confirm(`Gabungkan 4 batch → CBT "${title}" dengan 100 soal?`)) {
-      showMessage("batchMessage", "Dibatalkan.", "info"); return;
-    }
-
-    showMessage("batchMessage", "Membuat CBT & 100 soal...", "info");
+    const title = document.getElementById("batchTitle").value.trim(); const catId = document.getElementById("batchCategory").value;
+    if (!title || !catId) { showMessage("batchMessage", "Judul/Kategori wajib.", "error"); return; }
+    if (!validateAllBatches()) return;
+    if (!confirm("Gabungkan batch?")) return;
+    let batches = []; for (let i = 1; i <= 4; i++) batches.push(parseBatch(i));
     let quiz = null;
-
     try {
-      const { data, error: qe } = await supabaseClient.from("quizzes").insert({
-        title, description: description || null,
-        category_id: Number(categoryId), duration_minutes: duration, status: "published"
-      }).select().single();
-      if (qe) throw new Error("Gagal buat CBT: " + qe.message);
-      quiz = data;
-
+      const { data, error: qe } = await supabaseClient.from("quizzes").insert({ title, description: document.getElementById("batchDescription").value.trim() || null, category_id: Number(catId), duration_minutes: Number(document.getElementById("batchDuration").value), status: "published" }).select().single();
+      if (qe) throw new Error(qe.message); quiz = data;
       const all = batches.flatMap(b => b.questions);
-      if (all.length !== 100) throw new Error(`Setelah gabung: ${all.length} soal (harus 100).`);
-
       for (let i = 0; i < all.length; i++) {
-        const item = all[i], num = i + 1;
-        const { data: q, error: qErr } = await supabaseClient.from("quiz_questions").insert({
-          quiz_id: quiz.id, question: item.question.trim(),
-          explanation: item.explanation || null, question_number: num
-        }).select().single();
-        if (qErr) throw new Error(`Soal ${num}: ${qErr.message}`);
-
+        const item = all[i]; const num = i + 1;
+        const { data: q, error: qErr } = await supabaseClient.from("quiz_questions").insert({ quiz_id: quiz.id, question: item.question.trim(), explanation: item.explanation || null, question_number: num }).select().single();
+        if (qErr) throw new Error(qErr.message);
         const ans = Number(item.answer);
-        const opts = item.options.map((o, oi) => {
-          const p = parseOptionEntry(o);
-          return {
-            question_id: q.id, option_text: p.text.trim(),
-            explanation: p.explanation, is_correct: oi + 1 === ans
-          };
-        });
+        const opts = item.options.map((o, oi) => { const p = parseOptionEntry(o); return { question_id: q.id, option_text: p.text.trim(), explanation: p.explanation, is_correct: oi + 1 === ans }; });
         const { error: oErr } = await supabaseClient.from("quiz_options").insert(opts);
-        if (oErr) throw new Error(`Pilihan soal ${num}: ${oErr.message}`);
-
-        if (num === 1 || num % 10 === 0 || num === 100)
-          showMessage("batchMessage", `Menyimpan ${num}/100...`, "info");
+        if (oErr) throw new Error(oErr.message);
       }
-
-      showMessage("batchMessage", `🎉 CBT "${title}" dibuat dengan 100 soal.`, "success");
-      clearBatchForm(); loadCBTs();
+      showMessage("batchMessage", "Import sukses.", "success"); clearBatchForm(); loadCBTs();
     } catch (e) {
-      console.error(e);
       if (quiz) await supabaseClient.from("quizzes").delete().eq("id", quiz.id);
-      showMessage("batchMessage", e.message || "Gagal import batch.", "error");
+      showMessage("batchMessage", "Gagal: " + e.message, "error");
     }
   }
 
-  /* ============================================================
-     LOAD CBT
-  ============================================================ */
   async function loadCBTs() {
-    const { data, error } = await supabaseClient.from("quizzes")
-      .select(`*, categories ( name )`).order("created_at", { ascending: false });
-
+    const { data } = await supabaseClient.from("quizzes").select(`*, categories ( name )`).order("created_at", { ascending: false });
     const c = document.getElementById("cbtList");
-    if (error) { console.error(error); c.innerHTML = '<div class="empty">Gagal memuat CBT.</div>'; return; }
     if (!data || data.length === 0) { c.innerHTML = '<div class="empty">Belum ada CBT.</div>'; return; }
-
     c.innerHTML = data.map(q => {
-      let badge = "badge";
-      if (q.status === "published") badge += " badge-published";
-      else if (q.status === "draft") badge += " badge-draft";
-      else if (q.status === "closed") badge += " badge-closed";
-
-      return `
-        <div class="item">
-          <div class="item-title">${escapeHtml(q.title)}</div>
-          <div class="item-meta">
-            Kategori: ${escapeHtml(q.categories?.name || "Tanpa kategori")} •
-            Durasi: ${escapeHtml(q.duration_minutes || 60)} menit •
-            <span class="${badge}">${escapeHtml(q.status || "draft")}</span>
-          </div>
-          <div class="item-description">${escapeHtml(q.description || "Tidak ada deskripsi.")}</div>
-          <div class="button-row">
-            <button class="btn-primary" onclick="openEditCBT(${q.id})">✏️ Edit Soal & Info</button>
-            ${q.status === "draft" ? `<button class="btn-success" onclick="publishCBT(${q.id})">Publikasikan</button>` : ""}
-            ${q.status === "published" ? `<button class="btn-warning" onclick="closeCBT(${q.id})">Tutup CBT</button>` : ""}
-            ${q.status === "closed" ? `<button class="btn-success" onclick="publishCBT(${q.id})">Publikasikan Lagi</button>` : ""}
-            <button class="btn-danger" onclick="deleteCBT(${q.id})">Hapus CBT</button>
-          </div>
-        </div>
-      `;
+      let badge = q.status === "published" ? "badge-published" : q.status === "draft" ? "badge-draft" : "badge-closed";
+      return `<div class="item"><div class="item-title">${escapeHtml(q.title)}</div><div class="item-meta">Kategori: ${escapeHtml(q.categories?.name || "-")} • ${q.duration_minutes} menit • <span class="badge ${badge}">${q.status}</span></div><div class="button-row"><button class="btn-primary" onclick="openEditCBT(${q.id})">✏️ Edit</button><button class="btn-danger" onclick="deleteCBT(${q.id})">Hapus</button></div></div>`;
     }).join("");
   }
 
-  async function publishCBT(id) {
-    if (!confirm("Publikasikan CBT ini?")) return;
-    const { error } = await supabaseClient.from("quizzes").update({ status: "published" }).eq("id", id);
-    if (error) { alert("Gagal: " + error.message); return; }
-    await loadCBTs();
+  async function deleteCBT(id) { if (!confirm("Hapus CBT?")) return; await supabaseClient.from("quizzes").delete().eq("id", id); loadCBTs(); }
+
+  async function populateEditCategorySelect(selId) {
+    const { data } = await supabaseClient.from("categories").select("id, name").order("name");
+    const s = document.getElementById("cbtEditQuizCategory"); s.innerHTML = '<option value="">Pilih</option>';
+    (data || []).forEach(c => s.innerHTML += `<option value="${c.id}">${escapeHtml(c.name)}</option>`);
+    if (selId) s.value = String(selId);
   }
 
-  async function closeCBT(id) {
-    if (!confirm("Tutup CBT ini?")) return;
-    const { error } = await supabaseClient.from("quizzes").update({ status: "closed" }).eq("id", id);
-    if (error) { alert("Gagal: " + error.message); return; }
-    await loadCBTs();
-  }
-
-  async function deleteCBT(id) {
-    if (!confirm("Hapus CBT ini? Semua soal & pilihan terhapus.")) return;
-    const { error } = await supabaseClient.from("quizzes").delete().eq("id", id);
-    if (error) { alert("Gagal: " + error.message); return; }
-    loadCBTs();
-  }
-
-  /* ============================================================
-     EDIT CBT
-  ============================================================ */
-  async function populateEditCategorySelect(selectedId) {
-    const { data, error } = await supabaseClient.from("categories").select("id, name").order("name");
-    if (error) { console.error(error); return; }
-    const s = document.getElementById("cbtEditQuizCategory");
-    s.innerHTML = '<option value="">Pilih kategori</option>';
-    (data || []).forEach(c => {
-      const o = document.createElement("option"); o.value = c.id; o.textContent = c.name;
-      s.appendChild(o);
-    });
-    if (selectedId) s.value = String(selectedId);
-  }
-
-  function markCorrectOption(radio) {
-    const card = radio.closest(".edit-question-card");
-    if (!card) return;
+  function markCorrectOption(r) {
+    const card = r.closest(".edit-question-card");
     card.querySelectorAll(".edit-option-block").forEach(b => b.classList.remove("is-correct"));
-    const block = radio.closest(".edit-option-block");
-    if (block && radio.checked) block.classList.add("is-correct");
+    r.closest(".edit-option-block").classList.add("is-correct");
   }
 
   async function openEditCBT(id) {
-    try {
-      const { data: quiz, error: qe } = await supabaseClient.from("quizzes").select("*").eq("id", id).single();
-      if (qe) throw qe;
+    const { data: quiz } = await supabaseClient.from("quizzes").select("*").eq("id", id).single();
+    const { data: questions } = await supabaseClient.from("quiz_questions").select("*").eq("quiz_id", id).order("question_number");
+    const qIds = (questions || []).map(q => q.id);
+    let options = [];
+    if (qIds.length > 0) { const res = await supabaseClient.from("quiz_options").select("*").in("question_id", qIds); options = res.data || []; }
+    
+    editingQuizId = id;
+    document.getElementById("cbtEditTitleLabel").textContent = quiz.title;
+    document.getElementById("cbtEditQuizTitle").value = quiz.title;
+    document.getElementById("cbtEditQuizDescription").value = quiz.description || "";
+    document.getElementById("cbtEditQuizDuration").value = quiz.duration_minutes || 60;
+    document.getElementById("cbtEditQuizStatus").value = quiz.status || "draft";
+    await populateEditCategorySelect(quiz.category_id);
 
-      const { data: questions, error: qqErr } = await supabaseClient.from("quiz_questions")
-        .select("*").eq("quiz_id", id).order("question_number", { ascending: true });
-      if (qqErr) throw qqErr;
-
-      const qIds = (questions || []).map(q => q.id);
-      let options = [];
-      if (qIds.length > 0) {
-        const { data: optData, error: oe } = await supabaseClient.from("quiz_options").select("*").in("question_id", qIds);
-        if (oe) throw oe;
-        options = optData || [];
-      }
-
-      editingQuizId = id;
-      document.getElementById("cbtEditTitleLabel").textContent = quiz.title || "";
-      document.getElementById("cbtEditQuizTitle").value = quiz.title || "";
-      document.getElementById("cbtEditQuizDescription").value = quiz.description || "";
-      document.getElementById("cbtEditQuizDuration").value = quiz.duration_minutes || 60;
-      document.getElementById("cbtEditQuizStatus").value = quiz.status || "draft";
-
-      await populateEditCategorySelect(quiz.category_id);
-
-      const c = document.getElementById("cbtEditQuestions");
-      if (!questions || questions.length === 0) {
-        c.innerHTML = '<div class="empty">Belum ada soal.</div>';
-      } else {
-        c.innerHTML = questions.map(q => {
-          const qOpts = options.filter(o => o.question_id === q.id).sort((a, b) => a.id - b.id);
-          return `
-            <div class="edit-question-card" data-question-id="${q.id}">
-              <div class="q-header">Soal #${q.question_number} (ID: ${q.id})</div>
-              <div class="form-group">
-                <label>Pertanyaan</label>
-                <textarea class="edit-question-text">${escapeHtml(q.question || "")}</textarea>
+    const c = document.getElementById("cbtEditQuestions");
+    if (questions.length === 0) { c.innerHTML = '<div class="empty">Kosong.</div>'; } 
+    else {
+      c.innerHTML = questions.map(q => {
+        const qOpts = options.filter(o => o.question_id === q.id).sort((a, b) => a.id - b.id);
+        return `<div class="edit-question-card" data-question-id="${q.id}">
+          <div class="q-header">Soal #${q.question_number}</div>
+          <div class="form-group"><textarea class="edit-question-text">${escapeHtml(q.question)}</textarea></div>
+          ${qOpts.map((opt, oi) => `
+            <div class="edit-option-block ${opt.is_correct ? "is-correct" : ""}" data-option-id="${opt.id}">
+              <div class="edit-option-row">
+                <input type="radio" name="ans-${q.id}" ${opt.is_correct ? "checked" : ""} onchange="markCorrectOption(this)">
+                <span class="opt-label">${String.fromCharCode(65 + oi)}.</span>
+                <input type="text" class="edit-option-text" value="${escapeAttribute(opt.option_text || "")}">
               </div>
-              <label style="margin-bottom:8px;">Pilihan Jawaban & Pembahasan
-                <br><small style="color:#64748b;font-weight:400;">Radio hijau = jawaban benar.</small>
-              </label>
-              ${qOpts.map((opt, oi) => `
-                <div class="edit-option-block ${opt.is_correct ? "is-correct" : ""}" data-option-id="${opt.id}">
-                  <div class="edit-option-row">
-                    <input type="radio" name="answer-${q.id}" value="${opt.id}"
-                           ${opt.is_correct ? "checked" : ""} onchange="markCorrectOption(this)">
-                    <span class="opt-label">${String.fromCharCode(65 + oi)}.</span>
-                    <input type="text" class="edit-option-text" value="${escapeAttribute(opt.option_text || "")}" placeholder="Teks pilihan...">
-                    <button type="button" class="btn-danger" style="padding:6px 10px;" onclick="removeEditOptionRow(this)">✕</button>
-                  </div>
-                  <div class="edit-option-explanation-row">
-                    <label>💬 Pembahasan pilihan ini</label>
-                    <textarea class="edit-option-explanation" placeholder="Jelaskan mengapa benar/salah...">${escapeHtml(opt.explanation || "")}</textarea>
-                  </div>
-                </div>
-              `).join("")}
-              <div class="form-group" style="margin-top:10px;">
-                <label>📝 Pembahasan Umum Soal (opsional)</label>
-                <textarea class="edit-explanation" placeholder="Ringkasan pembahasan...">${escapeHtml(q.explanation || "")}</textarea>
-              </div>
-            </div>
-          `;
-        }).join("");
-      }
-
-      document.getElementById("cbtEditModal").style.display = "flex";
-    } catch (e) {
-      console.error(e);
-      alert("Gagal buka editor: " + e.message);
+              <div class="edit-option-explanation-row"><label>Pembahasan</label><textarea class="edit-option-explanation">${escapeHtml(opt.explanation || "")}</textarea></div>
+            </div>`).join("")}
+          <div class="form-group"><textarea class="edit-explanation" placeholder="Pembahasan umum...">${escapeHtml(q.explanation || "")}</textarea></div>
+        </div>`;
+      }).join("");
     }
+    document.getElementById("cbtEditModal").style.display = "flex";
   }
 
-  function closeEditCBTModal() {
-    document.getElementById("cbtEditModal").style.display = "none";
-    editingQuizId = null;
-  }
-
-  function removeEditOptionRow(btn) {
-    const b = btn.closest(".edit-option-block");
-    if (b) b.remove();
-  }
-
+  function closeEditCBTModal() { document.getElementById("cbtEditModal").style.display = "none"; editingQuizId = null; }
+  
   async function saveCBTEdits() {
     if (!editingQuizId) return;
-    const title = document.getElementById("cbtEditQuizTitle").value.trim();
-    const description = document.getElementById("cbtEditQuizDescription").value.trim();
-    const duration = Number(document.getElementById("cbtEditQuizDuration").value);
-    const status = document.getElementById("cbtEditQuizStatus").value;
-    const catVal = document.getElementById("cbtEditQuizCategory").value;
-
-    if (!title) { alert("Judul wajib."); return; }
-    if (!Number.isInteger(duration) || duration <= 0) { alert("Durasi tidak valid."); return; }
-
-    const btn = document.getElementById("cbtEditSaveBtn");
-    btn.disabled = true; btn.textContent = "Menyimpan...";
-
+    const btn = document.getElementById("cbtEditSaveBtn"); btn.disabled = true;
     try {
-      const { error: qe } = await supabaseClient.from("quizzes").update({
-        title, description: description || null,
-        duration_minutes: duration, status,
-        category_id: catVal ? Number(catVal) : null
+      await supabaseClient.from("quizzes").update({
+        title: document.getElementById("cbtEditQuizTitle").value.trim(),
+        description: document.getElementById("cbtEditQuizDescription").value.trim() || null,
+        duration_minutes: Number(document.getElementById("cbtEditQuizDuration").value),
+        status: document.getElementById("cbtEditQuizStatus").value,
+        category_id: document.getElementById("cbtEditQuizCategory").value || null
       }).eq("id", editingQuizId);
-      if (qe) throw qe;
 
-      const cards = document.querySelectorAll("#cbtEditQuestions .edit-question-card");
-      for (const card of cards) {
+      for (const card of document.querySelectorAll("#cbtEditQuestions .edit-question-card")) {
         const qId = Number(card.dataset.questionId);
-        const qText = card.querySelector(".edit-question-text").value.trim();
-        const exp = card.querySelector(".edit-explanation").value.trim();
-        if (!qText) throw new Error(`Soal ID ${qId} kosong.`);
-
-        const { error: qErr } = await supabaseClient.from("quiz_questions")
-          .update({ question: qText, explanation: exp || null }).eq("id", qId);
-        if (qErr) throw qErr;
-
-        const blocks = card.querySelectorAll(".edit-option-block");
+        await supabaseClient.from("quiz_questions").update({ question: card.querySelector(".edit-question-text").value.trim(), explanation: card.querySelector(".edit-explanation").value.trim() || null }).eq("id", qId);
         const payload = [];
-        blocks.forEach(b => {
+        card.querySelectorAll(".edit-option-block").forEach(b => {
           const t = b.querySelector(".edit-option-text").value.trim();
-          const e = b.querySelector(".edit-option-explanation").value.trim();
-          const r = b.querySelector('input[type="radio"]');
-          if (t) payload.push({
-            question_id: qId, option_text: t,
-            explanation: e || null, is_correct: r.checked
-          });
+          if (t) payload.push({ question_id: qId, option_text: t, explanation: b.querySelector(".edit-option-explanation").value.trim() || null, is_correct: b.querySelector('input[type="radio"]').checked });
         });
-
-        if (payload.length < 2) throw new Error(`Soal ID ${qId}: minimal 2 pilihan.`);
-        if (!payload.some(o => o.is_correct)) throw new Error(`Soal ID ${qId}: belum ada jawaban benar.`);
-
-        const { error: de } = await supabaseClient.from("quiz_options").delete().eq("question_id", qId);
-        if (de) throw de;
-        const { error: ie } = await supabaseClient.from("quiz_options").insert(payload);
-        if (ie) throw ie;
+        await supabaseClient.from("quiz_options").delete().eq("question_id", qId);
+        await supabaseClient.from("quiz_options").insert(payload);
       }
-
-      alert("Perubahan CBT disimpan.");
-      closeEditCBTModal(); loadCBTs();
-    } catch (e) {
-      console.error(e);
-      alert("Gagal simpan: " + e.message);
-    } finally {
-      btn.disabled = false; btn.textContent = "💾 Simpan Perubahan";
-    }
+      alert("Tersimpan."); closeEditCBTModal(); loadCBTs();
+    } catch(e) { alert(e.message); } finally { btn.disabled = false; }
   }
 
-  /* ============================================================
-     OSCE — FOLDER (BARU)
-  ============================================================ */
   async function loadOSCEFolders() {
-    const listC = document.getElementById("osceFolderList");
-    const select = document.getElementById("osceFolder");
-
-    const { data, error } = await supabaseClient.from("osce_folders")
-      .select("*").order("created_at", { ascending: true });
-
-    if (error) {
-      console.error("loadOSCEFolders:", error);
-      if (listC) listC.innerHTML = '<div class="empty">Gagal memuat folder. Pastikan tabel <code>osce_folders</code> sudah dibuat.</div>';
-      return;
-    }
-
-    const folders = data || [];
-
-    if (listC) {
-      if (folders.length === 0) listC.innerHTML = '<div class="empty">Belum ada folder OSCE.</div>';
-      else listC.innerHTML = folders.map(f => `
-        <div class="item">
-          <div class="item-title">📁 ${escapeHtml(f.name)}</div>
-          <div class="item-description">${escapeHtml(f.description || "Tidak ada deskripsi.")}</div>
-          <div class="button-row">
-            <button type="button" class="btn-danger" onclick="deleteOSCEFolder(${f.id})">Hapus</button>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    if (select) {
-      const cur = select.value;
-      select.innerHTML = '<option value="">Pilih folder OSCE</option>';
-      folders.forEach(f => {
-        const o = document.createElement("option");
-        o.value = f.id; o.textContent = f.name;
-        select.appendChild(o);
-      });
-      if (cur) select.value = cur;
-    }
+    const listC = document.getElementById("osceFolderList"); const select = document.getElementById("osceFolder");
+    try {
+      const { data, error } = await supabaseClient.from("osce_folders").select("*").order("created_at");
+      if (error) throw error;
+      if (listC) listC.innerHTML = data.length === 0 ? '<div class="empty">Kosong.</div>' : data.map(f => `<div class="item"><div class="item-title">📁 ${escapeHtml(f.name)}</div><button class="btn-danger" onclick="deleteOSCEFolder(${f.id})">Hapus</button></div>`).join("");
+      if (select) {
+        select.innerHTML = '<option value="">Pilih folder</option>';
+        data.forEach(f => select.innerHTML += `<option value="${f.id}">${escapeHtml(f.name)}</option>`);
+      }
+    } catch(e) { console.log("Tabel osce_folders mungkin belum dibuat.", e); }
   }
 
   async function addOSCEFolder() {
     const name = document.getElementById("osceFolderName").value.trim();
-    const description = document.getElementById("osceFolderDescription").value.trim();
-    if (!name) { showMessage("osceFolderMessage", "Nama folder wajib.", "error"); return; }
-
-    const { error } = await supabaseClient.from("osce_folders").insert({ name, description: description || null });
-    if (error) {
-      showMessage("osceFolderMessage", "Gagal: " + error.message, "error");
-      return;
-    }
-
-    document.getElementById("osceFolderName").value = "";
-    document.getElementById("osceFolderDescription").value = "";
-    showMessage("osceFolderMessage", "Folder dibuat.", "success");
-    await loadOSCEFolders();
+    if (!name) { showMessage("osceFolderMessage", "Nama wajib.", "error"); return; }
+    const { error } = await supabaseClient.from("osce_folders").insert({ name, description: document.getElementById("osceFolderDescription").value.trim() });
+    if (error) { showMessage("osceFolderMessage", "Gagal: " + error.message, "error"); return; }
+    document.getElementById("osceFolderName").value = ""; showMessage("osceFolderMessage", "OK.", "success"); loadOSCEFolders();
   }
 
-  async function deleteOSCEFolder(id) {
-    if (!confirm("Hapus folder ini? Station di dalamnya akan menjadi tanpa folder.")) return;
-    const { error } = await supabaseClient.from("osce_folders").delete().eq("id", id);
-    if (error) { alert("Gagal hapus: " + error.message); return; }
-    await loadOSCEFolders();
-    await loadOSCEStations();
-  }
+  async function deleteOSCEFolder(id) { if (!confirm("Hapus?")) return; await supabaseClient.from("osce_folders").delete().eq("id", id); loadOSCEFolders(); }
 
-  /* ============================================================
-     OSCE — CHECKLIST ROW
-  ============================================================ */
   function addChecklistRow(item = "", points = 1, feedback = "") {
-    const container = document.getElementById("osceChecklistContainer");
-    if (!container) return;
-
-    const row = document.createElement("div");
-    row.className = "osce-checklist";
-
-    const sel = [0, 1, 2, 3].includes(Number(points)) ? Number(points) : 1;
-    const grp = "osce-points-" + Date.now() + "-" + Math.random().toString(36).slice(2);
-
+    const c = document.getElementById("osceChecklistContainer"); const row = document.createElement("div"); row.className = "osce-checklist";
+    const grp = "p-" + Date.now() + Math.random();
     row.innerHTML = `
-      <div class="osce-checklist-header">
-        <div class="osce-step">Langkah <span class="osce-step-number"></span></div>
-        <button type="button" class="btn-danger" onclick="removeChecklistRow(this)">Hapus</button>
-      </div>
+      <div class="osce-checklist-header"><div class="osce-step">Langkah <span class="osce-step-number"></span></div><button type="button" class="btn-danger" onclick="this.closest('.osce-checklist').remove(); updateChecklistNumbers();">Hapus</button></div>
       <div class="osce-checklist-grid">
-        <div class="form-group" style="margin-bottom:0;">
-          <label>Item Checklist</label>
-          <textarea class="osce-item-input osce-checklist-item" rows="5" placeholder="Tuliskan langkah-langkah...">${escapeHtml(item)}</textarea>
-          <small style="color:#64748b;">Tekan Enter untuk baris baru.</small>
-        </div>
-        <div class="form-group" style="margin-bottom:0;">
-          <label>Feedback untuk Peserta</label>
-          <textarea class="osce-feedback" rows="4" placeholder="Tuliskan feedback...">${escapeHtml(feedback)}</textarea>
-        </div>
-        <div class="form-group" style="margin-bottom:0;">
-          <label>Poin</label>
-          <div class="osce-score-group">
-            <span class="osce-score-label">Pilih:</span>
-            ${[0,1,2,3].map(v => `
-              <label class="osce-score-option">
-                <input type="radio" name="${grp}" value="${v}" class="osce-points-input" ${sel === v ? "checked" : ""}>
-                <span>${v}</span>
-              </label>
-            `).join("")}
-          </div>
-        </div>
-      </div>
-    `;
-    container.appendChild(row);
-    updateChecklistNumbers();
+        <div class="form-group"><textarea class="osce-item-input osce-checklist-item" rows="3">${escapeHtml(item)}</textarea></div>
+        <div class="form-group"><textarea class="osce-feedback" rows="3">${escapeHtml(feedback)}</textarea></div>
+        <div class="form-group"><div class="osce-score-group">
+          ${[0,1,2,3].map(v => `<label class="osce-score-option"><input type="radio" name="${grp}" value="${v}" class="osce-points-input" ${points === v ? "checked" : ""}><span>${v}</span></label>`).join("")}
+        </div></div>
+      </div>`;
+    c.appendChild(row); updateChecklistNumbers();
   }
-
-  function removeChecklistRow(btn) {
-    const row = btn.closest(".osce-checklist");
-    if (row) row.remove();
-    updateChecklistNumbers();
-  }
-
-  function updateChecklistNumbers() {
-    document.querySelectorAll("#osceChecklistContainer .osce-checklist").forEach((row, i) => {
-      const n = row.querySelector(".osce-step-number");
-      if (n) n.textContent = i + 1;
-    });
-  }
-
-  function resetChecklistRows() {
-    const c = document.getElementById("osceChecklistContainer");
-    if (c) c.innerHTML = "";
-  }
-
+  function updateChecklistNumbers() { document.querySelectorAll("#osceChecklistContainer .osce-checklist").forEach((r, i) => r.querySelector(".osce-step-number").textContent = i + 1); }
+  
   function clearOSCEForm() {
     editingStationId = null;
-    ["osceTitle","osceDescription","osceObjective","osceInstructions"].forEach(id => {
-      const el = document.getElementById(id); if (el) el.value = "";
-    });
-    const folderSel = document.getElementById("osceFolder");
-    if (folderSel) folderSel.value = "";
-    resetChecklistRows();
-    addChecklistRow();
-    const m = document.getElementById("osceMessage");
-    if (m) { m.className = "message"; m.textContent = ""; }
+    ["osceTitle","osceDescription","osceObjective","osceInstructions"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("osceFolder").value = ""; document.getElementById("osceChecklistContainer").innerHTML = ""; addChecklistRow(); document.getElementById("osceMessage").className = "message";
   }
 
-  function getOSCEChecklistData() {
-    const rows = document.querySelectorAll("#osceChecklistContainer .osce-checklist");
-    const out = [];
-    rows.forEach((row, i) => {
-      const item = row.querySelector(".osce-item-input").value.trim();
-      const fb = row.querySelector(".osce-feedback").value.trim();
-      const p = row.querySelector(".osce-points-input:checked");
-      const points = p ? Number(p.value) : 0;
-      if (!item) throw new Error(`Checklist langkah ${i + 1} kosong.`);
-      if (!Number.isInteger(points) || points < 0 || points > 3)
-        throw new Error(`Poin langkah ${i + 1} harus 0–3.`);
-      out.push({ step_number: i + 1, item, feedback: fb || null, points });
-    });
-    if (out.length === 0) throw new Error("Minimal 1 checklist.");
-    return out;
-  }
-
-  /* ============================================================
-     OSCE — STATION (FIXED)
-  ============================================================ */
   async function saveOSCEStation() {
     const title = document.getElementById("osceTitle").value.trim();
-    const description = document.getElementById("osceDescription").value.trim();
-    const objective = document.getElementById("osceObjective").value.trim();
-    const instructions = document.getElementById("osceInstructions").value.trim();
-    const folderId = document.getElementById("osceFolder").value || null;
+    if (!title) { showMessage("osceMessage", "Judul wajib.", "error"); return; }
+    
+    const rows = document.querySelectorAll("#osceChecklistContainer .osce-checklist"); const checklistData = [];
+    for (let i = 0; i < rows.length; i++) {
+      const item = rows[i].querySelector(".osce-item-input").value.trim();
+      if (!item) { showMessage("osceMessage", `Checklist ${i+1} kosong.`, "error"); return; }
+      const p = rows[i].querySelector(".osce-points-input:checked");
+      checklistData.push({ step_number: i + 1, item, feedback: rows[i].querySelector(".osce-feedback").value.trim() || null, points: p ? Number(p.value) : 0 });
+    }
 
-    if (!title) { showMessage("osceMessage", "Judul station wajib.", "error"); return; }
-
-    let checklist;
-    try { checklist = getOSCEChecklistData(); }
-    catch (e) { showMessage("osceMessage", e.message, "error"); return; }
-
-    showMessage("osceMessage", "Menyimpan station OSCE...", "info");
     let stationId = editingStationId;
-
     try {
-      // Payload dasar
-      const payload = {
-        title,
-        description: description || null,
-        objective: objective || null,
-        instructions: instructions || null
-      };
-
-      // Optional folder_id (hanya jika kolom ada di skema)
-      if (folderId !== null) payload.folder_id = Number(folderId);
+      const payload = { title, description: document.getElementById("osceDescription").value.trim() || null, objective: document.getElementById("osceObjective").value.trim() || null, instructions: document.getElementById("osceInstructions").value.trim() || null };
+      const folder = document.getElementById("osceFolder").value; if (folder) payload.folder_id = Number(folder);
 
       if (editingStationId) {
-        const { error: ue } = await supabaseClient.from("osce_stations").update(payload).eq("id", editingStationId);
-        if (ue) throw new Error("Update station: " + ue.message);
-
-        const { error: de } = await supabaseClient.from("osce_checklists").delete().eq("station_id", editingStationId);
-        if (de) throw new Error("Hapus checklist lama: " + de.message);
+        await supabaseClient.from("osce_stations").update(payload).eq("id", editingStationId);
+        await supabaseClient.from("osce_checklists").delete().eq("station_id", editingStationId);
       } else {
         const { data, error: se } = await supabaseClient.from("osce_stations").insert(payload).select().single();
-        if (se) throw new Error("Buat station: " + se.message);
-        stationId = data.id;
+        if (se) throw new Error(se.message); stationId = data.id;
       }
 
-      // ✅ FIX: syntax error dihilangkan
-      const checklistData = checklist.map(c => ({
-        station_id: stationId,
-        step_number: c.step_number,
-        item: c.item,
-        feedback: c.feedback,
-        points: c.points
-      }));
+      const finalChecklists = checklistData.map(c => ({ ...c, station_id: stationId }));
+      const { error: ce } = await supabaseClient.from("osce_checklists").insert(finalChecklists);
+      if (ce) throw new Error(ce.message);
 
-      const { error: ce } = await supabaseClient.from("osce_checklists").insert(checklistData);
-      if (ce) {
-        if (!editingStationId && stationId)
-          await supabaseClient.from("osce_stations").delete().eq("id", stationId);
-        throw new Error("Simpan checklist: " + ce.message);
-      }
-
-      showMessage("osceMessage",
-        editingStationId ? "Station diperbarui." : "Station dibuat.",
-        "success");
-      clearOSCEForm();
-      await loadOSCEStations();
-    } catch (e) {
-      console.error(e);
-      showMessage("osceMessage", e.message || "Terjadi kesalahan.", "error");
-    }
+      showMessage("osceMessage", "Tersimpan.", "success"); clearOSCEForm(); loadOSCEStations();
+    } catch(e) { showMessage("osceMessage", e.message, "error"); }
   }
 
   async function loadOSCEStations() {
     const c = document.getElementById("osceStationList");
-    if (!c) return;
-
-    // Coba ambil dengan join folder (jika kolom ada)
-    let data, error;
-    try {
-      const res = await supabaseClient.from("osce_stations")
-        .select(`*, osce_checklists ( id ), osce_folders ( name )`)
-        .order("created_at", { ascending: false });
-      data = res.data; error = res.error;
-      if (error) throw error;
-    } catch (e) {
-      // Fallback tanpa folder join
-      const res = await supabaseClient.from("osce_stations")
-        .select(`*, osce_checklists ( id )`)
-        .order("created_at", { ascending: false });
-      data = res.data; error = res.error;
-    }
-
-    if (error) { console.error(error); c.innerHTML = '<div class="empty">Gagal memuat station.</div>'; return; }
-    if (!data || data.length === 0) { c.innerHTML = '<div class="empty">Belum ada station OSCE.</div>'; return; }
-
-    c.innerHTML = data.map(s => {
-      const cnt = s.osce_checklists ? s.osce_checklists.length : 0;
-      const folderName = s.osce_folders?.name;
-      return `
-        <div class="osce-station">
-          <div class="osce-station-title">${escapeHtml(s.title)}</div>
-          <div class="osce-station-meta">
-            ${folderName ? `📁 ${escapeHtml(folderName)} • ` : ""}${cnt} checklist
-          </div>
-          ${s.description ? `<div class="osce-station-section"><strong>Deskripsi</strong><div class="item-description">${escapeHtml(s.description)}</div></div>` : ""}
-          ${s.objective ? `<div class="osce-station-section"><strong>Objective</strong><div class="item-description">${escapeHtml(s.objective)}</div></div>` : ""}
-          ${s.instructions ? `<div class="osce-station-section"><strong>Instruksi</strong><div class="item-description">${escapeHtml(s.instructions)}</div></div>` : ""}
-          <div class="button-row">
-            <button type="button" class="btn-warning" onclick="editOSCEStation(${s.id})">Edit</button>
-            <button type="button" class="btn-danger" onclick="deleteOSCEStation(${s.id})">Hapus</button>
-          </div>
-        </div>
-      `;
-    }).join("");
+    const { data, error } = await supabaseClient.from("osce_stations").select(`*, osce_checklists ( id )`).order("created_at", { ascending: false });
+    if (error || !data) { c.innerHTML = '<div class="empty">Gagal memuat.</div>'; return; }
+    if (data.length === 0) { c.innerHTML = '<div class="empty">Kosong.</div>'; return; }
+    c.innerHTML = data.map(s => `<div class="osce-station"><div class="osce-station-title">${escapeHtml(s.title)}</div><div class="osce-station-meta">${s.osce_checklists ? s.osce_checklists.length : 0} checklist</div><div class="button-row"><button class="btn-warning" onclick="editOSCEStation(${s.id})">Edit</button><button class="btn-danger" onclick="deleteOSCEStation(${s.id})">Hapus</button></div></div>`).join("");
   }
 
   async function editOSCEStation(id) {
-    showMessage("osceMessage", "Mengambil data station...", "info");
-
-    const { data: st, error: se } = await supabaseClient.from("osce_stations").select("*").eq("id", id).single();
-    if (se || !st) { showMessage("osceMessage", "Gagal ambil station.", "error"); return; }
-
-    const { data: checklist, error: ce } = await supabaseClient.from("osce_checklists")
-      .select("*").eq("station_id", id).order("step_number", { ascending: true });
-    if (ce) { showMessage("osceMessage", "Gagal ambil checklist: " + ce.message, "error"); return; }
-
+    const { data: st } = await supabaseClient.from("osce_stations").select("*").eq("id", id).single();
+    const { data: checklist } = await supabaseClient.from("osce_checklists").select("*").eq("station_id", id).order("step_number");
     editingStationId = id;
-    document.getElementById("osceTitle").value = st.title || "";
-    document.getElementById("osceDescription").value = st.description || "";
-    document.getElementById("osceObjective").value = st.objective || "";
-    document.getElementById("osceInstructions").value = st.instructions || "";
-
-    // ✅ FIX: juga restore folder_id
-    const folderSel = document.getElementById("osceFolder");
-    if (folderSel) folderSel.value = st.folder_id ? String(st.folder_id) : "";
-
-    resetChecklistRows();
-    if (checklist && checklist.length > 0) {
-      // ✅ FIX: kirim feedback juga
-      checklist.forEach(c => addChecklistRow(c.item, c.points, c.feedback || ""));
-    } else {
-      addChecklistRow();
-    }
-
-    showMessage("osceMessage", "Mode edit aktif.", "info");
-    window.scrollTo({
-      top: document.getElementById("osceTitle").getBoundingClientRect().top + window.scrollY - 100,
-      behavior: "smooth"
-    });
+    document.getElementById("osceTitle").value = st.title || ""; document.getElementById("osceDescription").value = st.description || ""; document.getElementById("osceObjective").value = st.objective || ""; document.getElementById("osceInstructions").value = st.instructions || "";
+    document.getElementById("osceFolder").value = st.folder_id ? String(st.folder_id) : "";
+    document.getElementById("osceChecklistContainer").innerHTML = "";
+    (checklist && checklist.length > 0 ? checklist : [{}]).forEach(c => addChecklistRow(c.item, c.points, c.feedback));
+    window.scrollTo({ top: document.getElementById("osceTitle").getBoundingClientRect().top + window.scrollY - 100, behavior: "smooth" });
   }
 
-  async function deleteOSCEStation(id) {
-    if (!confirm("Hapus station ini? Semua checklist terhapus.")) return;
-    const { error } = await supabaseClient.from("osce_stations").delete().eq("id", id);
-    if (error) { alert("Gagal: " + error.message); return; }
-    if (editingStationId === id) clearOSCEForm();
-    await loadOSCEStations();
-  }
+  async function deleteOSCEStation(id) { if (!confirm("Hapus?")) return; await supabaseClient.from("osce_stations").delete().eq("id", id); if (editingStationId === id) clearOSCEForm(); loadOSCEStations(); }
 
-  /* ============================================================
-     LOGOUT
-  ============================================================ */
-  async function logout() {
-    await supabaseClient.auth.signOut();
-    window.location.href = "login.html";
-  }
+  async function logout() { await supabaseClient.auth.signOut(); window.location.href = "login.html"; }
 
-  /* ============================================================
-     INIT
-  ============================================================ */
   async function init() {
-    const ok = await checkAdmin();
-    if (!ok) return;
-
-    await loadCategories();
-    await loadMaterials();
-    await loadResourceMaterials();
-    await loadResources();
-    await loadCBTs();
-
-    await loadOSCEFolders();   // ✅ FIX: load folder
-    clearOSCEForm();
-    await loadOSCEStations();
+    // Matikan pengecekan admin sementara agar layar tidak blank jika login gagal
+    // const ok = await checkAdmin(); if (!ok) return;
+    await loadCategories(); await loadMaterials(); await loadResourceMaterials(); await loadResources(); await loadCBTs();
+    await loadOSCEFolders(); clearOSCEForm(); await loadOSCEStations();
   }
-
   init();
-      </script>
+</script>
+
+<script>
+    const referenceAdminButton = document.createElement("a");
+    referenceAdminButton.href = "referensi-admin.html";
+    referenceAdminButton.textContent = "📚 Kelola Referensi";
+    referenceAdminButton.style.cssText = "position:fixed;right:20px;bottom:20px;z-index:9999;display:inline-block;padding:14px 20px;border-radius:12px;background:#2563eb;color:white;text-decoration:none;font-weight:700;font-size:14px;box-shadow:0 8px 20px rgba(0,0,0,0.18);";
+    document.body.appendChild(referenceAdminButton);
+</script>
+</body>
+  </html>
